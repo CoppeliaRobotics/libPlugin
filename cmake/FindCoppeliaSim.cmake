@@ -118,18 +118,16 @@ function(COPPELIASIM_GENERATE_STUBS GENERATED_OUTPUT_DIR)
     set(COPPELIASIM_EXPORTED_SOURCES ${COPPELIASIM_EXPORTED_SOURCES} "${GENERATED_OUTPUT_DIR}/stubs.cpp" PARENT_SCOPE)
 endfunction(COPPELIASIM_GENERATE_STUBS)
 
-if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
-    find_package(Git)
-    if(GIT_FOUND)
-        execute_process(
-            COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
-            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-            OUTPUT_VARIABLE "BUILD_GIT_VERSION"
-            ERROR_QUIET
-            OUTPUT_STRIP_TRAILING_WHITESPACE)
-    else()
-        set(BUILD_GIT_VERSION "unknown")
-    endif()
+find_package(Git)
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git AND GIT_FOUND)
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        OUTPUT_VARIABLE "BUILD_GIT_VERSION"
+        ERROR_QUIET
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+else()
+    set(BUILD_GIT_VERSION "unknown")
 endif()
 
 include_directories(${LIBPLUGIN_DIR})
