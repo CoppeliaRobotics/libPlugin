@@ -1,16 +1,32 @@
 cmake_minimum_required(VERSION 2.8.12)
 include(CMakeParseArguments)
 
+function(COPPELIASIM_FIND_ERROR MESSAGE)
+    if(CoppeliaSim_FIND_REQUIRED)
+        message(FATAL_ERROR ${MESSAGE})
+    elseif(NOT CoppeliaSim_FIND_QUIETLY)
+        message(SEND_ERROR ${MESSAGE})
+    endif()
+endfunction()
+
+# redefine LIBPLUGIN_DIR as the directory containing this module:
+
 get_filename_component(LIBPLUGIN_DIR ${CMAKE_CURRENT_LIST_DIR} DIRECTORY)
+if(NOT CoppeliaSim_FIND_QUIETLY)
+    message(STATUS "CoppeliaSim: LIBPLUGIN_DIR: ${LIBPLUGIN_DIR}.")
+endif()
+
+# determine the value of COPPELIASIM_ROOT_DIR:
 
 if(NOT COPPELIASIM_ROOT_DIR)
     if(NOT DEFINED ENV{COPPELIASIM_ROOT_DIR})
         if(EXISTS "${LIBPLUGIN_DIR}/../../programming/include")
-            get_filename_component(COPPELIASIM_PROGRAMMING_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
+            get_filename_component(COPPELIASIM_PROGRAMMING_DIR ${LIBPLUGIN_DIR} DIRECTORY)
         elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../programming/include")
             get_filename_component(COPPELIASIM_PROGRAMMING_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
         else()
-            message(FATAL_ERROR "Cannot find CoppeliaSim installation. Please set the COPPELIASIM_ROOT_DIR environment variable to point to the root of your CoppeliaSim installation.")
+            coppeliasim_find_error("Cannot figure out the value for COPPELIASIM_ROOT_DIR.")
+            return()
         endif()
         get_filename_component(COPPELIASIM_ROOT_DIR ${COPPELIASIM_PROGRAMMING_DIR} DIRECTORY)
         unset(COPPELIASIM_PROGRAMMING_DIR)
@@ -19,24 +35,60 @@ if(NOT COPPELIASIM_ROOT_DIR)
     endif()
 endif()
 
-file(TO_CMAKE_PATH "${COPPELIASIM_ROOT_DIR}" COPPELIASIM_ROOT_DIR)
+# check if COPPELIASIM_ROOT_DIR exists, is valid, etc...:
 
-if(EXISTS "${COPPELIASIM_ROOT_DIR}/programming/include" AND EXISTS "${COPPELIASIM_ROOT_DIR}/programming/common")
-    set(COPPELIASIM_INCLUDE_DIR "${COPPELIASIM_ROOT_DIR}/programming/include")
-    set(COPPELIASIM_COMMON_DIR "${COPPELIASIM_ROOT_DIR}/programming/common")
-    if(NOT EXISTS "${COPPELIASIM_INCLUDE_DIR}/simLib.h")
-        message(FATAL_ERROR "Cannot find simLib.h in ${COPPELIASIM_INCLUDE_DIR}.")
-    endif()
-    if(NOT EXISTS "${COPPELIASIM_INCLUDE_DIR}/simConst.h")
-        message(FATAL_ERROR "Cannot find simConst.h in ${COPPELIASIM_INCLUDE_DIR}.")
-    endif()
-    if(NOT EXISTS "${COPPELIASIM_COMMON_DIR}/simLib.cpp")
-        message(FATAL_ERROR "Cannot find simLib.cpp in ${COPPELIASIM_COMMON_DIR}.")
-    endif()
-    if(NOT COPPELIASIM_FIND_QUIETLY)
-        message(STATUS "Found CoppeliaSim installation at ${COPPELIASIM_ROOT_DIR}.")
-    endif()
+set(COPPELIASIM_FOUND FALSE)
 
+if(EXISTS "${COPPELIASIM_ROOT_DIR}")
+    file(TO_CMAKE_PATH "${COPPELIASIM_ROOT_DIR}" COPPELIASIM_ROOT_DIR)
+    if(NOT CoppeliaSim_FIND_QUIETLY)
+        message(STATUS "CoppeliaSim: COPPELIASIM_ROOT_DIR: ${COPPELIASIM_ROOT_DIR}.")
+    endif()
+else()
+    coppeliasim_find_error("The specified COPPELIASIM_ROOT_DIR (${COPPELIASIM_ROOT_DIR}) does not exist")
+    return()
+endif()
+
+foreach(D IN ITEMS
+        "${COPPELIASIM_ROOT_DIR}/programming/include"
+        "${COPPELIASIM_ROOT_DIR}/programming/common"
+)
+    if(NOT EXISTS "${D}" AND IS_DIRECTORY "${D}")
+        coppeliasim_find_error("Directory ${D} does not exist.")
+        return()
+    endif()
+endforeach()
+
+set(COPPELIASIM_INCLUDE_DIR "${COPPELIASIM_ROOT_DIR}/programming/include")
+set(COPPELIASIM_COMMON_DIR "${COPPELIASIM_ROOT_DIR}/programming/common")
+
+foreach(F IN ITEMS
+        "${COPPELIASIM_INCLUDE_DIR}/simLib.h"
+        "${COPPELIASIM_INCLUDE_DIR}/simConst.h"
+        "${COPPELIASIM_COMMON_DIR}/simLib.cpp"
+        "${LIBPLUGIN_DIR}/simPlusPlus/Plugin.cpp"
+)
+    if(NOT EXISTS "${F}")
+        coppeliasim_find_error("File ${F} does not exist.")
+        return()
+    endif()
+endforeach()
+
+set(COPPELIASIM_EXPORTED_SOURCES
+    "${COPPELIASIM_EXPORTED_SOURCES}"
+    "${COPPELIASIM_COMMON_DIR}/simLib.cpp"
+    "${LIBPLUGIN_DIR}/simPlusPlus/Plugin.cpp")
+
+if(NOT CoppeliaSim_FIND_QUIETLY)
+    message(STATUS "Found CoppeliaSim installation at ${COPPELIASIM_ROOT_DIR}.")
+endif()
+
+# check required version:
+
+if(DEFINED CoppeliaSim_FIND_VERSION)
+    if(NOT CoppeliaSim_FIND_QUIETLY)
+        message(STATUS "Checking CoppeliaSim header version...")
+    endif()
     set(COPPELIASIM_VERSION_CHECK_SRC "${CMAKE_BINARY_DIR}/sim_version_check.cpp")
     set(COPPELIASIM_VERSION_CHECK_BIN "${CMAKE_BINARY_DIR}/sim_version_check")
     file(WRITE ${COPPELIASIM_VERSION_CHECK_SRC} "
@@ -51,10 +103,7 @@ int main() {
         << SIM_PROGRAM_REVISION_NB << sep
         << 0 << std::endl;
 }
-    ")
-    if(NOT COPPELIASIM_FIND_QUIETLY)
-        message(STATUS "Checking CoppeliaSim header version...")
-    endif()
+")
     try_run(COPPELIASIM_VERSION_RUN_RESULT COPPELIASIM_VERSION_COMPILE_RESULT ${COPPELIASIM_VERSION_CHECK_BIN} ${COPPELIASIM_VERSION_CHECK_SRC} CMAKE_FLAGS -DINCLUDE_DIRECTORIES=${COPPELIASIM_INCLUDE_DIR} RUN_OUTPUT_VARIABLE COPPELIASIM_VERSION_CHECK_OUTPUT)
     if(${COPPELIASIM_VERSION_COMPILE_RESULT})
         if(${COPPELIASIM_VERSION_RUN_RESULT} EQUAL 0)
@@ -66,29 +115,22 @@ int main() {
             list(GET COPPELIASIM_VERSION_CHECK_OUTPUT 3 COPPELIASIM_REVISION)
             set(COPPELIASIM_VERSION "${COPPELIASIM_VERSION_MAJOR}.${COPPELIASIM_VERSION_MINOR}.${COPPELIASIM_VERSION_PATCH}.${COPPELIASIM_REVISION}")
             set(COPPELIASIM_VERSION_STR "${COPPELIASIM_VERSION_MAJOR}.${COPPELIASIM_VERSION_MINOR}.${COPPELIASIM_VERSION_PATCH} rev${COPPELIASIM_REVISION}")
-            if(NOT COPPELIASIM_FIND_QUIETLY)
+            if(NOT CoppeliaSim_FIND_QUIETLY)
                 message(STATUS "CoppeliaSim headers version ${COPPELIASIM_VERSION_STR}")
             endif()
-            if(DEFINED COPPELIASIM_FIND_VERSION)
-                if(${COPPELIASIM_VERSION} VERSION_LESS ${COPPELIASIM_FIND_VERSION})
-                    message(FATAL_ERROR "Found CoppeliaSim version ${COPPELIASIM_VERSION} but ${COPPELIASIM_FIND_VERSION} required.")
-                endif()
+            if(${COPPELIASIM_VERSION} VERSION_LESS ${CoppeliaSim_FIND_VERSION})
+                coppeliasim_find_error("Found CoppeliaSim version ${COPPELIASIM_VERSION} but ${CoppeliaSim_FIND_VERSION} required.")
+                return()
             endif()
         else()
-            message(FATAL_ERROR "Failed to run CoppeliaSim version check program")
+            coppeliasim_find_error("Failed to run CoppeliaSim version check program")
+            return()
         endif()
     else()
-        message(FATAL_ERROR "Failed to compile CoppeliaSim version check program")
-    endif()
-
-    set(COPPELIASIM_FOUND TRUE)
-else()
-    if(COPPELIASIM_FIND_REQUIRED)
-        message(FATAL_ERROR "The specified COPPELIASIM_ROOT_DIR dir does not point to a valid CoppeliaSim installation.")
+        coppeliasim_find_error("Failed to compile CoppeliaSim version check program")
+        return()
     endif()
 endif()
-
-set(COPPELIASIM_EXPORTED_SOURCES "${COPPELIASIM_COMMON_DIR}/simLib.cpp")
 
 if(WIN32)
     add_definitions(-DWIN_SIM)
@@ -103,9 +145,11 @@ elseif(UNIX AND APPLE)
     set(COPPELIASIM_LIBRARIES "")
 endif()
 
+include_directories(${LIBPLUGIN_DIR})
+
 function(COPPELIASIM_GENERATE_STUBS GENERATED_OUTPUT_DIR)
     cmake_parse_arguments(COPPELIASIM_GENERATE_STUBS "" "XML_FILE;LUA_FILE" "" ${ARGN})
-    if(NOT COPPELIASIM_FIND_QUIETLY)
+    if(NOT CoppeliaSim_FIND_QUIETLY)
         message(STATUS "Adding simStubsGen command...")
     endif()
     if("${COPPELIASIM_GENERATE_STUBS_LUA_FILE}" STREQUAL "")
@@ -135,5 +179,4 @@ else()
     set(BUILD_GIT_VERSION "unknown")
 endif()
 
-include_directories(${LIBPLUGIN_DIR})
-set(COPPELIASIM_EXPORTED_SOURCES ${COPPELIASIM_EXPORTED_SOURCES} ${LIBPLUGIN_DIR}/simPlusPlus/Plugin.cpp)
+set(COPPELIASIM_FOUND TRUE)
