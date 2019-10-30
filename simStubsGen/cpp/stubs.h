@@ -6,9 +6,6 @@
 
 #ifdef QT_COMPIL
 #include <QThread>
-#if defined(QT_DEBUG) && !defined(DEBUG)
-#define DEBUG
-#endif
 #endif // QT_COMPIL
 
 #include <simLib.h>
