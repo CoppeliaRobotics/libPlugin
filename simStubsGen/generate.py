@@ -43,8 +43,12 @@ def rel(filename):
 def runsubprocess(what, cmdargs):
     if args.verbose:
         print(' '.join(['"%s"' % arg if ' ' in arg else arg for arg in cmdargs]))
-    child = subprocess.Popen(cmdargs)
-    child.communicate()
+    try:
+        child = subprocess.Popen(cmdargs)
+        child.communicate()
+    except OSError as e:
+        print('error: program "{0}" is missing (hint: try "sudo apt install {0}")'.format(what), file=sys.stderr)
+        sys.exit(1)
     if child.returncode != 0:
         print('failed to run %s' % what)
         sys.exit(1)
