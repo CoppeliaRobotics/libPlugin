@@ -156,11 +156,11 @@ function(COPPELIASIM_GENERATE_STUBS GENERATED_OUTPUT_DIR)
         message(STATUS "Adding simStubsGen command...")
     endif()
     if("${COPPELIASIM_GENERATE_STUBS_LUA_FILE}" STREQUAL "")
-        add_custom_command(OUTPUT ${GENERATED_OUTPUT_DIR}/stubs.cpp ${GENERATED_OUTPUT_DIR}/stubs.h
+        add_custom_command(OUTPUT ${GENERATED_OUTPUT_DIR}/stubs.cpp ${GENERATED_OUTPUT_DIR}/stubs.h ${GENERATED_OUTPUT_DIR}/stubsPlusPlus.cpp
             COMMAND python ${LIBPLUGIN_DIR}/simStubsGen/generate.py --xml-file ${COPPELIASIM_GENERATE_STUBS_XML_FILE} --gen-all ${GENERATED_OUTPUT_DIR}
             DEPENDS ${COPPELIASIM_GENERATE_STUBS_XML_FILE})
     else()
-        add_custom_command(OUTPUT ${GENERATED_OUTPUT_DIR}/stubs.cpp ${GENERATED_OUTPUT_DIR}/stubs.h ${GENERATED_OUTPUT_DIR}/lua_calltips.cpp
+        add_custom_command(OUTPUT ${GENERATED_OUTPUT_DIR}/stubs.cpp ${GENERATED_OUTPUT_DIR}/stubs.h ${GENERATED_OUTPUT_DIR}/stubsPlusPlus.cpp ${GENERATED_OUTPUT_DIR}/lua_calltips.cpp
             COMMAND python ${LIBPLUGIN_DIR}/simStubsGen/generate.py --xml-file ${COPPELIASIM_GENERATE_STUBS_XML_FILE} --lua-file ${COPPELIASIM_GENERATE_STUBS_LUA_FILE} --gen-all ${GENERATED_OUTPUT_DIR}
             DEPENDS ${COPPELIASIM_GENERATE_STUBS_XML_FILE})
     endif()

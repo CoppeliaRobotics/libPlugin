@@ -9,11 +9,6 @@ Example plugin (uses also [simStubsGen](https://github.com/CoppeliaRobotics/libP
 #include "simPlusPlus/Plugin.h"
 #include "stubs.h"
 
-void test(SScriptCallBack *p, const char *cmd, test_in *in, test_out *out)
-{
-    // ...
-}
-
 class Plugin : public sim:Plugin
 {
 public:
@@ -22,9 +17,15 @@ public:
         if(!registerScriptStuff())
             throw std::runtime_error("script stuff initialization failed");
     }
+
+    void test(test_in *in, test_out *out)
+    {
+        // ...
+    }
 };
 
 SIM_PLUGIN("PluginSkeletonNG", 1, Plugin)
+#include "stubsPlusPlus.cpp"
 ```
 
 See [simExtPluginSkeletonNG](https://github.com/CoppeliaRobotics/simExtPluginSkeletonNG) for a complete example.
