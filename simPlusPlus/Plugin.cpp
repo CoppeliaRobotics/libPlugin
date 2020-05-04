@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <cstring>
+#include <iostream>
 
 namespace sim
 {
@@ -14,6 +15,39 @@ namespace sim
     std::string Plugin::name() const
     {
         return name_;
+    }
+
+    void Plugin::setExtVersion(const std::string &s)
+    {
+        simSetModuleInfo(name_.c_str(), sim_moduleinfo_extversionstr, s.c_str(), 0);
+    }
+
+    void Plugin::setExtVersion(int i)
+    {
+        simSetModuleInfo(name_.c_str(), sim_moduleinfo_extversionint, 0, i);
+    }
+
+    void Plugin::setBuildDate(const std::string &s)
+    {
+        simSetModuleInfo(name_.c_str(), sim_moduleinfo_builddatestr, s.c_str(), 0);
+    }
+
+    void Plugin::setVerbosity(int i)
+    {
+        simSetModuleInfo(name_.c_str(), sim_moduleinfo_verbosity, 0, i);
+    }
+
+    int Plugin::getVerbosity()
+    {
+        int v = sim_verbosity_default;
+        simGetModuleInfo(name_.c_str(), sim_moduleinfo_verbosity, nullptr, &v);
+        return v;
+    }
+
+    void Plugin::log(int verbosity, const std::string &message)
+    {
+        if(getVerbosity() < verbosity) return;
+        std::cout << name_ << ": " << message << std::endl;
     }
 
     void Plugin::onStart()

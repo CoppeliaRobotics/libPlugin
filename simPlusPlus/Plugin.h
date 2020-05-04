@@ -59,6 +59,12 @@ namespace sim
     public:
         void setName(const std::string &name);
         std::string name() const;
+        void setExtVersion(const std::string &s);
+        void setExtVersion(int i);
+        void setBuildDate(const std::string &s);
+        void setVerbosity(int i);
+        int getVerbosity();
+        void log(int verbosity, const std::string &message);
         void init();
         virtual void onStart();
         virtual void onEnd();
