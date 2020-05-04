@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
+#include <boost/format.hpp>
 
 #include "simLib.h"
 
@@ -65,6 +66,7 @@ namespace sim
         void setVerbosity(int i);
         int getVerbosity();
         void log(int verbosity, const std::string &message);
+        void log(int verbosity, boost::format &fmt);
         void init();
         virtual void onStart();
         virtual void onEnd();
