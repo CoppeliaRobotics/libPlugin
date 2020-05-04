@@ -117,6 +117,7 @@ const char* `enum.name.lower()`_string(`enum.name` x);
 #py for cmd in plugin.commands:
 struct `cmd.name`_in
 {
+    int _scriptID;
 #py for p in cmd.params:
     `p.ctype()` `p.name`;
 #py endfor
