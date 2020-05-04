@@ -57,6 +57,8 @@ namespace sim
     class Plugin
     {
     public:
+        void setName(const std::string &name);
+        std::string name() const;
         void init();
         virtual void onStart();
         virtual void onEnd();
@@ -113,6 +115,7 @@ namespace sim
 
     private:
         bool firstInstancePass = true;
+        std::string name_;
     };
 }
 
@@ -124,6 +127,7 @@ SIM_DLLEXPORT unsigned char simStart(void *reservedPointer, int reservedInt) \
     try \
     { \
         simPlugin = new className; \
+        simPlugin->setName(pluginName); \
         simLib = simPlugin->loadSimLibrary(); \
         simPlugin->onStart(); \
         return pluginVersion; \

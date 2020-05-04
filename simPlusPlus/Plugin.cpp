@@ -6,6 +6,16 @@
 
 namespace sim
 {
+    void Plugin::setName(const std::string &name)
+    {
+        name_ = name;
+    }
+
+    std::string Plugin::name() const
+    {
+        return name_;
+    }
+
     void Plugin::onStart()
     {
     }
