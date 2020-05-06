@@ -57,6 +57,51 @@ void log(int v, boost::format &fmt)
     log(v, fmt.str());
 }
 
+FuncTracer::FuncTracer(const std::string &f, int l)
+    : f_(f),
+      l_(l)
+{
+    log(l_, f_ + " [enter]");
+}
+
+FuncTracer::~FuncTracer()
+{
+    log(l_, f_ + " [leave]");
+}
+
+#ifdef QT_COMPIL
+
+Qt::HANDLE UI_THREAD = NULL;
+Qt::HANDLE SIM_THREAD = NULL;
+
+std::string threadNickname()
+{
+    Qt::HANDLE h = QThread::currentThreadId();
+    if(h == UI_THREAD) return "UI";
+    if(h == SIM_THREAD) return "SIM";
+    std::stringstream ss;
+    ss << h;
+    return ss.str();
+}
+
+void uiThread()
+{
+    Qt::HANDLE h = QThread::currentThreadId();
+    if(UI_THREAD != NULL && UI_THREAD != h)
+        log(sim_verbosity_warnings, "warning: UI thread has already been set");
+    UI_THREAD = h;
+}
+
+void simThread()
+{
+    Qt::HANDLE h = QThread::currentThreadId();
+    if(SIM_THREAD != NULL && SIM_THREAD != h)
+        log(sim_verbosity_warnings, "warning: SIM thread has already been set");
+    SIM_THREAD = h;
+}
+
+#endif // QT_COMPIL
+
 simInt simRegisterScriptCallbackFunctionE(const simChar *funcNameAtPluginName, const simChar *callTips, simVoid (*callBack)(struct SScriptCallBack *cb))
 {
     simInt ret = simRegisterScriptCallbackFunction(funcNameAtPluginName, callTips, callBack);
