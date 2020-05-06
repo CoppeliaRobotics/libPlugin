@@ -4,10 +4,9 @@
 #include "stubs.h"
 
 #include <cstdlib>
+#include <sstream>
 #include <iostream>
-
 #include <boost/lexical_cast.hpp>
-#include <boost/format.hpp>
 
 #define CATCH_AND_RETHROW(prefix)   \
     catch(std::exception &ex)       \
@@ -43,15 +42,17 @@ static bool isDebugStubsEnabled()
     return enabled;
 }
 
-static void log(int v, const std::string &msg)
+void log(int v, const std::string &msg)
 {
     int vg = sim_verbosity_default;
     simGetModuleInfo("`plugin.name`", sim_moduleinfo_verbosity, nullptr, &vg);
     if(vg < v) return;
-    std::cout << "`plugin.name`: " << msg << std::endl;
+    std::stringstream ss;
+    ss << "simExt`plugin.name`: " << msg << std::endl;
+    std::cout << ss.str() << std::flush;
 }
 
-static void log(int v, boost::format &fmt)
+void log(int v, boost::format &fmt)
 {
     log(v, fmt.str());
 }

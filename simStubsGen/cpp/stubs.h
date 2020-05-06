@@ -11,8 +11,7 @@
 #include <simLib.h>
 #include <string>
 #include <vector>
-#include <boost/assign/list_of.hpp>
-#include <boost/lexical_cast.hpp>
+#include <boost/format.hpp>
 #include <boost/optional.hpp>
 
 struct exception : public std::exception
@@ -22,6 +21,9 @@ struct exception : public std::exception
     ~exception() throw() {}
     const char* what() const throw() {return s.c_str();}
 };
+
+void log(int v, const std::string &msg);
+void log(int v, boost::format &fmt);
 
 simInt simRegisterScriptCallbackFunctionE(const simChar *funcNameAtPluginName, const simChar *callTips, simVoid (*callBack)(struct SScriptCallBack *cb));
 simInt simRegisterScriptVariableE(const simChar *varName, const simChar *varValue, simInt stackID);
