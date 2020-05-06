@@ -158,11 +158,11 @@ function(COPPELIASIM_GENERATE_STUBS GENERATED_OUTPUT_DIR)
     if("${COPPELIASIM_GENERATE_STUBS_LUA_FILE}" STREQUAL "")
         add_custom_command(OUTPUT ${GENERATED_OUTPUT_DIR}/stubs.cpp ${GENERATED_OUTPUT_DIR}/stubs.h ${GENERATED_OUTPUT_DIR}/stubsPlusPlus.cpp
             COMMAND python ${LIBPLUGIN_DIR}/simStubsGen/generate.py --xml-file ${COPPELIASIM_GENERATE_STUBS_XML_FILE} --gen-all ${GENERATED_OUTPUT_DIR}
-            DEPENDS ${COPPELIASIM_GENERATE_STUBS_XML_FILE})
+            DEPENDS ${COPPELIASIM_GENERATE_STUBS_XML_FILE} ${LIBPLUGIN_DIR}/simStubsGen/cpp/stubs.cpp ${LIBPLUGIN_DIR}/simStubsGen/cpp/stubs.h ${LIBPLUGIN_DIR}/simStubsGen/cpp/stubsPlusPlus.cpp)
     else()
         add_custom_command(OUTPUT ${GENERATED_OUTPUT_DIR}/stubs.cpp ${GENERATED_OUTPUT_DIR}/stubs.h ${GENERATED_OUTPUT_DIR}/stubsPlusPlus.cpp ${GENERATED_OUTPUT_DIR}/lua_calltips.cpp
             COMMAND python ${LIBPLUGIN_DIR}/simStubsGen/generate.py --xml-file ${COPPELIASIM_GENERATE_STUBS_XML_FILE} --lua-file ${COPPELIASIM_GENERATE_STUBS_LUA_FILE} --gen-all ${GENERATED_OUTPUT_DIR}
-            DEPENDS ${COPPELIASIM_GENERATE_STUBS_XML_FILE})
+            DEPENDS ${COPPELIASIM_GENERATE_STUBS_XML_FILE} ${LIBPLUGIN_DIR}/simStubsGen/cpp/stubs.cpp ${LIBPLUGIN_DIR}/simStubsGen/cpp/stubs.h ${LIBPLUGIN_DIR}/simStubsGen/cpp/stubsPlusPlus.cpp)
     endif()
     set_property(SOURCE ${GENERATED_OUTPUT_DIR}/stubs.cpp PROPERTY SKIP_AUTOGEN ON)
     set_property(SOURCE ${GENERATED_OUTPUT_DIR}/stubs.h PROPERTY SKIP_AUTOGEN ON)
