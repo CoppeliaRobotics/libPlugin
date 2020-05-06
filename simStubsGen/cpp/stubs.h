@@ -7,6 +7,7 @@
 #include <simLib.h>
 #include <string>
 #include <vector>
+#include <boost/assign/list_of.hpp>
 #include <boost/format.hpp>
 #include <boost/optional.hpp>
 
