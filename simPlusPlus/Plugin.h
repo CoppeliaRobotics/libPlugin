@@ -1,6 +1,10 @@
 #ifndef SIMPLUSPLUS_PLUGIN_H_INCLUDED
 #define SIMPLUSPLUS_PLUGIN_H_INCLUDED
 
+#if __cplusplus <= 199711L
+    #error simPlusPlus needs at least a C++11 compliant compiler
+#endif
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -70,7 +74,7 @@ namespace sim
         void init();
         virtual void onStart();
         virtual void onEnd();
-        virtual void * onMessage(int message, int *auxData, void *customData, int *replyData);
+        virtual void * onMessage(int message, int *auxData, void *customData, int *replyData) final;
         virtual LIBRARY loadSimLibrary();
 
         virtual void onInstancePass(const InstancePassFlags &flags, bool first);
