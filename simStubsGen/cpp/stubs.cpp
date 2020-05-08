@@ -45,6 +45,10 @@ static bool isDebugStubsEnabled()
 void log(int v, const std::string &msg)
 {
     int vg = sim_verbosity_default;
+#if 1
+    auto vgenv = std::getenv("COPPELIASIM_VERBOSITY");
+    if(vgenv) vg = std::atoi(vgenv);
+#endif
     simGetModuleInfo("`plugin.name`", sim_moduleinfo_verbosity, nullptr, &vg);
     if(vg < v) return;
     std::stringstream ss;
