@@ -44,17 +44,6 @@ namespace sim
         return v;
     }
 
-    void Plugin::log(int verbosity, const std::string &message)
-    {
-        if(getVerbosity() < verbosity) return;
-        std::cout << name_ << ": " << message << std::endl;
-    }
-
-    void Plugin::log(int verbosity, boost::format &fmt)
-    {
-        log(verbosity, fmt.str());
-    }
-
     void Plugin::onStart()
     {
     }

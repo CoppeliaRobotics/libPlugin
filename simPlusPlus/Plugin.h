@@ -69,8 +69,6 @@ namespace sim
         void setBuildDate(const std::string &s);
         void setVerbosity(int i);
         int getVerbosity();
-        void log(int verbosity, const std::string &message);
-        void log(int verbosity, boost::format &fmt);
         void init();
         virtual void onStart();
         virtual void onEnd();
