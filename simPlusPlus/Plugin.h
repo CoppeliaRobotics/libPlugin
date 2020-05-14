@@ -144,7 +144,7 @@ SIM_DLLEXPORT unsigned char simStart(void *reservedPointer, int reservedInt) \
     } \
     catch(std::exception &ex) \
     { \
-        std::cout << pluginName << ": " << ex.what() << std::endl; \
+        simAddLog(pluginName, sim_verbosity_errors, ex.what()); \
         return 0; \
     } \
 } \
@@ -161,7 +161,7 @@ SIM_DLLEXPORT void simEnd() \
     } \
     catch(std::exception &ex) \
     { \
-        std::cout << pluginName << ": " << ex.what() << std::endl; \
+        simAddLog(pluginName, sim_verbosity_errors, ex.what()); \
     } \
     unloadSimLibrary(simLib); \
 } \
@@ -176,7 +176,7 @@ SIM_DLLEXPORT void * simMessage(int message, int *auxiliaryData, void *customDat
     } \
     catch(std::exception &ex) \
     { \
-        std::cout << pluginName << ": " << ex.what() << std::endl; \
+        simAddLog(pluginName, sim_verbosity_errors, ex.what()); \
     } \
     return 0L; \
 }
