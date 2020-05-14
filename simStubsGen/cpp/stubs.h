@@ -22,6 +22,22 @@ struct exception : public std::exception
 void log(int v, const std::string &msg);
 void log(int v, boost::format &fmt);
 
+template<typename... Arguments>
+static void log(int v, const std::string &fmt, Arguments&&... args)
+{
+    try
+    {
+        boost::format fmt_(fmt);
+        log(v, fmt_, std::forward<Arguments>(args)...);
+    }
+    catch(boost::io::too_many_args &ex)
+    {
+        std::string s = fmt;
+        s += " (error during formatting)";
+        log(v, s);
+    }
+}
+
 class FuncTracer
 {
     int l_;
