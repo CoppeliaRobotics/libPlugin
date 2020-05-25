@@ -56,7 +56,7 @@ def runsubprocess(what, cmdargs):
         sys.exit(1)
 
 def runtool(what, *cmdargs):
-    runsubprocess(what, ['python', rel(what + '.py')] + list(cmdargs))
+    runsubprocess(what, [sys.executable, rel(what + '.py')] + list(cmdargs))
 
 def runprogram(what, *cmdargs):
     runsubprocess(what, [what] + list(cmdargs))
