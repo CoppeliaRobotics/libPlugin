@@ -158,7 +158,7 @@ function(COPPELIASIM_GENERATE_STUBS GENERATED_OUTPUT_DIR)
     if(NOT CoppeliaSim_FIND_QUIETLY)
         message(STATUS "Adding simStubsGen command...")
     endif()
-    find_package(Python3 COMPONENTS Interpreter)
+    find_package(Python3 REQUIRED COMPONENTS Interpreter)
     if("${COPPELIASIM_GENERATE_STUBS_LUA_FILE}" STREQUAL "")
         add_custom_command(OUTPUT ${GENERATED_OUTPUT_DIR}/stubs.cpp ${GENERATED_OUTPUT_DIR}/stubs.h
             COMMAND ${Python3_EXECUTABLE} ${LIBPLUGIN_DIR}/simStubsGen/generate.py --xml-file ${COPPELIASIM_GENERATE_STUBS_XML_FILE} --gen-all ${GENERATED_OUTPUT_DIR}
