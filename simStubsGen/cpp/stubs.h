@@ -180,6 +180,7 @@ const char* `enum.name.lower()`_string(`enum.name` x);
 struct `cmd.name`_in
 {
     int _scriptID;
+    int _stackID;
 #py for p in cmd.params:
     `p.ctype()` `p.name`;
 #py endfor
