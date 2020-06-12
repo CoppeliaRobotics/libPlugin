@@ -1029,7 +1029,7 @@ void `cmd.name`(SScriptCallBack *p, `cmd.name`_in *in_args, `cmd.name`_out *out_
 `cmd.returns[0].ctype()` `cmd.name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p'])`)
 {
     `cmd.name`_in in_args;
-    in_args._scriptID = p->scriptID;
+    if(p) in_args._scriptID = p->scriptID;
 #py for p in cmd.params:
     in_args.`p.name` = `p.name`;
 #py endfor
@@ -1043,7 +1043,7 @@ void `cmd.name`(SScriptCallBack *p, `cmd.name`_in *in_args, `cmd.name`_out *out_
 void `cmd.name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p'])`)
 {
     `cmd.name`_in in_args;
-    in_args._scriptID = p->scriptID;
+    if(p) in_args._scriptID = p->scriptID;
 #py for p in cmd.params:
     in_args.`p.name` = `p.name`;
 #py endfor
@@ -1055,7 +1055,7 @@ void `cmd.name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p'])`)
 void `cmd.name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p', '%s_out *out_args' % cmd.name])`)
 {
     `cmd.name`_in in_args;
-    in_args._scriptID = p->scriptID;
+    if(p) in_args._scriptID = p->scriptID;
 #py for p in cmd.params:
     in_args.`p.name` = `p.name`;
 #py endfor
@@ -1076,7 +1076,7 @@ void `cmd.name`_callback(SScriptCallBack *p)
     const char *cmd = "`plugin.command_prefix``cmd.name`";
 
     `cmd.name`_in in_args;
-    in_args._scriptID = p->scriptID;
+    if(p) in_args._scriptID = p->scriptID;
     `cmd.name`_out out_args;
 
     try
