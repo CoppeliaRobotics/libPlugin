@@ -45,7 +45,7 @@ fi
 
 export LD_LIBRARY_PATH="$COPPELIASIM_ROOT_DIR:$LD_LIBRARY_PATH"
 "$COPPELIASIM_ROOT_DIR/coppeliaSim" \
-    -a"$simTest_dir/simTest.lua" \
+    -a"$simTest_dir/simTest_addon.lua" \
     -Ginput_dir="$input_dir" \
     -Goutput_dir="$output_dir" \
     -GsimTest_dir="$simTest_dir" \
