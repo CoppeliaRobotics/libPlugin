@@ -5,9 +5,6 @@ if [ "x$COPPELIASIM_ROOT_DIR" = "x" ]; then
     exit 1
 fi
 
-# we need to suppress all startup dialogs to avoid blocking the test:
-sed --in-place -e 's/^\(suppressStartupDialogs\)\b.*/\1 = true/' "$COPPELIASIM_ROOT_DIR/system/usrset.txt"
-
 # figure out simTest's directory:
 simTest_dir="$(cd "$(dirname "$0")"; pwd)"
 
@@ -45,6 +42,7 @@ fi
 
 export LD_LIBRARY_PATH="$COPPELIASIM_ROOT_DIR:$LD_LIBRARY_PATH"
 "$COPPELIASIM_ROOT_DIR/coppeliaSim" \
+    -xnone \
     -a"$simTest_dir/simTest_addon.lua" \
     -Ginput_dir="$input_dir" \
     -Goutput_dir="$output_dir" \
