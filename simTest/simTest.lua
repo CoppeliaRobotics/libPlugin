@@ -88,6 +88,9 @@ end
 function simTest.writeOutputFile(fileName,content)
     local output_dir=sim.getStringNamedParam('output_dir')
     f=io.open(output_dir..'/'..fileName,'w+')
+    if not f then
+        simTest.fatalError('cannot open file "'..fileName..'" for writing')
+    end
     f:write(content)
     f:close()
 end
