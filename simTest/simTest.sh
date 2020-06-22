@@ -25,7 +25,7 @@ fi
 if [ "x$2" != "x" ]; then
     output_dir="$(readlink -f "$2")"
 else
-    output_dir="$(mktemp -d "$(basename "$input_dir").$(date +%Y%m%d%H%MS).XXXX")"
+    output_dir="$(mktemp -t -d "simTest.$(basename "$input_dir").$(date +%Y%m%d%H%MS).XXXX")"
     echo "warning: output directory has not been specified. using $output_dir" 1>&2
 fi
 
