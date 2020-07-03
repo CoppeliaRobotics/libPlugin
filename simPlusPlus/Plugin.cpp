@@ -95,7 +95,6 @@ namespace sim
                 firstInstancePass = false;
             }
             break;
-#if SIM_PROGRAM_FULL_VERSION_NB >= 3060104 // 3.6.1.rev4
         case sim_message_eventcallback_lastinstancepass:
             /*
             called on the last client application loop pass (the instancepass message is not sent)
@@ -104,7 +103,6 @@ namespace sim
                 onLastInstancePass();
             }
             break;
-#endif // SIM_PROGRAM_FULL_VERSION_NB >= 3060104
         case sim_message_eventcallback_instanceswitch:
             /*
             scene was switched (react to this message in a similar way as you would react to
