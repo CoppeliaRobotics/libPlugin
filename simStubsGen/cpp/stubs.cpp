@@ -83,7 +83,7 @@ void uiThread()
 {
     Qt::HANDLE h = QThread::currentThreadId();
     if(UI_THREAD != NULL && UI_THREAD != h)
-        log(sim_verbosity_warnings, "warning: UI thread has already been set");
+        log(sim_verbosity_warnings, "UI thread has already been set");
     UI_THREAD = h;
 }
 
@@ -91,7 +91,7 @@ void simThread()
 {
     Qt::HANDLE h = QThread::currentThreadId();
     if(SIM_THREAD != NULL && SIM_THREAD != h)
-        log(sim_verbosity_warnings, "warning: SIM thread has already been set");
+        log(sim_verbosity_warnings, "SIM thread has already been set");
     SIM_THREAD = h;
 }
 
@@ -102,7 +102,7 @@ simInt simRegisterScriptCallbackFunctionE(const simChar *funcNameAtPluginName, c
     simInt ret = simRegisterScriptCallbackFunction(funcNameAtPluginName, callTips, callBack);
     if(ret == 0)
     {
-        log(sim_verbosity_warnings, boost::format("warning: replaced function '%s'") % funcNameAtPluginName);
+        log(sim_verbosity_warnings, boost::format("replaced function '%s'") % funcNameAtPluginName);
     }
     if(ret == -1)
         throw exception("simRegisterScriptCallbackFunction: error");
@@ -114,7 +114,7 @@ simInt simRegisterScriptVariableE(const simChar *varName, const simChar *varValu
     simInt ret = simRegisterScriptVariable(varName, varValue, stackID);
     if(ret == 0)
     {
-        log(sim_verbosity_warnings, boost::format("warning: replaced variable '%s'") % varName);
+        log(sim_verbosity_warnings, boost::format("replaced variable '%s'") % varName);
     }
     if(ret == -1)
         throw exception("simRegisterScriptVariable: error");
@@ -933,7 +933,6 @@ bool registerScriptStuff()
         try
         {
 #py if plugin.short_name:
-            simRegisterScriptVariableE("sim`plugin.short_name`", "{}", 0);
             simRegisterScriptVariableE("sim`plugin.short_name`", "require('simExt`plugin.name`')", 0);
 #py endif
 
