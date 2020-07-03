@@ -13,11 +13,6 @@
 
 #include "simLib.h"
 
-// backwards compatibility for this constant:
-#ifndef SIM_PROGRAM_FULL_VERSION_NB
-#define SIM_PROGRAM_FULL_VERSION_NB ((SIM_PROGRAM_VERSION_NB) * 100 + (SIM_PROGRAM_REVISION_NB))
-#endif // SIM_PROGRAM_FULL_VERSION_NB
-
 #ifdef _WIN32
 	#define SIM_DLLEXPORT extern "C" __declspec(dllexport)
 #endif /* _WIN32 */
