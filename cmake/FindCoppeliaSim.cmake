@@ -118,6 +118,8 @@ int main() {
             if(NOT CoppeliaSim_FIND_QUIETLY)
                 message(STATUS "CoppeliaSim headers version ${COPPELIASIM_VERSION_STR}")
             endif()
+            math(EXPR CoppeliaSim_FIND_VERSION_NB "1000000 * ${CoppeliaSim_FIND_VERSION_MAJOR} + 10000 * ${CoppeliaSim_FIND_VERSION_MINOR} + 100 * ${CoppeliaSim_FIND_VERSION_PATCH} + ${CoppeliaSim_FIND_VERSION_TWEAK}")
+            add_compile_definitions(SIM_REQUIRED_PROGRAM_VERSION_NB=${CoppeliaSim_FIND_VERSION_NB})
             if(${COPPELIASIM_VERSION} VERSION_LESS ${CoppeliaSim_FIND_VERSION})
                 coppeliasim_find_error("Found CoppeliaSim version ${COPPELIASIM_VERSION} but ${CoppeliaSim_FIND_VERSION} required.")
                 return()

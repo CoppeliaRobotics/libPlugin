@@ -929,29 +929,32 @@ std::string versionString(int v)
     return ss.str();
 }
 
-void checkRuntimeVersion(int v, const char *deptype)
+void checkRuntimeVersion()
 {
     simInt simVer = 0, simRev = 0;
     simGetIntegerParameter(sim_intparam_program_version, &simVer);
     simGetIntegerParameter(sim_intparam_program_revision, &simRev);
     simVer = simVer * 100 + simRev;
-    if(simVer < v)
-    {
-        std::stringstream ss;
-        ss << "this plugin " << deptype << " CoppeliaSim " << versionString(v) << " (you have " << versionString(simVer) << ")";
-        throw exception(ss.str());
-    }
+
+    // version required by simStubsGen:
+    int minVer = 4010000; // 4.1.0rev0
+    if(simVer < minVer)
+        throw exception((boost::format("requires at least %s (libPlugin)") % versionString(minVer)).str());
+
+    // version required by plugin:
+    if(simVer < SIM_REQUIRED_PROGRAM_VERSION_NB)
+        throw exception((boost::format("requires at least %s") % versionString(SIM_REQUIRED_PROGRAM_VERSION_NB)).str());
+
+    // warn if the app older than the headers used to compile:
+    if(simVer < SIM_PROGRAM_FULL_VERSION_NB)
+        log(sim_verbosity_warnings, boost::format("has been built for %s") % versionString(SIM_PROGRAM_FULL_VERSION_NB));
 }
 
 bool registerScriptStuff()
 {
     try
     {
-        // version required by simStubsGen:
-        checkRuntimeVersion(4010000 /* 4.1.0rev0 */, "requires at least");
-
-        // make sure that the app is at least as recent as the headers used to compile:
-        checkRuntimeVersion(SIM_PROGRAM_FULL_VERSION_NB, "has been built for");
+        checkRuntimeVersion();
 
         try
         {
