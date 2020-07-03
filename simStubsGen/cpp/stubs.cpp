@@ -920,7 +920,7 @@ bool registerScriptStuff()
     try
     {
         {
-            simInt simVer = 0, simRev = 0, simMinVer = 30400, simMinRev = 9;
+            simInt simVer = 0, simRev = 0, simMinVer = 40100, simMinRev = 0;
             simGetIntegerParameter(sim_intparam_program_version, &simVer);
             simGetIntegerParameter(sim_intparam_program_revision, &simRev);
             if(simVer < simMinVer || (simVer == simMinVer && simRev < simMinRev))
