@@ -5,12 +5,12 @@ copying, etc.) contained in the same directory if it is present, or
 under the same terms of the files in the parent directory otherwise.
 
 -----------------------------------------------------------------------
-Copyright 2006-2019 Coppelia Robotics GmbH. All rights reserved. 
+Copyright 2006-2019 Coppelia Robotics AG. All rights reserved. 
 
 THE FILES IN THIS DIRECTORY (THE 'FILES'), UNLESS OTHERWISE INDICATED,
 ARE DISTRIBUTED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED WARRANTY. 
 THE USER WILL USE THEM AT HIS/HER OWN RISK. THE ORIGINAL AUTHORS AND
-COPPELIA ROBOTICS GMBH WILL NOT BE LIABLE FOR DATA LOSS, DAMAGES, LOSS
+COPPELIA ROBOTICS AG WILL NOT BE LIABLE FOR DATA LOSS, DAMAGES, LOSS
 OF PROFITS OR ANY OTHER KIND OF LOSS WHILE USING OR MISUSING THE FILES
 OR SOFTWARE THEY ARE PART OF.
 
