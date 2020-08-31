@@ -1450,6 +1450,7 @@ bool `fn.name`(simInt scriptId, const char *func, `fn.name`_in *in_args, `fn.nam
 #py endif
 #py else:
             // read output argument `i+1` (`p.name`) of type `p.ctype()`
+            simMoveStackItemToTopE(stackID, 0);
             read__`p.ctype_normalized()`(stackID, &(out_args->`p.name`));
 #py endif
         }
