@@ -20,7 +20,6 @@ parser.add_argument("--gen-lua-xml", help='generate XML translation of Lua docst
 parser.add_argument("--gen-reference-xml", help='generate merged XML (from callbacks.xml and lua.xml)', action='store_true')
 parser.add_argument("--gen-reference-html", help='generate HTML documentation (from reference.xml or callbacks.xml)', action='store_true')
 parser.add_argument("--gen-lua-calltips", help='generate C++ code for Lua calltips', action='store_true')
-parser.add_argument("--gen-notepadplusplus-stuff", help='generate syntax hilighting stuff for notepad++', action='store_true')
 parser.add_argument("--gen-deprecated-txt", help='generate deprecated functions mapping for CoppeliaSim', action='store_true')
 parser.add_argument("--gen-all", help='generate everything', action='store_true')
 parser.add_argument("--verbose", help='print commands being executed', action='store_true')
@@ -69,7 +68,6 @@ if args.gen_all:
     args.gen_reference_xml = True
     args.gen_reference_html = True
     args.gen_lua_calltips = True
-    args.gen_notepadplusplus_stuff = True
     args.gen_deprecated_txt = True
 if args.gen_reference_xml:
     input_xml = output('reference.xml')
@@ -114,10 +112,6 @@ if args.gen_lua_calltips:
         print('no lua file defined. skipping gen_lua_calltips')
     else:
         runtool('generate_lua_calltips', plugin.name, plugin.short_name, args.lua_file, output('lua_calltips.cpp'))
-
-if args.gen_notepadplusplus_stuff:
-    runtool('generate_notepadplusplus_xml', input_xml, output('np++.xml'))
-    runtool('generate_notepadplusplus_txt', input_xml, output('np++.txt'))
 
 if args.gen_deprecated_txt:
     runtool('generate_deprecated_txt', args.xml_file, output('deprecated_mapping.txt'))
