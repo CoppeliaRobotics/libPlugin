@@ -23,6 +23,9 @@ with open(outfile, 'w') as fout:
             while calltip[-2:] == '\\n': calltip = calltip[:-2]
             fout.write('simRegisterScriptCallbackFunctionE("sim{}.{}@{}", "{}", NULL);\n'.format(shortPlugName, f, longPlugName, calltip))
 
+    def strip_table_type(s):
+        return 'table' if s.startswith('table.') else s
+
     with open(luafile, 'r') as f:
         for lineno, line in enumerate(f):
             lineno += 1
@@ -38,9 +41,9 @@ with open(outfile, 'w') as fout:
                         print('%s:%d: bad arguments. must be: @fun <funcName> [description]' % (luafile, lineno))
                         exit(2)
                 elif key in ('arg', 'ret'):
-                    m2 = re.match(r'(\w+)\s+(\w+)\s+(.*)$', rest)
+                    m2 = re.match(r'(\w+|table\.\w+)\s+(\w+)\s+(.*)$', rest)
                     if m2:
-                        item = (m2.group(1), m2.group(2), m2.group(3))
+                        item = (strip_table_type(m2.group(1)), m2.group(2), m2.group(3))
                         (rets if key == 'ret' else args).append(item)
                     else:
                         print('%s:%d: bad arguments. must be: @%s <type> <name> <description>' % (luafile, lineno, key))
