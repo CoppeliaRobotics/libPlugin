@@ -56,6 +56,15 @@
         <li><xsl:apply-templates select="node()"/></li>
     </xsl:template>
 
+    <xsl:template match="br">
+        <br />
+    </xsl:template>
+
+    <xsl:preserve-space elements="code" />
+    <xsl:template match="code">
+        <code><pre><xsl:apply-templates select="node()"/></pre></code>
+    </xsl:template>
+
     <!-- template routines: -->
 
     <xsl:template name="functionPrefixOldStyle">
