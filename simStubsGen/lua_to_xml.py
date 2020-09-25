@@ -10,6 +10,7 @@ outfile = argv[2]
 
 fun = None
 args, rets = [], []
+cats = []
 
 with open(outfile, 'w') as fout:
     fout.write('<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n')
@@ -27,6 +28,11 @@ with open(outfile, 'w') as fout:
             f, fdesc = fun
             fout.write('    <command name="{}">\n'.format(f))
             fout.write('        <description>{}</description>\n'.format(fdesc))
+            if cats:
+                fout.write('        <categories>\n')
+                for cat in cats:
+                    fout.write('            <category name="{}" />\n'.format(cat))
+                fout.write('        </categories>\n')
             fout.write('        <params>\n')
             for (t, n, d) in args:
                 t = processTableType(t)
@@ -61,10 +67,13 @@ with open(outfile, 'w') as fout:
                             args.append((dtype, name, description))
                         elif tag == 'ret':
                             rets.append((dtype, name, description))
+                elif tag == 'cats':
+                    cats = [x.strip() for x in line.split(',')]
             else:
                 output()
                 fun = None
                 args, rets = [], []
+                cats = []
         output()
 
     fout.write('</plugin>\n')
