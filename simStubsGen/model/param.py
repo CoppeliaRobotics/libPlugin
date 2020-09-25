@@ -136,7 +136,9 @@ class ParamTable(Param):
         return self.item_dummy().ctype().replace('::', '__')
 
     def htype(self):
-        return 'table' + ('_%d' % self.minsize if self.minsize else '')
+        if self.minsize and self.maxsize and self.minsize == self.maxsize:
+            return 'table_{}'.format(self.minsize)
+        return 'table'
 
     def cdefault(self):
         if self.default is not None:
