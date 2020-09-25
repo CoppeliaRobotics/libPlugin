@@ -113,8 +113,11 @@ class ParamTable(Param):
     def __init__(self, node):
         super(ParamTable, self).__init__(node)
         self.itype = node.attrib.get('item-type', None)
-        self.minsize = int(node.attrib.get('minsize', 0))
-        self.maxsize = int(node.attrib['maxsize']) if 'maxsize' in node.attrib else None
+        for (old, new) in (('minsize', 'min-size'), ('maxsize', 'max-size')):
+            if old in node.attrib:
+                raise AttributeError('Attribute "{}" should be changed to "{}"'.format(old, new))
+        self.minsize = int(node.attrib.get('min-size', 0))
+        self.maxsize = int(node.attrib['max-size']) if 'max-size' in node.attrib else None
         if 'size' in node.attrib:
             self.minsize = int(node.attrib['size'])
             self.maxsize = int(node.attrib['size'])
