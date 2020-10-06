@@ -3,7 +3,10 @@
 This utility is used to generate boilerplate code for CoppeliaSim Lua callbacks.
 It reads an XML file containing a description of the callbacks, script
 functions, and enums, and it produces documentation, C++ source and header files,
-and other stuff.
+and other stuff:
+
+![overview diagram](doc/overview.png)
+
 
 ## Dependencies
 
