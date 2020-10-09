@@ -7,6 +7,9 @@ and other stuff:
 
 ![overview diagram](doc/overview.png)
 
+Additionally, it can parse special comments in the lua files to generate
+similar documentation for pure Lua functions. See [below](#lua-comments).
+
 
 ## Dependencies
 
@@ -238,6 +241,37 @@ Example:
     </categories>
     ...
 </command>
+```
+
+## Lua comments
+
+As plugins can provide additional functions via lua files, special comments can be added to lua files to generate a similar documentation (html reference, calltips, etc...).
+
+Comments must start at the very beginning of a line, and are in the form:
+
+```lua
+--@key value
+```
+
+Where `key` is an identifier. Valid values for `key` are:
+
+- `fun`: must be the first one of a block. `value` must contain the name of the function and a description;
+- `arg`: describe an input argument. `value` must contain the type (`int`, `float`, `string`, `table`, whereas the latter can be specialized with the item type, e.g.: `table.int`, `table.string`, etc...);
+- `ret`: similar to `arg` but describe a return value;
+- `cats`: a list of [categories](#automatic-cross-references), separated by comma (spaces are ignored).
+
+Example:
+
+```lua
+--@fun getPathStateCount get the number of states in the given path
+--@arg int taskHandle the handle of the task
+--@arg table.float path the path, as returned by simOMPL.getPath
+--@ret int count the number of states in the path
+--@cats path, state
+function simOMPL.getPathStateCount(taskHandle,path)
+    local n=simOMPL.getStateSpaceDimension(taskHandle)
+    return #path/n
+end
 ```
 
 ## Complete example
