@@ -6,6 +6,8 @@ class Command(object):
             raise ValueError('expected <command>, got <%s>' % node.tag)
         self.plugin = plugin
         self.name = node.attrib['name']
+        if self.name == '':
+            raise ValueError('attribute "name" of <command> cannot be empty')
 
         descnode = node.find('description')
         self.description = '' if descnode is None else '' if descnode.text is None else descnode.text

@@ -178,7 +178,7 @@ The enum items will be available also in Lua as `simPLG.myenum.alpha`, `simPLG.m
 
 The `<param>` element can have the following attributes:
 
-- `name`: (mandatory) the name of the field.
+- `name`: (mandatory) the name of the field. Cannot start with an underscore, and must be a valid C and a valid Lua identifier.
 - `type`: (mandatory) the type of the field (`int`, `float`, `double`, `bool`, `string`, `table`, or the name of a *struct*).
 - `nullable`: if `true`, the fields accepts also a nil value; the C++ type will be wrapped into a `boost::optional` (only valid for `int`, `float`, `double`, `bool`, `string`).
 - `default`: the default value of the field (no more fields without default value should follow); in case of tables specify a list of values as `{1, 2, 3}`; in case of strings, the string value must be enclosed by `"`s, but the `"` must be escaped as `&quot;`, i.e.: `default="&quot;some value&quot;"`.

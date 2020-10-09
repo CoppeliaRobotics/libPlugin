@@ -5,6 +5,10 @@ class Param(object):
         if node.tag != 'param':
             raise ValueError('expected <param>, got <%s>' % node.tag)
         self.name = node.attrib['name']
+        if self.name == '':
+            raise ValueError('attribute "name" of <param> cannot be empty')
+        if self.name.startswith('_'):
+            raise ValueError('attribute "name" of <param> cannot start with underscore')
         try:
             descnode = node.find('description')
             self.description = '' if descnode is None else descnode.text
