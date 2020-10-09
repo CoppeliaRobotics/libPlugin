@@ -6,6 +6,14 @@ class ScriptFunction(object):
             raise ValueError('expected <script-function>, got <%s>' % node.tag)
         self.plugin = plugin
         self.name = node.attrib['name']
+        if self.name == '':
+            raise ValueError('attribute "name" of <script-function> cannot be empty')
+
+        # different names for C symbol names can be specified:
+        self.c_name = node.attrib.get('c-name', self.name)
+        self.c_in_name = node.attrib.get('c-in-name', self.c_name + '_in')
+        self.c_out_name = node.attrib.get('c-out-name', self.c_name + '_out')
+
         self.description = node.find('description')
 
         self.clear_stack_after_reading_input = True

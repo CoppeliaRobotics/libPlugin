@@ -972,14 +972,14 @@ bool registerScriptStuff()
 #py endfor
             // register new-style short-version commands
 #py for cmd in plugin.commands:
-            simRegisterScriptCallbackFunctionE("sim`plugin.short_name`.`cmd.name`@`plugin.name`", "`cmd.help_out_args_text`sim`plugin.short_name`.`cmd.name`(`cmd.help_in_args_text`)`cmd.documentation`", `cmd.name`_callback);
+            simRegisterScriptCallbackFunctionE("sim`plugin.short_name`.`cmd.name`@`plugin.name`", "`cmd.help_out_args_text`sim`plugin.short_name`.`cmd.name`(`cmd.help_in_args_text`)`cmd.documentation`", `cmd.c_name`_callback);
 #py endfor
 #py endif
 
 #py if plugin.short_name:
             // commands simExt<PLUGIN_NAME>_<COMMAND_NAME> (deprecated)
 #py for cmd in plugin.commands:
-            simRegisterScriptCallbackFunctionE("`plugin.command_prefix``cmd.name`@`plugin.name`", "`cmd.help_text`\n\n(DEPRECATED, please use sim`plugin.short_name`.`cmd.name`)", `cmd.name`_callback);
+            simRegisterScriptCallbackFunctionE("`plugin.command_prefix``cmd.name`@`plugin.name`", "`cmd.help_text`\n\n(DEPRECATED, please use sim`plugin.short_name`.`cmd.name`)", `cmd.c_name`_callback);
 #py endfor
             // register variables (deprecated)
 #py for enum in plugin.enums:
@@ -990,7 +990,7 @@ bool registerScriptStuff()
 #py else:
             // commands simExt<PLUGIN_NAME>_<COMMAND_NAME>
 #py for cmd in plugin.commands:
-            simRegisterScriptCallbackFunctionE("`plugin.command_prefix``cmd.name`@`plugin.name`", "`cmd.help_text``cmd.documentation`", `cmd.name`_callback);
+            simRegisterScriptCallbackFunctionE("`plugin.command_prefix``cmd.name`@`plugin.name`", "`cmd.help_text``cmd.documentation`", `cmd.c_name`_callback);
 #py endfor
             // register variables
 #py for enum in plugin.enums:
@@ -1026,7 +1026,7 @@ const char* `enum.name.lower()`_string(`enum.name` x)
 
 #py endfor
 #py for cmd in plugin.commands:
-`cmd.name`_in::`cmd.name`_in()
+`cmd.c_in_name`::`cmd.c_in_name`()
 {
     _scriptID = -1;
     _stackID = -1;
@@ -1037,7 +1037,7 @@ const char* `enum.name.lower()`_string(`enum.name` x)
 #py endfor
 }
 
-`cmd.name`_out::`cmd.name`_out()
+`cmd.c_out_name`::`cmd.c_out_name`()
 {
 #py for p in cmd.returns:
 #py if p.cdefault() is not None:
@@ -1046,15 +1046,15 @@ const char* `enum.name.lower()`_string(`enum.name` x)
 #py endfor
 }
 
-void `cmd.name`(SScriptCallBack *p, `cmd.name`_in *in_args, `cmd.name`_out *out_args)
+void `cmd.c_name`(SScriptCallBack *p, `cmd.c_in_name` *in_args, `cmd.c_out_name` *out_args)
 {
-    `cmd.name`(p, "`plugin.command_prefix``cmd.name`", in_args, out_args);
+    `cmd.c_name`(p, "`plugin.command_prefix``cmd.c_name`", in_args, out_args);
 }
 
 #py if len(cmd.returns) == 1:
-`cmd.returns[0].ctype()` `cmd.name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p'])`)
+`cmd.returns[0].ctype()` `cmd.c_name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p'])`)
 {
-    `cmd.name`_in in_args;
+    `cmd.c_in_name` in_args;
     if(p)
     {
         in_args._scriptID = p->scriptID;
@@ -1063,16 +1063,16 @@ void `cmd.name`(SScriptCallBack *p, `cmd.name`_in *in_args, `cmd.name`_out *out_
 #py for p in cmd.params:
     in_args.`p.name` = `p.name`;
 #py endfor
-    `cmd.name`_out out_args;
-    `cmd.name`(p, &in_args, &out_args);
+    `cmd.c_out_name` out_args;
+    `cmd.c_name`(p, &in_args, &out_args);
     return out_args.`cmd.returns[0].name`;
 }
 
 #py endif
 #py if len(cmd.returns) == 0:
-void `cmd.name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p'])`)
+void `cmd.c_name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p'])`)
 {
-    `cmd.name`_in in_args;
+    `cmd.c_in_name` in_args;
     if(p)
     {
         in_args._scriptID = p->scriptID;
@@ -1081,14 +1081,14 @@ void `cmd.name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p'])`)
 #py for p in cmd.params:
     in_args.`p.name` = `p.name`;
 #py endfor
-    `cmd.name`_out out_args;
-    `cmd.name`(p, &in_args, &out_args);
+    `cmd.c_out_name` out_args;
+    `cmd.c_name`(p, &in_args, &out_args);
 }
 
 #py endif
-void `cmd.name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p', '%s_out *out_args' % cmd.name])`)
+void `cmd.c_name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p', '%s *out_args' % cmd.c_out_name])`)
 {
-    `cmd.name`_in in_args;
+    `cmd.c_in_name` in_args;
     if(p)
     {
         in_args._scriptID = p->scriptID;
@@ -1097,29 +1097,29 @@ void `cmd.name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p', '%s_out *out_arg
 #py for p in cmd.params:
     in_args.`p.name` = `p.name`;
 #py endfor
-    `cmd.name`(p, &in_args, out_args);
+    `cmd.c_name`(p, &in_args, out_args);
 }
 
-void `cmd.name`_callback(SScriptCallBack *p)
+void `cmd.c_name`_callback(SScriptCallBack *p)
 {
 #ifndef NDEBUG
     if(isDebugStubsEnabled())
     {
-        log(sim_verbosity_debug, "DEBUG_STUBS: script callback for \"`cmd.name`\"...");
+        log(sim_verbosity_debug, "DEBUG_STUBS: script callback for \"`cmd.c_name`\"...");
         log(sim_verbosity_debug, "DEBUG_STUBS: reading input arguments...");
         simDebugStack(p->stackID, -1);
     }
 #endif // NDEBUG
 
-    const char *cmd = "`plugin.command_prefix``cmd.name`";
+    const char *cmd = "`plugin.command_prefix``cmd.c_name`";
 
-    `cmd.name`_in in_args;
+    `cmd.c_in_name` in_args;
     if(p)
     {
         in_args._scriptID = p->scriptID;
         in_args._stackID = p->stackID;
     }
-    `cmd.name`_out out_args;
+    `cmd.c_out_name` out_args;
 
     try
     {
@@ -1230,7 +1230,7 @@ void `cmd.name`_callback(SScriptCallBack *p)
         simPopStackItemE(p->stackID, 0);
 
 #py endif
-        `cmd.name`(p, cmd, &in_args, &out_args);
+        `cmd.c_name`(p, cmd, &in_args, &out_args);
     }
     catch(std::exception& e)
     {
@@ -1337,7 +1337,7 @@ void `cmd.name`_callback(SScriptCallBack *p)
 
 #py endfor
 #py for fn in plugin.script_functions:
-`fn.name`_in::`fn.name`_in()
+`fn.c_in_name`::`fn.c_in_name`()
 {
 #py for p in fn.params:
 #py if p.default is not None:
@@ -1346,7 +1346,7 @@ void `cmd.name`_callback(SScriptCallBack *p)
 #py endfor
 }
 
-`fn.name`_out::`fn.name`_out()
+`fn.c_out_name`::`fn.c_out_name`()
 {
 #py for p in fn.returns:
 #py if p.default is not None:
@@ -1355,12 +1355,12 @@ void `cmd.name`_callback(SScriptCallBack *p)
 #py endfor
 }
 
-bool `fn.name`(simInt scriptId, const char *func, `fn.name`_in *in_args, `fn.name`_out *out_args)
+bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn.c_out_name` *out_args)
 {
 #ifndef NDEBUG
     if(isDebugStubsEnabled())
     {
-        log(sim_verbosity_debug, "DEBUG_STUBS: script callback function for \"`fn.name`\"...");
+        log(sim_verbosity_debug, "DEBUG_STUBS: script callback function for \"`fn.c_name`\"...");
         log(sim_verbosity_debug, "DEBUG_STUBS: writing input arguments...");
     }
 #endif // NDEBUG

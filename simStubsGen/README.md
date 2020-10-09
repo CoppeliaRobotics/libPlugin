@@ -109,6 +109,8 @@ Example:
 </command>
 ```
 
+The `name` attribute is mandatory.
+
 The tool will generate C++ code:
  - a `test_in` data structure for the input arguments
  - a `test_out` data structure for the output arguments
@@ -121,6 +123,10 @@ void test(SScriptCallBack *p, const char *cmd, test_in *in, test_out *out)
     ...
 }
 ```
+
+If `name` is not a valid C identifier (e.g. some reserved keyword, such as "union"), an additional `c-name` attribute can be specified with the name for the C symbols.
+
+Similarly, the names of the `_in` and `_out` data structures can be changed with the `c-in-name` and `c-out-name` attributes of `<command>`.
 
 ### Data Structures
 

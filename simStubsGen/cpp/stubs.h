@@ -177,7 +177,7 @@ const char* `enum.name.lower()`_string(`enum.name` x);
 
 #py endfor
 #py for cmd in plugin.commands:
-struct `cmd.name`_in
+struct `cmd.c_in_name`
 {
     int _scriptID;
     int _stackID;
@@ -185,61 +185,61 @@ struct `cmd.name`_in
     `p.ctype()` `p.name`;
 #py endfor
 
-    `cmd.name`_in();
+    `cmd.c_in_name`();
 };
 
-struct `cmd.name`_out
+struct `cmd.c_out_name`
 {
 #py for p in cmd.returns:
     `p.ctype()` `p.name`;
 #py endfor
 
-    `cmd.name`_out();
+    `cmd.c_out_name`();
 };
 
-void `cmd.name`(SScriptCallBack *p, `cmd.name`_in *in, `cmd.name`_out *out);
+void `cmd.c_name`(SScriptCallBack *p, `cmd.c_in_name` *in, `cmd.c_out_name` *out);
 #py if len(cmd.returns) == 1:
-`cmd.returns[0].ctype()` `cmd.name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p'], defaults=True)`);
+`cmd.returns[0].ctype()` `cmd.c_name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p'], defaults=True)`);
 #py endif
 #py if len(cmd.returns) == 0:
-void `cmd.name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p'], defaults=True)`);
+void `cmd.c_name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p'], defaults=True)`);
 #py endif
-void `cmd.name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p', '%s_out *out' % cmd.name], defaults=True)`);
-void `cmd.name`_callback(SScriptCallBack *p);
+void `cmd.c_name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p', '%s *out' % cmd.c_out_name], defaults=True)`);
+void `cmd.c_name`_callback(SScriptCallBack *p);
 
 #py endfor
 #py for fn in plugin.script_functions:
-struct `fn.name`_in
+struct `fn.c_in_name`
 {
 #py for p in fn.params:
     `p.ctype()` `p.name`;
 #py endfor
 
-    `fn.name`_in();
+    `fn.c_in_name`();
 };
 
-struct `fn.name`_out
+struct `fn.c_out_name`
 {
 #py for p in fn.returns:
     `p.ctype()` `p.name`;
 #py endfor
 
-    `fn.name`_out();
+    `fn.c_out_name`();
 };
 
 #py if len(fn.returns) == 1:
-`fn.returns[0].ctype()` `fn.name`(`fn.c_arg_list(pre_args=['simInt scriptId', 'const char *func'], defaults=True)`);
+`fn.returns[0].ctype()` `fn.c_name`(`fn.c_arg_list(pre_args=['simInt scriptId', 'const char *func'], defaults=True)`);
 #py endif
 #py if len(fn.returns) == 0:
-void `fn.name`(`fn.c_arg_list(pre_args=['simInt scriptId', 'const char *func'], defaults=True)`);
+void `fn.c_name`(`fn.c_arg_list(pre_args=['simInt scriptId', 'const char *func'], defaults=True)`);
 #py endif
-bool `fn.name`(simInt scriptId, const char *func, `fn.name`_in *in_args, `fn.name`_out *out_args);
+bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn.c_out_name` *out_args);
 
 #py endfor
 // following functions must be implemented in the plugin
 
 #py for cmd in plugin.commands:
-void `cmd.name`(SScriptCallBack *p, const char *cmd, `cmd.name`_in *in, `cmd.name`_out *out);
+void `cmd.c_name`(SScriptCallBack *p, const char *cmd, `cmd.c_in_name` *in, `cmd.c_out_name` *out);
 #py endfor
 
 #endif // STUBS_H__INCLUDED

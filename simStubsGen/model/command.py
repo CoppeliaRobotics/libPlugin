@@ -9,6 +9,11 @@ class Command(object):
         if self.name == '':
             raise ValueError('attribute "name" of <command> cannot be empty')
 
+        # different names for C symbol names can be specified:
+        self.c_name = node.attrib.get('c-name', self.name)
+        self.c_in_name = node.attrib.get('c-in-name', self.c_name + '_in')
+        self.c_out_name = node.attrib.get('c-out-name', self.c_name + '_out')
+
         descnode = node.find('description')
         self.description = '' if descnode is None else '' if descnode.text is None else descnode.text
 
