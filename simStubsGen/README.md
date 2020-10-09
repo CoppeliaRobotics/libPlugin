@@ -18,6 +18,23 @@ similar documentation for pure Lua functions. See [below](#lua-comments).
 
 ## Usage
 
+This tool is normally used within the [libPlugin](https://github.com/CoppeliaRobotics/libPlugin) framework.
+
+For CMake, use the `coppeliasim_generate_stubs` CMake macro, e.g.:
+
+```cmake
+coppeliasim_generate_stubs(
+    ${CMAKE_CURRENT_BINARY_DIR}/generated
+    XML_FILE ${CMAKE_CURRENT_SOURCE_DIR}/callbacks.xml
+    LUA_FILE ${CMAKE_CURRENT_SOURCE_DIR}/simExtOMPL.lua)
+```
+
+The `XML_FILE` parameter is mandatory.
+
+The `LUA_FILE` is optional; passing a `LUA_FILE` parameter will also parse the [lua comments](#lua-comments) for generating documentation and calltips.
+
+The tool can also be invoked standalone:
+
 ```text
 $ python3 generate.py --help
 usage: generate.py [-h] [--xml-file XML_FILE] [--lua-file LUA_FILE]
