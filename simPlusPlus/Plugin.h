@@ -35,6 +35,9 @@
 
 namespace sim
 {
+    extern std::string pluginName;
+    extern int pluginVersion;
+
     struct InstancePassFlags
     {
         bool objectsErased;
@@ -124,22 +127,28 @@ namespace sim
     };
 }
 
-#define SIM_PLUGIN(pluginName, pluginVersion, className) \
-LIBRARY simLib; \
-className *simPlugin; \
+#define SIM_PLUGIN(pluginName_, pluginVersion_, className_) \
+namespace sim { \
+LIBRARY lib; \
+::className_ *plugin; \
+std::string pluginName; \
+int pluginVersion; \
+} \
 SIM_DLLEXPORT unsigned char simStart(void *reservedPointer, int reservedInt) \
 { \
     try \
     { \
-        simPlugin = new className; \
-        simPlugin->setName(pluginName); \
-        simLib = simPlugin->loadSimLibrary(); \
-        simPlugin->onStart(); \
-        return pluginVersion; \
+        sim::pluginName = pluginName_; \
+        sim::pluginVersion = pluginVersion_; \
+        sim::plugin = new className_; \
+        sim::plugin->setName(pluginName_); \
+        sim::lib = sim::plugin->loadSimLibrary(); \
+        sim::plugin->onStart(); \
+        return sim::pluginVersion; \
     } \
     catch(std::exception &ex) \
     { \
-        simAddLog(pluginName, sim_verbosity_errors, ex.what()); \
+        simAddLog(sim::pluginName.c_str(), sim_verbosity_errors, ex.what()); \
         return 0; \
     } \
 } \
@@ -147,31 +156,31 @@ SIM_DLLEXPORT void simEnd() \
 { \
     try \
     { \
-        if(simPlugin) \
+        if(sim::plugin) \
         { \
-            simPlugin->onEnd(); \
-            delete simPlugin; \
-            simPlugin = nullptr; \
+            sim::plugin->onEnd(); \
+            delete sim::plugin; \
+            sim::plugin = nullptr; \
         } \
     } \
     catch(std::exception &ex) \
     { \
-        simAddLog(pluginName, sim_verbosity_errors, ex.what()); \
+        simAddLog(sim::pluginName.c_str(), sim_verbosity_errors, ex.what()); \
     } \
-    unloadSimLibrary(simLib); \
+    unloadSimLibrary(sim::lib); \
 } \
 SIM_DLLEXPORT void * simMessage(int message, int *auxiliaryData, void *customData, int *replyData) \
 { \
     try \
     { \
-        if(simPlugin) \
+        if(sim::plugin) \
         { \
-            return simPlugin->onMessage(message, auxiliaryData, customData, replyData); \
+            return sim::plugin->onMessage(message, auxiliaryData, customData, replyData); \
         } \
     } \
     catch(std::exception &ex) \
     { \
-        simAddLog(pluginName, sim_verbosity_errors, ex.what()); \
+        simAddLog(sim::pluginName.c_str(), sim_verbosity_errors, ex.what()); \
     } \
     return 0L; \
 }
