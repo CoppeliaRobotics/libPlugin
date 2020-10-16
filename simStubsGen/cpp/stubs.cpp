@@ -159,6 +159,11 @@ simInt simCreateStackE()
     simInt ret = simCreateStack();
     if(ret == -1)
         throw exception("simCreateStack: error");
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled()) simDebugStack(ret, -1);
+#endif // NDEBUG
+
     return ret;
 }
 
@@ -201,6 +206,10 @@ simVoid simPushNullOntoStackE(simInt stackHandle)
 
     if(simPushNullOntoStack(stackHandle) == -1)
         throw exception("simPushNullOntoStack: error");
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
+#endif // NDEBUG
 }
 
 simVoid simPushBoolOntoStackE(simInt stackHandle, simBool value)
@@ -214,6 +223,10 @@ simVoid simPushBoolOntoStackE(simInt stackHandle, simBool value)
 
     if(simPushBoolOntoStack(stackHandle, value) == -1)
         throw exception("simPushBoolOntoStack: error");
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
+#endif // NDEBUG
 }
 
 simVoid simPushInt32OntoStackE(simInt stackHandle, simInt value)
@@ -227,6 +240,10 @@ simVoid simPushInt32OntoStackE(simInt stackHandle, simInt value)
 
     if(simPushInt32OntoStack(stackHandle, value) == -1)
         throw exception("simPushInt32OntoStack: error");
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
+#endif // NDEBUG
 }
 
 simVoid simPushFloatOntoStackE(simInt stackHandle, simFloat value)
@@ -240,6 +257,10 @@ simVoid simPushFloatOntoStackE(simInt stackHandle, simFloat value)
 
     if(simPushFloatOntoStack(stackHandle, value) == -1)
         throw exception("simPushFloatOntoStack: error");
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
+#endif // NDEBUG
 }
 
 simVoid simPushDoubleOntoStackE(simInt stackHandle, simDouble value)
@@ -253,6 +274,10 @@ simVoid simPushDoubleOntoStackE(simInt stackHandle, simDouble value)
 
     if(simPushDoubleOntoStack(stackHandle, value) == -1)
         throw exception("simPushDoubleOntoStack: error");
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
+#endif // NDEBUG
 }
 
 simVoid simPushStringOntoStackE(simInt stackHandle, const simChar *value, simInt stringSize)
@@ -266,6 +291,10 @@ simVoid simPushStringOntoStackE(simInt stackHandle, const simChar *value, simInt
 
     if(simPushStringOntoStack(stackHandle, value, stringSize) == -1)
         throw exception("simPushStringOntoStack: error");
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
+#endif // NDEBUG
 }
 
 simVoid simPushUInt8TableOntoStackE(simInt stackHandle, const simUChar *values, simInt valueCnt)
@@ -279,6 +308,10 @@ simVoid simPushUInt8TableOntoStackE(simInt stackHandle, const simUChar *values, 
 
     if(simPushUInt8TableOntoStack(stackHandle, values, valueCnt) == -1)
         throw exception("simPushUInt8TableOntoStack: error");
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
+#endif // NDEBUG
 }
 
 simVoid simPushInt32TableOntoStackE(simInt stackHandle, const simInt *values, simInt valueCnt)
@@ -292,6 +325,10 @@ simVoid simPushInt32TableOntoStackE(simInt stackHandle, const simInt *values, si
 
     if(simPushInt32TableOntoStack(stackHandle, values, valueCnt) == -1)
         throw exception("simPushInt32TableOntoStack: error");
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
+#endif // NDEBUG
 }
 
 simVoid simPushFloatTableOntoStackE(simInt stackHandle, const simFloat *values, simInt valueCnt)
@@ -305,6 +342,10 @@ simVoid simPushFloatTableOntoStackE(simInt stackHandle, const simFloat *values, 
 
     if(simPushFloatTableOntoStack(stackHandle, values, valueCnt) == -1)
         throw exception("simPushFloatTableOntoStack: error");
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
+#endif // NDEBUG
 }
 
 simVoid simPushDoubleTableOntoStackE(simInt stackHandle, const simDouble *values, simInt valueCnt)
@@ -318,6 +359,10 @@ simVoid simPushDoubleTableOntoStackE(simInt stackHandle, const simDouble *values
 
     if(simPushDoubleTableOntoStack(stackHandle, values, valueCnt) == -1)
         throw exception("simPushDoubleTableOntoStack: error");
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
+#endif // NDEBUG
 }
 
 simVoid simPushTableOntoStackE(simInt stackHandle)
@@ -331,6 +376,10 @@ simVoid simPushTableOntoStackE(simInt stackHandle)
 
     if(simPushTableOntoStack(stackHandle) == -1)
         throw exception("simPushTableOntoStack: error");
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
+#endif // NDEBUG
 }
 
 simVoid simInsertDataIntoStackTableE(simInt stackHandle)
@@ -344,6 +393,10 @@ simVoid simInsertDataIntoStackTableE(simInt stackHandle)
 
     if(simInsertDataIntoStackTable(stackHandle) == -1)
         throw exception("simInsertDataIntoStackTable: error");
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
+#endif // NDEBUG
 }
 
 simInt simGetStackSizeE(simInt stackHandle)
@@ -375,6 +428,11 @@ simInt simPopStackItemE(simInt stackHandle, simInt count)
 
     if(ret == -1)
         throw exception("simPopStackItem: error");
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
+#endif // NDEBUG
+
     return ret;
 }
 
@@ -389,6 +447,10 @@ simVoid simMoveStackItemToTopE(simInt stackHandle, simInt cIndex)
 
     if(simMoveStackItemToTop(stackHandle, cIndex) == -1)
         throw exception("simMoveStackItemToTop: error");
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
+#endif // NDEBUG
 }
 
 simInt simIsStackValueNullE(simInt stackHandle)
@@ -396,6 +458,14 @@ simInt simIsStackValueNullE(simInt stackHandle)
     simInt ret = simIsStackValueNull(stackHandle);
     if(ret == -1)
         throw exception("simIsStackValueNull: error");
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled())
+    {
+        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simIsStackValueNull(stack) -> %d") % ret);
+    }
+#endif // NDEBUG
+
     return ret;
 }
 
@@ -404,6 +474,14 @@ simInt simGetStackBoolValueE(simInt stackHandle, simBool *boolValue)
     simInt ret = simGetStackBoolValue(stackHandle, boolValue);
     if(ret == -1)
         throw exception("simGetStackBoolValue: error");
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled())
+    {
+        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simGetStackBoolValue(stack) -> %d, value = %d") % ret % boolValue);
+    }
+#endif // NDEBUG
+
     return ret;
 }
 
@@ -412,6 +490,14 @@ simInt simGetStackInt32ValueE(simInt stackHandle, simInt *numberValue)
     simInt ret = simGetStackInt32Value(stackHandle, numberValue);
     if(ret == -1)
         throw exception("simGetStackInt32Value: error");
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled())
+    {
+        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simGetStackInt32Value(stack) -> %d, value = %d") % ret % numberValue);
+    }
+#endif // NDEBUG
+
     return ret;
 }
 
@@ -420,6 +506,14 @@ simInt simGetStackFloatValueE(simInt stackHandle, simFloat *numberValue)
     simInt ret = simGetStackFloatValue(stackHandle, numberValue);
     if(ret == -1)
         throw exception("simGetStackFloatValue: error");
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled())
+    {
+        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simGetStackFloatValue(stack) -> %d, value = %f") % ret % numberValue);
+    }
+#endif // NDEBUG
+
     return ret;
 }
 
@@ -428,15 +522,40 @@ simInt simGetStackDoubleValueE(simInt stackHandle, simDouble *numberValue)
     simInt ret = simGetStackDoubleValue(stackHandle, numberValue);
     if(ret == -1)
         throw exception("simGetStackDoubleValue: error");
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled())
+    {
+        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simGetStackDoubleValue(stack) -> %d, value = %g") % ret % numberValue);
+    }
+#endif // NDEBUG
+
     return ret;
 }
 
 simChar* simGetStackStringValueE(simInt stackHandle, simInt *stringSize)
 {
     simChar *ret = simGetStackStringValue(stackHandle, stringSize);
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled())
+    {
+        if(ret)
+        {
+            std::string s(ret, *stringSize);
+            log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simGetStackStringValue(stack) -> value = %s") % s);
+        }
+        else
+        {
+            log(sim_verbosity_debug, "DEBUG_STUBS: simGetStackStringValue(stack) -> null");
+        }
+    }
+#endif // NDEBUG
+
     // if stringSize is NULL, we cannot distinguish error (-1) from type error (0)
     if(ret == NULL && stringSize && *stringSize == -1)
         throw exception("simGetStackStringValue: error");
+
     return ret;
 }
 
@@ -459,6 +578,14 @@ simInt simGetStackTableInfoE(simInt stackHandle, simInt infoType)
 simInt simGetStackUInt8TableE(simInt stackHandle, simUChar *array, simInt count)
 {
     simInt ret = simGetStackUInt8Table(stackHandle, array, count);
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled())
+    {
+        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simGetStackUInt8Table(stack, array, count = %d) -> %d") % count % ret);
+    }
+#endif // NDEBUG
+
     if(ret == -1)
         throw exception("simGetStackUInt8Table: error");
     return ret;
@@ -475,6 +602,14 @@ simInt simGetStackInt32TableE(simInt stackHandle, simInt *array, simInt count)
 simInt simGetStackFloatTableE(simInt stackHandle, simFloat *array, simInt count)
 {
     simInt ret = simGetStackFloatTable(stackHandle, array, count);
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled())
+    {
+        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simGetStackFloatTable(stack, array, count = %d) -> %d") % count % ret);
+    }
+#endif // NDEBUG
+
     if(ret == -1)
         throw exception("simGetStackFloatTable: error");
     return ret;
@@ -483,6 +618,14 @@ simInt simGetStackFloatTableE(simInt stackHandle, simFloat *array, simInt count)
 simInt simGetStackDoubleTableE(simInt stackHandle, simDouble *array, simInt count)
 {
     simInt ret = simGetStackDoubleTable(stackHandle, array, count);
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled())
+    {
+        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simGetStackDoubleTable(stack, array, count = %d) -> %d") % count % ret);
+    }
+#endif // NDEBUG
+
     if(ret == -1)
         throw exception("simGetStackDoubleTable: error");
     return ret;
@@ -494,6 +637,7 @@ simVoid simUnfoldStackTableE(simInt stackHandle)
     if(isDebugStubsEnabled())
     {
         log(sim_verbosity_debug, "DEBUG_STUBS: simUnfoldStackTable(stack)");
+        simDebugStack(stackHandle, -1);
     }
 #endif // NDEBUG
 
@@ -694,6 +838,7 @@ void read__`struct.name`(int stack, `struct.name` *value)
     if(isDebugStubsEnabled())
     {
         log(sim_verbosity_debug, "DEBUG_STUBS: reading struct \"`struct.name`\"...");
+        simDebugStack(stack, -1);
     }
 #endif // NDEBUG
 
@@ -744,10 +889,6 @@ void read__`struct.name`(int stack, `struct.name` *value)
                         int i = simGetStackTableInfoE(stack, 0);
                         if(i < 0)
                         {
-#ifndef NDEBUG
-                            if(isDebugStubsEnabled())
-                                simDebugStack(stack, -1);
-#endif // NDEBUG
                             throw exception((boost::format("expected array (simGetStackTableInfo(stack, 0) returned %d)") % i).str());
                         }
                         int oldsz = simGetStackSizeE(stack);
@@ -1170,10 +1311,6 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
                 int sz = simGetStackTableInfoE(p->stackID, 0);
                 if(sz < 0)
                 {
-#ifndef NDEBUG
-                    if(isDebugStubsEnabled())
-                        simDebugStack(p->stackID, -1);
-#endif // NDEBUG
                     throw exception((boost::format("expected array (simGetStackTableInfo(stack, 0) returned %d)") % sz).str());
                 }
                 if(simGetStackTableInfoE(p->stackID, 2) != 1)
@@ -1195,10 +1332,6 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
                 int i = simGetStackTableInfoE(p->stackID, 0);
                 if(i < 0)
                 {
-#ifndef NDEBUG
-                    if(isDebugStubsEnabled())
-                        simDebugStack(p->stackID, -1);
-#endif // NDEBUG
                     throw exception((boost::format("expected array (simGetStackTableInfo(stack, 0) returned %d)") % i).str());
                 }
                 int oldsz = simGetStackSizeE(p->stackID);
@@ -1242,14 +1375,30 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
 
 #ifndef NDEBUG
         if(isDebugStubsEnabled())
+        {
+            log(sim_verbosity_debug, "DEBUG_STUBS: stack content after reading input arguments:");
             simDebugStack(p->stackID, -1);
+        }
 #endif // NDEBUG
 
 #py if cmd.clear_stack_after_reading_input:
+#ifndef NDEBUG
+        if(isDebugStubsEnabled())
+        {
+            log(sim_verbosity_debug, "DEBUG_STUBS: clearing stack content after reading input arguments");
+        }
+#endif // NDEBUG
         // clear stack
         simPopStackItemE(p->stackID, 0);
 
 #py endif
+
+#ifndef NDEBUG
+        if(isDebugStubsEnabled())
+        {
+            log(sim_verbosity_debug, "DEBUG_STUBS: calling callback");
+        }
+#endif // NDEBUG
         `cmd.c_name`(p, cmd, &in_args, &out_args);
     }
     catch(std::exception& e)
@@ -1287,6 +1436,12 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
 #endif // NDEBUG
 
 #py if cmd.clear_stack_before_writing_output:
+#ifndef NDEBUG
+        if(isDebugStubsEnabled())
+        {
+            log(sim_verbosity_debug, "DEBUG_STUBS: clearing stack content before writing output arguments");
+        }
+#endif // NDEBUG
         // clear stack
         simPopStackItemE(p->stackID, 0);
 
@@ -1321,7 +1476,10 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
 
 #ifndef NDEBUG
         if(isDebugStubsEnabled())
+        {
+            log(sim_verbosity_debug, "DEBUG_STUBS: stack content after writing output arguments:");
             simDebugStack(p->stackID, -1);
+        }
 #endif // NDEBUG
     }
     catch(std::exception& e)
@@ -1415,7 +1573,10 @@ bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn
 
 #ifndef NDEBUG
         if(isDebugStubsEnabled())
+        {
+            log(sim_verbosity_debug, "DEBUG_STUBS: wrote input arguments:");
             simDebugStack(stackID, -1);
+        }
 #endif // NDEBUG
 
         simCallScriptFunctionExE(scriptId, func, stackID);
@@ -1436,10 +1597,6 @@ bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn
             int i = simGetStackTableInfoE(stackID, 0);
             if(i < 0)
             {
-#ifndef NDEBUG
-                if(isDebugStubsEnabled())
-                    simDebugStack(stackID, -1);
-#endif // NDEBUG
                 throw exception((boost::format("expected array (simGetStackTableInfo(stack, 0) returned %d)") % i).str());
             }
             int oldsz = simGetStackSizeE(stackID);
@@ -1479,7 +1636,10 @@ bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn
 
 #ifndef NDEBUG
         if(isDebugStubsEnabled())
+        {
+            log(sim_verbosity_debug, "DEBUG_STUBS: stack content after reading output arguments:");
             simDebugStack(stackID, -1);
+        }
 #endif // NDEBUG
 
         simReleaseStackE(stackID);
