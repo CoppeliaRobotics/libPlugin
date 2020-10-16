@@ -9,12 +9,17 @@ class Param(object):
             raise ValueError('attribute "name" of <param> cannot be empty')
         if self.name.startswith('_'):
             raise ValueError('attribute "name" of <param> cannot start with underscore')
+
         try:
             descnode = node.find('description')
             self.description = '' if descnode is None else descnode.text
         except AttributeError:
             self.description = ''
+
+        if 'type' not in node.attrib:
+            raise ValueError('attribute "type" is missing in <param>')
         self.dtype = node.attrib['type']
+
         self.ctype_base = self.dtype
         self.default = node.attrib.get('default', None)
         self.skip = node.attrib.get('skip', 'false').lower() in ('true', 'yes', '1')
@@ -64,6 +69,8 @@ class Param(object):
 
     @staticmethod
     def factory(node):
+        if 'type' not in node.attrib:
+            raise ValueError('attribute "type" is missing in <param>')
         dtype = node.attrib['type']
         if dtype not in Param.mapping:
             print('ERROR: type "{}" not found in mapping; valid types are: {}'.format(dtype, ', '.join('"%s"' % k for k in Param.mapping.keys())))
