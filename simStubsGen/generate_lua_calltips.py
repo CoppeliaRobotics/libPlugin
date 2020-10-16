@@ -21,7 +21,7 @@ with open(outfile, 'w') as fout:
             if fdesc:
                 calltip += '\\n\\n' + fdesc
             while calltip[-2:] == '\\n': calltip = calltip[:-2]
-            fout.write('simRegisterScriptCallbackFunctionE("sim{}.{}@{}", "{}", NULL);\n'.format(shortPlugName, f, longPlugName, calltip))
+            fout.write('sim::registerScriptCallbackFunction("sim{}.{}@{}", "{}", NULL);\n'.format(shortPlugName, f, longPlugName, calltip))
 
     def strip_table_type(s):
         return 'table' if s.startswith('table.') else s

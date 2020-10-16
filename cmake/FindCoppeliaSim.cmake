@@ -66,6 +66,7 @@ foreach(F IN ITEMS
         "${COPPELIASIM_INCLUDE_DIR}/simLib.h"
         "${COPPELIASIM_INCLUDE_DIR}/simConst.h"
         "${COPPELIASIM_COMMON_DIR}/simLib.cpp"
+        "${LIBPLUGIN_DIR}/simPlusPlus/Lib.cpp"
         "${LIBPLUGIN_DIR}/simPlusPlus/Plugin.cpp"
 )
     if(NOT EXISTS "${F}")
@@ -77,6 +78,7 @@ endforeach()
 set(COPPELIASIM_EXPORTED_SOURCES
     "${COPPELIASIM_EXPORTED_SOURCES}"
     "${COPPELIASIM_COMMON_DIR}/simLib.cpp"
+    "${LIBPLUGIN_DIR}/simPlusPlus/Lib.cpp"
     "${LIBPLUGIN_DIR}/simPlusPlus/Plugin.cpp")
 
 if(NOT CoppeliaSim_FIND_QUIETLY)

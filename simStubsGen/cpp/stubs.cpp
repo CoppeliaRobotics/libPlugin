@@ -2,6 +2,7 @@
 #py import model
 #py plugin = parse(pycpp.params['xml_file'])
 #include "stubs.h"
+#include <simPlusPlus/Lib.h>
 
 #include <cstdlib>
 #include <sstream>
@@ -13,20 +14,20 @@
     {                               \
         std::string msg = prefix;   \
         msg += ex.what();           \
-        throw exception(msg);       \
+        throw sim::exception(msg);       \
     }                               \
     catch(std::string& s)           \
     {                               \
         std::string msg = prefix;   \
         msg += s;                   \
-        throw exception(msg);       \
+        throw sim::exception(msg);       \
     }                               \
     catch(int& n)                   \
     {                               \
         std::stringstream msg;      \
         msg << prefix;              \
         msg << "error #" << n;      \
-        throw exception(msg.str()); \
+        throw sim::exception(msg.str()); \
     }
 
 static bool isDebugStubsEnabled()
@@ -52,7 +53,7 @@ static bool isDebugStubsEnabled()
         {
             std::string s(val, len);
             enabled = boost::lexical_cast<int>(val) != 0 ? 1 : 0;
-            simReleaseBuffer(val);
+            sim::releaseBuffer(val);
             return enabled;
         }
     }
@@ -62,26 +63,16 @@ static bool isDebugStubsEnabled()
     return enabled;
 }
 
-void log(int v, const std::string &msg)
-{
-    simAddLog("`plugin.name`", v, msg.c_str());
-}
-
-void log(int v, boost::format &fmt)
-{
-    log(v, fmt.str());
-}
-
 FuncTracer::FuncTracer(const std::string &f, int l)
     : f_(f),
       l_(l)
 {
-    log(l_, f_ + " [enter]");
+    sim::addLog(l_, f_ + " [enter]");
 }
 
 FuncTracer::~FuncTracer()
 {
-    log(l_, f_ + " [leave]");
+    sim::addLog(l_, f_ + " [leave]");
 }
 
 #ifdef QT_COMPIL
@@ -103,7 +94,7 @@ void uiThread()
 {
     Qt::HANDLE h = QThread::currentThreadId();
     if(UI_THREAD != NULL && UI_THREAD != h)
-        log(sim_verbosity_warnings, "UI thread has already been set");
+        sim::addLog(sim_verbosity_warnings, "UI thread has already been set");
     UI_THREAD = h;
 }
 
@@ -111,621 +102,65 @@ void simThread()
 {
     Qt::HANDLE h = QThread::currentThreadId();
     if(SIM_THREAD != NULL && SIM_THREAD != h)
-        log(sim_verbosity_warnings, "SIM thread has already been set");
+        sim::addLog(sim_verbosity_warnings, "SIM thread has already been set");
     SIM_THREAD = h;
 }
 
 #endif // QT_COMPIL
 
-simInt simRegisterScriptCallbackFunctionE(const simChar *funcNameAtPluginName, const simChar *callTips, simVoid (*callBack)(struct SScriptCallBack *cb))
-{
-    simInt ret = simRegisterScriptCallbackFunction(funcNameAtPluginName, callTips, callBack);
-    if(ret == 0)
-    {
-        log(sim_verbosity_warnings, boost::format("replaced function '%s'") % funcNameAtPluginName);
-    }
-    if(ret == -1)
-        throw exception("simRegisterScriptCallbackFunction: error");
-    return ret;
-}
-
-simInt simRegisterScriptVariableE(const simChar *varName, const simChar *varValue, simInt stackID)
-{
-    simInt ret = simRegisterScriptVariable(varName, varValue, stackID);
-    if(ret == 0)
-    {
-        log(sim_verbosity_warnings, boost::format("replaced variable '%s'") % varName);
-    }
-    if(ret == -1)
-        throw exception("simRegisterScriptVariable: error");
-    return ret;
-}
-
-simVoid simCallScriptFunctionExE(simInt scriptHandleOrType,const simChar* functionNameAtScriptName,simInt stackId)
-{
-    if(simCallScriptFunctionEx(scriptHandleOrType, functionNameAtScriptName, stackId) == -1)
-        throw exception("simCallScriptFunctionEx: error");
-}
-
-simInt simCreateStackE()
-{
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, "DEBUG_STUBS: simCreateStack()");
-    }
-#endif // NDEBUG
-
-    simInt ret = simCreateStack();
-    if(ret == -1)
-        throw exception("simCreateStack: error");
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled()) simDebugStack(ret, -1);
-#endif // NDEBUG
-
-    return ret;
-}
-
-simVoid simReleaseStackE(simInt stackHandle)
-{
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, "DEBUG_STUBS: simReleaseStack(stack)");
-    }
-#endif // NDEBUG
-
-    if(simReleaseStack(stackHandle) != 1)
-        throw exception("simReleaseStack: error");
-}
-
-simInt simCopyStackE(simInt stackHandle)
-{
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, "DEBUG_STUBS: simCopyStack(stack)");
-    }
-#endif // NDEBUG
-
-    simInt ret = simCopyStack(stackHandle);
-    if(ret == -1)
-        throw exception("simCopyStack: error");
-    return ret;
-}
-
-simVoid simPushNullOntoStackE(simInt stackHandle)
-{
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, "DEBUG_STUBS: simPushNullOntoStack(stack)");
-    }
-#endif // NDEBUG
-
-    if(simPushNullOntoStack(stackHandle) == -1)
-        throw exception("simPushNullOntoStack: error");
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
-#endif // NDEBUG
-}
-
-simVoid simPushBoolOntoStackE(simInt stackHandle, simBool value)
-{
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simPushBoolOntoStack(stack, %d)") % value);
-    }
-#endif // NDEBUG
-
-    if(simPushBoolOntoStack(stackHandle, value) == -1)
-        throw exception("simPushBoolOntoStack: error");
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
-#endif // NDEBUG
-}
-
-simVoid simPushInt32OntoStackE(simInt stackHandle, simInt value)
-{
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simPushInt32OntoStack(stack, %d)") % value);
-    }
-#endif // NDEBUG
-
-    if(simPushInt32OntoStack(stackHandle, value) == -1)
-        throw exception("simPushInt32OntoStack: error");
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
-#endif // NDEBUG
-}
-
-simVoid simPushFloatOntoStackE(simInt stackHandle, simFloat value)
-{
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simPushFloatOntoStack(stack, %f)") % value);
-    }
-#endif // NDEBUG
-
-    if(simPushFloatOntoStack(stackHandle, value) == -1)
-        throw exception("simPushFloatOntoStack: error");
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
-#endif // NDEBUG
-}
-
-simVoid simPushDoubleOntoStackE(simInt stackHandle, simDouble value)
-{
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simPushDoubleOntoStack(stack, %f)") % value);
-    }
-#endif // NDEBUG
-
-    if(simPushDoubleOntoStack(stackHandle, value) == -1)
-        throw exception("simPushDoubleOntoStack: error");
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
-#endif // NDEBUG
-}
-
-simVoid simPushStringOntoStackE(simInt stackHandle, const simChar *value, simInt stringSize)
-{
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simPushStringOntoStack(stack, \"%s\" [%d])") % value % stringSize);
-    }
-#endif // NDEBUG
-
-    if(simPushStringOntoStack(stackHandle, value, stringSize) == -1)
-        throw exception("simPushStringOntoStack: error");
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
-#endif // NDEBUG
-}
-
-simVoid simPushUInt8TableOntoStackE(simInt stackHandle, const simUChar *values, simInt valueCnt)
-{
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simPushUInt8TableOntoStack(stack, <%d values>)") % valueCnt);
-    }
-#endif // NDEBUG
-
-    if(simPushUInt8TableOntoStack(stackHandle, values, valueCnt) == -1)
-        throw exception("simPushUInt8TableOntoStack: error");
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
-#endif // NDEBUG
-}
-
-simVoid simPushInt32TableOntoStackE(simInt stackHandle, const simInt *values, simInt valueCnt)
-{
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simPushInt32TableOntoStack(stack, <%d values>)") % valueCnt);
-    }
-#endif // NDEBUG
-
-    if(simPushInt32TableOntoStack(stackHandle, values, valueCnt) == -1)
-        throw exception("simPushInt32TableOntoStack: error");
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
-#endif // NDEBUG
-}
-
-simVoid simPushFloatTableOntoStackE(simInt stackHandle, const simFloat *values, simInt valueCnt)
-{
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simPushFloatTableOntoStack(stack, <%d values>)") % valueCnt);
-    }
-#endif // NDEBUG
-
-    if(simPushFloatTableOntoStack(stackHandle, values, valueCnt) == -1)
-        throw exception("simPushFloatTableOntoStack: error");
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
-#endif // NDEBUG
-}
-
-simVoid simPushDoubleTableOntoStackE(simInt stackHandle, const simDouble *values, simInt valueCnt)
-{
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simPushDoubleTableOntoStack(stack, <%d values>)") % valueCnt);
-    }
-#endif // NDEBUG
-
-    if(simPushDoubleTableOntoStack(stackHandle, values, valueCnt) == -1)
-        throw exception("simPushDoubleTableOntoStack: error");
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
-#endif // NDEBUG
-}
-
-simVoid simPushTableOntoStackE(simInt stackHandle)
-{
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, "DEBUG_STUBS: simPushTableOntoStack(stack)");
-    }
-#endif // NDEBUG
-
-    if(simPushTableOntoStack(stackHandle) == -1)
-        throw exception("simPushTableOntoStack: error");
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
-#endif // NDEBUG
-}
-
-simVoid simInsertDataIntoStackTableE(simInt stackHandle)
-{
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, "DEBUG_STUBS: simInsertDataIntoStackTable(stack)");
-    }
-#endif // NDEBUG
-
-    if(simInsertDataIntoStackTable(stackHandle) == -1)
-        throw exception("simInsertDataIntoStackTable: error");
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
-#endif // NDEBUG
-}
-
-simInt simGetStackSizeE(simInt stackHandle)
-{
-    simInt ret = simGetStackSize(stackHandle);
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simGetStackSize(stack) -> %d") % ret);
-    }
-#endif // NDEBUG
-
-    if(ret == -1)
-        throw exception("simGetStackSize: error");
-    return ret;
-}
-
-simInt simPopStackItemE(simInt stackHandle, simInt count)
-{
-    simInt ret = simPopStackItem(stackHandle, count);
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simPopStackItem(stack, %d) -> %d") % count % ret);
-    }
-#endif // NDEBUG
-
-    if(ret == -1)
-        throw exception("simPopStackItem: error");
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
-#endif // NDEBUG
-
-    return ret;
-}
-
-simVoid simMoveStackItemToTopE(simInt stackHandle, simInt cIndex)
-{
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simMoveStackItemToTop(stack, %d)") % cIndex);
-    }
-#endif // NDEBUG
-
-    if(simMoveStackItemToTop(stackHandle, cIndex) == -1)
-        throw exception("simMoveStackItemToTop: error");
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled()) simDebugStack(stackHandle, -1);
-#endif // NDEBUG
-}
-
-simInt simIsStackValueNullE(simInt stackHandle)
-{
-    simInt ret = simIsStackValueNull(stackHandle);
-    if(ret == -1)
-        throw exception("simIsStackValueNull: error");
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simIsStackValueNull(stack) -> %d") % ret);
-    }
-#endif // NDEBUG
-
-    return ret;
-}
-
-simInt simGetStackBoolValueE(simInt stackHandle, simBool *boolValue)
-{
-    simInt ret = simGetStackBoolValue(stackHandle, boolValue);
-    if(ret == -1)
-        throw exception("simGetStackBoolValue: error");
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simGetStackBoolValue(stack) -> %d, value = %d") % ret % boolValue);
-    }
-#endif // NDEBUG
-
-    return ret;
-}
-
-simInt simGetStackInt32ValueE(simInt stackHandle, simInt *numberValue)
-{
-    simInt ret = simGetStackInt32Value(stackHandle, numberValue);
-    if(ret == -1)
-        throw exception("simGetStackInt32Value: error");
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simGetStackInt32Value(stack) -> %d, value = %d") % ret % numberValue);
-    }
-#endif // NDEBUG
-
-    return ret;
-}
-
-simInt simGetStackFloatValueE(simInt stackHandle, simFloat *numberValue)
-{
-    simInt ret = simGetStackFloatValue(stackHandle, numberValue);
-    if(ret == -1)
-        throw exception("simGetStackFloatValue: error");
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simGetStackFloatValue(stack) -> %d, value = %f") % ret % numberValue);
-    }
-#endif // NDEBUG
-
-    return ret;
-}
-
-simInt simGetStackDoubleValueE(simInt stackHandle, simDouble *numberValue)
-{
-    simInt ret = simGetStackDoubleValue(stackHandle, numberValue);
-    if(ret == -1)
-        throw exception("simGetStackDoubleValue: error");
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simGetStackDoubleValue(stack) -> %d, value = %g") % ret % numberValue);
-    }
-#endif // NDEBUG
-
-    return ret;
-}
-
-simChar* simGetStackStringValueE(simInt stackHandle, simInt *stringSize)
-{
-    simChar *ret = simGetStackStringValue(stackHandle, stringSize);
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        if(ret)
-        {
-            std::string s(ret, *stringSize);
-            log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simGetStackStringValue(stack) -> value = %s") % s);
-        }
-        else
-        {
-            log(sim_verbosity_debug, "DEBUG_STUBS: simGetStackStringValue(stack) -> null");
-        }
-    }
-#endif // NDEBUG
-
-    // if stringSize is NULL, we cannot distinguish error (-1) from type error (0)
-    if(ret == NULL && stringSize && *stringSize == -1)
-        throw exception("simGetStackStringValue: error");
-
-    return ret;
-}
-
-simInt simGetStackTableInfoE(simInt stackHandle, simInt infoType)
-{
-    simInt ret = simGetStackTableInfo(stackHandle, infoType);
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simGetStackTableInfo(stack, %d) -> %d") % infoType % ret);
-    }
-#endif // NDEBUG
-
-    if(ret == -1)
-        throw exception("simGetStackTableInfo: error");
-    return ret;
-}
-
-simInt simGetStackUInt8TableE(simInt stackHandle, simUChar *array, simInt count)
-{
-    simInt ret = simGetStackUInt8Table(stackHandle, array, count);
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simGetStackUInt8Table(stack, array, count = %d) -> %d") % count % ret);
-    }
-#endif // NDEBUG
-
-    if(ret == -1)
-        throw exception("simGetStackUInt8Table: error");
-    return ret;
-}
-
-simInt simGetStackInt32TableE(simInt stackHandle, simInt *array, simInt count)
-{
-    simInt ret = simGetStackInt32Table(stackHandle, array, count);
-    if(ret == -1)
-        throw exception("simGetStackInt32Table: error");
-    return ret;
-}
-
-simInt simGetStackFloatTableE(simInt stackHandle, simFloat *array, simInt count)
-{
-    simInt ret = simGetStackFloatTable(stackHandle, array, count);
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simGetStackFloatTable(stack, array, count = %d) -> %d") % count % ret);
-    }
-#endif // NDEBUG
-
-    if(ret == -1)
-        throw exception("simGetStackFloatTable: error");
-    return ret;
-}
-
-simInt simGetStackDoubleTableE(simInt stackHandle, simDouble *array, simInt count)
-{
-    simInt ret = simGetStackDoubleTable(stackHandle, array, count);
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, boost::format("DEBUG_STUBS: simGetStackDoubleTable(stack, array, count = %d) -> %d") % count % ret);
-    }
-#endif // NDEBUG
-
-    if(ret == -1)
-        throw exception("simGetStackDoubleTable: error");
-    return ret;
-}
-
-simVoid simUnfoldStackTableE(simInt stackHandle)
-{
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        log(sim_verbosity_debug, "DEBUG_STUBS: simUnfoldStackTable(stack)");
-    }
-#endif // NDEBUG
-
-    if(simUnfoldStackTable(stackHandle) == -1)
-        throw exception("simUnfoldStackTable: error");
-
-#ifndef NDEBUG
-    if(isDebugStubsEnabled())
-    {
-        simDebugStack(stackHandle, -1);
-    }
-#endif // NDEBUG
-}
-
-simInt simGetInt32ParameterE(simInt parameter)
-{
-    simInt ret;
-    if(simGetInt32Parameter(parameter, &ret) == -1)
-        throw exception("simGetInt32Parameter: error");
-    return ret;
-}
-
-simChar* simCreateBufferE(simInt size)
-{
-    simChar *ret = simCreateBuffer(size);
-    if(ret == NULL)
-        throw exception("simCreateBuffer: error");
-    return ret;
-}
-
-simVoid simReleaseBufferE(simChar *buffer)
-{
-    if(simReleaseBuffer(buffer) == -1)
-        throw exception("simReleaseBuffer: error");
-}
-
 void read__bool(int stack, bool *value)
 {
     simBool v;
-    if(simGetStackBoolValueE(stack, &v) == 1)
+    if(sim::getStackBoolValue(stack, &v) == 1)
     {
         *value = v;
-        simPopStackItemE(stack, 1);
+        sim::popStackItem(stack, 1);
     }
     else
     {
-        throw exception("expected bool");
+        throw sim::exception("expected bool");
     }
 }
 
 void read__int(int stack, int *value)
 {
     int v;
-    if(simGetStackInt32ValueE(stack, &v) == 1)
+    if(sim::getStackInt32Value(stack, &v) == 1)
     {
         *value = v;
-        simPopStackItemE(stack, 1);
+        sim::popStackItem(stack, 1);
     }
     else
     {
-        throw exception("expected int");
+        throw sim::exception("expected int");
     }
 }
 
 void read__float(int stack, float *value)
 {
     simFloat v;
-    if(simGetStackFloatValueE(stack, &v) == 1)
+    if(sim::getStackFloatValue(stack, &v) == 1)
     {
         *value = v;
-        simPopStackItemE(stack, 1);
+        sim::popStackItem(stack, 1);
     }
     else
     {
-        throw exception("expected float");
+        throw sim::exception("expected float");
     }
 }
 
 void read__double(int stack, double *value)
 {
     simDouble v;
-    if(simGetStackDoubleValueE(stack, &v) == 1)
+    if(sim::getStackDoubleValue(stack, &v) == 1)
     {
         *value = v;
-        simPopStackItemE(stack, 1);
+        sim::popStackItem(stack, 1);
     }
     else
     {
-        throw exception("expected double");
+        throw sim::exception("expected double");
     }
 }
 
@@ -733,87 +168,87 @@ void read__std__string(int stack, std::string *value)
 {
     simChar *str;
     simInt strSize;
-    if((str = simGetStackStringValueE(stack, &strSize)) != NULL && strSize >= 0)
+    if((str = sim::getStackStringValue(stack, &strSize)) != NULL && strSize >= 0)
     {
         *value = std::string(str, strSize);
-        simPopStackItemE(stack, 1);
-        simReleaseBufferE(str);
+        sim::popStackItem(stack, 1);
+        sim::releaseBuffer(str);
     }
     else
     {
-        throw exception("expected string");
+        throw sim::exception("expected string");
     }
 }
 
 void read__boost__optional__bool__(int stack, boost::optional<bool> *value)
 {
     simBool v;
-    if(simGetStackBoolValueE(stack, &v) == 1)
+    if(sim::getStackBoolValue(stack, &v) == 1)
     {
         *value = v;
-        simPopStackItemE(stack, 1);
+        sim::popStackItem(stack, 1);
     }
-    else if(simIsStackValueNull(stack) == 1)
+    else if(sim::isStackValueNull(stack) == 1)
     {
         *value = boost::none;
     }
     else
     {
-        throw exception("expected bool or nil");
+        throw sim::exception("expected bool or nil");
     }
 }
 
 void read__boost__optional__int__(int stack, boost::optional<int> *value)
 {
     int v;
-    if(simGetStackInt32ValueE(stack, &v) == 1)
+    if(sim::getStackInt32Value(stack, &v) == 1)
     {
         *value = v;
-        simPopStackItemE(stack, 1);
+        sim::popStackItem(stack, 1);
     }
-    else if(simIsStackValueNull(stack) == 1)
+    else if(sim::isStackValueNull(stack) == 1)
     {
         *value = boost::none;
     }
     else
     {
-        throw exception("expected int or nil");
+        throw sim::exception("expected int or nil");
     }
 }
 
 void read__boost__optional__float__(int stack, boost::optional<float> *value)
 {
     simFloat v;
-    if(simGetStackFloatValueE(stack, &v) == 1)
+    if(sim::getStackFloatValue(stack, &v) == 1)
     {
         *value = v;
-        simPopStackItemE(stack, 1);
+        sim::popStackItem(stack, 1);
     }
-    else if(simIsStackValueNull(stack) == 1)
+    else if(sim::isStackValueNull(stack) == 1)
     {
         *value = boost::none;
     }
     else
     {
-        throw exception("expected float or nil");
+        throw sim::exception("expected float or nil");
     }
 }
 
 void read__boost__optional__double__(int stack, boost::optional<double> *value)
 {
     simDouble v;
-    if(simGetStackDoubleValueE(stack, &v) == 1)
+    if(sim::getStackDoubleValue(stack, &v) == 1)
     {
         *value = v;
-        simPopStackItemE(stack, 1);
+        sim::popStackItem(stack, 1);
     }
-    else if(simIsStackValueNull(stack) == 1)
+    else if(sim::isStackValueNull(stack) == 1)
     {
         *value = boost::none;
     }
     else
     {
-        throw exception("expected double or nil");
+        throw sim::exception("expected double or nil");
     }
 }
 
@@ -821,19 +256,19 @@ void read__boost__optional__std__string__(int stack, boost::optional<std::string
 {
     simChar *str;
     simInt strSize;
-    if((str = simGetStackStringValueE(stack, &strSize)) != NULL && strSize >= 0)
+    if((str = sim::getStackStringValue(stack, &strSize)) != NULL && strSize >= 0)
     {
         *value = std::string(str, strSize);
-        simPopStackItemE(stack, 1);
-        simReleaseBufferE(str);
+        sim::popStackItem(stack, 1);
+        sim::releaseBuffer(str);
     }
-    else if(simIsStackValueNull(stack) == 1)
+    else if(sim::isStackValueNull(stack) == 1)
     {
         *value = boost::none;
     }
     else
     {
-        throw exception("expected string or nil");
+        throw sim::exception("expected string or nil");
     }
 }
 
@@ -841,82 +276,82 @@ void read__boost__optional__std__string__(int stack, boost::optional<std::string
 void read__`struct.name`(int stack, `struct.name` *value)
 {
 #ifndef NDEBUG
-    if(isDebugStubsEnabled())
+    if(sim::isStackDebugEnabled())
     {
-        log(sim_verbosity_debug, "DEBUG_STUBS: reading struct \"`struct.name`\"...");
-        simDebugStack(stack, -1);
+        sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: reading struct \"`struct.name`\"...");
+        sim::debugStack(stack);
     }
 #endif // NDEBUG
 
     try
     {
-        simInt info = simGetStackTableInfoE(stack, 0);
+        simInt info = sim::getStackTableInfo(stack, 0);
         if(info == sim_stack_table_empty)
             return;
         if(info != sim_stack_table_map)
         {
-            throw exception("expected a map");
+            throw sim::exception("expected a map");
         }
 
-        int oldsz = simGetStackSizeE(stack);
-        simUnfoldStackTableE(stack);
-        int numItems = (simGetStackSizeE(stack) - oldsz + 1) / 2;
+        int oldsz = sim::getStackSize(stack);
+        sim::unfoldStackTable(stack);
+        int numItems = (sim::getStackSize(stack) - oldsz + 1) / 2;
 
         char *str;
         int strSz;
 
         while(numItems >= 1)
         {
-            simMoveStackItemToTopE(stack, oldsz - 1); // move key to top
-            if((str = simGetStackStringValueE(stack, &strSz)) != NULL && strSz >= 0)
+            sim::moveStackItemToTop(stack, oldsz - 1); // move key to top
+            if((str = sim::getStackStringValue(stack, &strSz)) != NULL && strSz >= 0)
             {
-                simPopStackItemE(stack, 1);
+                sim::popStackItem(stack, 1);
 
-                simMoveStackItemToTopE(stack, oldsz - 1); // move value to top
+                sim::moveStackItemToTop(stack, oldsz - 1); // move value to top
 
                 if(0) {}
 #py for field in struct.fields:
                 else if(strcmp(str, "`field.name`") == 0)
                 {
 #ifndef NDEBUG
-                    if(isDebugStubsEnabled())
-                        log(sim_verbosity_debug, "DEBUG_STUBS: reading field \"`field.name`\"...");
+                    if(sim::isStackDebugEnabled())
+                        sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: reading field \"`field.name`\"...");
 #endif // NDEBUG
 
                     try
                     {
 #py if isinstance(field, model.ParamTable):
                         // read field '`field.name`' of type array of `field.ctype()`
-                        simMoveStackItemToTopE(stack, 0);
-                        int i = simGetStackTableInfoE(stack, 0);
+                        sim::moveStackItemToTop(stack, 0);
+                        int i = sim::getStackTableInfo(stack, 0);
                         if(i < 0)
                         {
-                            throw exception((boost::format("expected array (simGetStackTableInfo(stack, 0) returned %d)") % i).str());
+                            throw sim::exception(boost::format("expected array (simGetStackTableInfo(stack, 0) returned %d)") % i);
                         }
-                        int oldsz = simGetStackSizeE(stack);
-                        simUnfoldStackTableE(stack);
-                        int sz = (simGetStackSizeE(stack) - oldsz + 1) / 2;
+                        int oldsz = sim::getStackSize(stack);
+                        sim::unfoldStackTable(stack);
+                        int sz = (sim::getStackSize(stack) - oldsz + 1) / 2;
                         for(int i = 0; i < sz; i++)
                         {
-                            simMoveStackItemToTopE(stack, oldsz - 1);
+                            sim::moveStackItemToTop(stack, oldsz - 1);
                             int j;
                             read__int(stack, &j);
-                            simMoveStackItemToTop(stack, oldsz - 1);
+                            sim::moveStackItemToTop(stack, oldsz - 1);
                             `field.ctype_normalized()` v;
                             read__`field.ctype_normalized()`(stack, &v);
                             value->`field.name`.push_back(v);
                         }
 #py if field.minsize > 0 and field.minsize == field.maxsize:
                         if(value->`field.name`.size() != `field.minsize`)
-                            throw exception("must have exactly `field.minsize` elements");
+                            throw sim::exception("must have exactly `field.minsize` elements");
 #py else:
 #py if field.minsize > 0:
                         if(value->`field.name`.size() < `field.minsize`)
-                            throw exception("must have at least `field.minsize` elements");
+                            throw sim::exception("must have at least `field.minsize` elements");
 #py endif
 #py if field.maxsize is not None:
                         if(value->`field.name`.size() > `field.maxsize`)
-                            throw exception("must have at most `field.maxsize` elements");
+                            throw sim::exception("must have at most `field.maxsize` elements");
 #py endif
 #py endif
 #py else:
@@ -931,10 +366,10 @@ void read__`struct.name`(int stack, `struct.name` *value)
                 {
                     std::string msg = "unexpected key: ";
                     msg += str;
-                    throw exception(msg);
+                    throw sim::exception(msg);
                 }
             }
-            numItems = (simGetStackSizeE(stack) - oldsz + 1) / 2;
+            numItems = (sim::getStackSize(stack) - oldsz + 1) / 2;
         }
     }
     CATCH_AND_RETHROW("read__`struct.name`: ")
@@ -944,31 +379,31 @@ void read__`struct.name`(int stack, `struct.name` *value)
 void write__bool(bool value, int stack)
 {
     simBool v = value;
-    simPushBoolOntoStackE(stack, v);
+    sim::pushBoolOntoStack(stack, v);
 }
 
 void write__int(int value, int stack)
 {
     simInt v = value;
-    simPushInt32OntoStackE(stack, v);
+    sim::pushInt32OntoStack(stack, v);
 }
 
 void write__float(float value, int stack)
 {
     simFloat v = value;
-    simPushFloatOntoStackE(stack, v);
+    sim::pushFloatOntoStack(stack, v);
 }
 
 void write__double(double value, int stack)
 {
     simDouble v = value;
-    simPushDoubleOntoStackE(stack, v);
+    sim::pushDoubleOntoStack(stack, v);
 }
 
 void write__std__string(std::string value, int stack)
 {
     const simChar *v = value.c_str();
-    simPushStringOntoStackE(stack, v, value.length());
+    sim::pushStringOntoStack(stack, v, value.length());
 }
 
 void write__boost__optional__bool__(boost::optional<bool> value, int stack)
@@ -976,9 +411,9 @@ void write__boost__optional__bool__(boost::optional<bool> value, int stack)
     if(value)
     {
         simBool v = value.get();
-        simPushBoolOntoStackE(stack, v);
+        sim::pushBoolOntoStack(stack, v);
     }
-    else simPushNullOntoStack(stack);
+    else sim::pushNullOntoStack(stack);
 }
 
 void write__boost__optional__int__(boost::optional<int> value, int stack)
@@ -986,9 +421,9 @@ void write__boost__optional__int__(boost::optional<int> value, int stack)
     if(value)
     {
         simInt v = value.get();
-        simPushInt32OntoStackE(stack, v);
+        sim::pushInt32OntoStack(stack, v);
     }
-    else simPushNullOntoStack(stack);
+    else sim::pushNullOntoStack(stack);
 }
 
 void write__boost__optional__float__(boost::optional<float> value, int stack)
@@ -996,9 +431,9 @@ void write__boost__optional__float__(boost::optional<float> value, int stack)
     if(value)
     {
         simFloat v = value.get();
-        simPushFloatOntoStackE(stack, v);
+        sim::pushFloatOntoStack(stack, v);
     }
-    else simPushNullOntoStack(stack);
+    else sim::pushNullOntoStack(stack);
 }
 
 void write__boost__optional__double__(boost::optional<double> value, int stack)
@@ -1006,9 +441,9 @@ void write__boost__optional__double__(boost::optional<double> value, int stack)
     if(value)
     {
         simDouble v = value.get();
-        simPushDoubleOntoStackE(stack, v);
+        sim::pushDoubleOntoStack(stack, v);
     }
-    else simPushNullOntoStack(stack);
+    else sim::pushNullOntoStack(stack);
 }
 
 void write__boost__optional__std__string__(boost::optional<std::string> value, int stack)
@@ -1017,48 +452,48 @@ void write__boost__optional__std__string__(boost::optional<std::string> value, i
     {
         std::string s = value.get();
         const simChar *v = s.c_str();
-        simPushStringOntoStackE(stack, v, s.length());
+        sim::pushStringOntoStack(stack, v, s.length());
     }
-    else simPushNullOntoStack(stack);
+    else sim::pushNullOntoStack(stack);
 }
 
 #py for struct in plugin.structs:
 void write__`struct.name`(`struct.name` *value, int stack)
 {
 #ifndef NDEBUG
-    if(isDebugStubsEnabled())
+    if(sim::isStackDebugEnabled())
     {
-        log(sim_verbosity_debug, "DEBUG_STUBS: writing struct \"`struct.name`\"...");
+        sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: writing struct \"`struct.name`\"...");
     }
 #endif // NDEBUG
 
     try
     {
-        simPushTableOntoStackE(stack);
+        sim::pushTableOntoStack(stack);
 
 #py for field in struct.fields:
         try
         {
 #ifndef NDEBUG
-            if(isDebugStubsEnabled())
-                log(sim_verbosity_debug, "DEBUG_STUBS: writing field \"`field.name`\"...");
+            if(sim::isStackDebugEnabled())
+                sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: writing field \"`field.name`\"...");
 #endif // NDEBUG
 
-            simPushStringOntoStackE(stack, "`field.name`", 0);
+            sim::pushStringOntoStack(stack, "`field.name`", 0);
 #py if isinstance(field, model.ParamTable):
             // write field '`field.name`' of type array of `field.ctype()`
-            simPushTableOntoStackE(stack);
+            sim::pushTableOntoStack(stack);
             for(int i = 0; i < value->`field.name`.size(); i++)
             {
                 write__int(i + 1, stack);
                 write__`field.ctype_normalized()`(`field.argmod()`(value->`field.name`[i]), stack);
-                simInsertDataIntoStackTableE(stack);
+                sim::insertDataIntoStackTable(stack);
             }
 #py else:
             // write field '`field.name`' of type `field.ctype()`
             write__`field.ctype_normalized()`(`field.argmod()`(value->`field.name`), stack);
 #py endif
-            simInsertDataIntoStackTableE(stack);
+            sim::insertDataIntoStackTable(stack);
         }
         CATCH_AND_RETHROW("field '`field.name`': ")
 #py endfor
@@ -1094,23 +529,22 @@ std::string versionString(int v)
 
 void checkRuntimeVersion()
 {
-    simInt simVer = 0, simRev = 0;
-    simGetIntegerParameter(sim_intparam_program_version, &simVer);
-    simGetIntegerParameter(sim_intparam_program_revision, &simRev);
+    simInt simVer = sim::getInt32Parameter(sim_intparam_program_version);
+    simInt simRev = sim::getInt32Parameter(sim_intparam_program_revision);
     simVer = simVer * 100 + simRev;
 
     // version required by simStubsGen:
     int minVer = 4010000; // 4.1.0rev0
     if(simVer < minVer)
-        throw exception((boost::format("requires at least %s (libPlugin)") % versionString(minVer)).str());
+        throw sim::exception(boost::format("requires at least %s (libPlugin)") % versionString(minVer));
 
     // version required by plugin:
     if(simVer < SIM_REQUIRED_PROGRAM_VERSION_NB)
-        throw exception((boost::format("requires at least %s") % versionString(SIM_REQUIRED_PROGRAM_VERSION_NB)).str());
+        throw sim::exception(boost::format("requires at least %s") % versionString(SIM_REQUIRED_PROGRAM_VERSION_NB));
 
     // warn if the app older than the headers used to compile:
     if(simVer < SIM_PROGRAM_FULL_VERSION_NB)
-        log(sim_verbosity_warnings, boost::format("has been built for %s") % versionString(SIM_PROGRAM_FULL_VERSION_NB));
+        sim::addLog(sim_verbosity_warnings, "has been built for %s", versionString(SIM_PROGRAM_FULL_VERSION_NB));
 }
 
 bool registerScriptStuff()
@@ -1122,43 +556,43 @@ bool registerScriptStuff()
         try
         {
 #py if plugin.short_name:
-            simRegisterScriptVariableE("sim`plugin.short_name`", "require('simExt`plugin.name`')", 0);
+            sim::registerScriptVariable("sim`plugin.short_name`", "require('simExt`plugin.name`')", 0);
 #py endif
 
 #py if plugin.short_name:
             // register new-style short-version varables
 #py for enum in plugin.enums:
-            simRegisterScriptVariableE("sim`plugin.short_name`.`enum.name`", "{}", 0);
+            sim::registerScriptVariable("sim`plugin.short_name`.`enum.name`", "{}", 0);
 #py for item in enum.items:
-            simRegisterScriptVariableE("sim`plugin.short_name`.`enum.name`.`item.name`", (boost::lexical_cast<std::string>(sim_`plugin.short_name.lower()`_`enum.item_prefix``item.name`)).c_str(), 0);
+            sim::registerScriptVariable("sim`plugin.short_name`.`enum.name`.`item.name`", boost::lexical_cast<std::string>(sim_`plugin.short_name.lower()`_`enum.item_prefix``item.name`), 0);
 #py endfor
 #py endfor
             // register new-style short-version commands
 #py for cmd in plugin.commands:
-            simRegisterScriptCallbackFunctionE("sim`plugin.short_name`.`cmd.name`@`plugin.name`", "`cmd.help_out_args_text`sim`plugin.short_name`.`cmd.name`(`cmd.help_in_args_text`)`cmd.documentation`", `cmd.c_name`_callback);
+            sim::registerScriptCallbackFunction("sim`plugin.short_name`.`cmd.name`@`plugin.name`", "`cmd.help_out_args_text`sim`plugin.short_name`.`cmd.name`(`cmd.help_in_args_text`)`cmd.documentation`", `cmd.c_name`_callback);
 #py endfor
 #py endif
 
 #py if plugin.short_name:
             // commands simExt<PLUGIN_NAME>_<COMMAND_NAME> (deprecated)
 #py for cmd in plugin.commands:
-            simRegisterScriptCallbackFunctionE("`plugin.command_prefix``cmd.name`@`plugin.name`", "`cmd.help_text`\n\n(DEPRECATED, please use sim`plugin.short_name`.`cmd.name`)", `cmd.c_name`_callback);
+            sim::registerScriptCallbackFunction("`plugin.command_prefix``cmd.name`@`plugin.name`", "`cmd.help_text`\n\n(DEPRECATED, please use sim`plugin.short_name`.`cmd.name`)", `cmd.c_name`_callback);
 #py endfor
             // register variables (deprecated)
 #py for enum in plugin.enums:
 #py for item in enum.items:
-            simRegisterScriptVariableE("sim_`plugin.name.lower()`_`enum.item_prefix``item.name`", (boost::lexical_cast<std::string>(sim_`plugin.name.lower()`_`enum.item_prefix``item.name`)).c_str(), -1);
+            sim::registerScriptVariable("sim_`plugin.name.lower()`_`enum.item_prefix``item.name`", boost::lexical_cast<std::string>(sim_`plugin.name.lower()`_`enum.item_prefix``item.name`), -1);
 #py endfor
 #py endfor
 #py else:
             // commands simExt<PLUGIN_NAME>_<COMMAND_NAME>
 #py for cmd in plugin.commands:
-            simRegisterScriptCallbackFunctionE("`plugin.command_prefix``cmd.name`@`plugin.name`", "`cmd.help_text``cmd.documentation`", `cmd.c_name`_callback);
+            sim::registerScriptCallbackFunction("`plugin.command_prefix``cmd.name`@`plugin.name`", "`cmd.help_text``cmd.documentation`", `cmd.c_name`_callback);
 #py endfor
             // register variables
 #py for enum in plugin.enums:
 #py for item in enum.items:
-            simRegisterScriptVariableE("sim_`plugin.name.lower()`_`enum.item_prefix``item.name`", (boost::lexical_cast<std::string>(sim_`plugin.name.lower()`_`enum.item_prefix``item.name`)).c_str(), 0);
+            sim::registerScriptVariable("sim_`plugin.name.lower()`_`enum.item_prefix``item.name`", boost::lexical_cast<std::string>(sim_`plugin.name.lower()`_`enum.item_prefix``item.name`), 0);
 #py endfor
 #py endfor
 #py endif
@@ -1167,9 +601,9 @@ bool registerScriptStuff()
         }
         CATCH_AND_RETHROW("Initialization failed (registerScriptStuff): ")
     }
-    catch(exception& ex)
+    catch(sim::exception& ex)
     {
-        log(sim_verbosity_errors, ex.what());
+        sim::addLog(sim_verbosity_errors, ex.what());
         return false;
     }
     return true;
@@ -1266,11 +700,11 @@ void `cmd.c_name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p', '%s *out_args'
 void `cmd.c_name`_callback(SScriptCallBack *p)
 {
 #ifndef NDEBUG
-    if(isDebugStubsEnabled())
+    if(sim::isStackDebugEnabled())
     {
-        log(sim_verbosity_debug, "DEBUG_STUBS: script callback for \"`cmd.c_name`\"...");
-        log(sim_verbosity_debug, "DEBUG_STUBS: reading input arguments...");
-        simDebugStack(p->stackID, -1);
+        sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: script callback for \"`cmd.c_name`\"...");
+        sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: reading input arguments...");
+        sim::debugStack(p->stackID);
     }
 #endif // NDEBUG
 
@@ -1288,11 +722,11 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
     {
         // check argument count
 
-        int numArgs = simGetStackSizeE(p->stackID);
+        int numArgs = sim::getStackSize(p->stackID);
         if(numArgs < `cmd.params_min`)
-            throw exception("not enough arguments");
+            throw sim::exception("not enough arguments");
         if(numArgs > `cmd.params_max`)
-            throw exception("too many arguments");
+            throw sim::exception("too many arguments");
 
         // read input arguments from stack
 
@@ -1300,8 +734,8 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
         if(numArgs >= `i+1`)
         {
 #ifndef NDEBUG
-            if(isDebugStubsEnabled())
-                log(sim_verbosity_debug, "DEBUG_STUBS: reading input argument `i+1` (`p.name`)...");
+            if(sim::isStackDebugEnabled())
+                sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: reading input argument `i+1` (`p.name`)...");
 #endif // NDEBUG
 
             try
@@ -1309,42 +743,42 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
 #py if isinstance(p, model.ParamTable):
 #py if p.itype in ('float', 'double', 'int'):
                 // read input argument `i+1` (`p.name`) of type array of `p.ctype()` using fast function
-                simMoveStackItemToTopE(p->stackID, 0);
-                int sz = simGetStackTableInfoE(p->stackID, 0);
+                sim::moveStackItemToTop(p->stackID, 0);
+                int sz = sim::getStackTableInfo(p->stackID, 0);
                 if(sz < 0)
                 {
-                    throw exception((boost::format("expected array (simGetStackTableInfo(stack, 0) returned %d)") % sz).str());
+                    throw sim::exception(boost::format("expected array (simGetStackTableInfo(stack, 0) returned %d)") % sz);
                 }
-                if(simGetStackTableInfoE(p->stackID, 2) != 1)
+                if(sim::getStackTableInfo(p->stackID, 2) != 1)
                 {
-                    throw exception("fast_write_type reader exception #1 (simGetStackTableInfo(stack, 2) returned error)");
+                    throw sim::exception("fast_write_type reader exception #1 (simGetStackTableInfo(stack, 2) returned error)");
                 }
                 in_args.`p.name`.resize(sz);
 #py if p.itype == 'float':
-                simGetStackFloatTableE(p->stackID, &(in_args.`p.name`[0]), sz);
+                sim::getStackFloatTable(p->stackID, &(in_args.`p.name`[0]), sz);
 #py elif p.itype == 'double':
-                simGetStackDoubleTableE(p->stackID, &(in_args.`p.name`[0]), sz);
+                sim::getStackDoubleTable(p->stackID, &(in_args.`p.name`[0]), sz);
 #py elif p.itype == 'int':
-                simGetStackInt32TableE(p->stackID, &(in_args.`p.name`[0]), sz);
+                sim::getStackInt32Table(p->stackID, &(in_args.`p.name`[0]), sz);
 #py endif
-                simPopStackItemE(p->stackID, 1);
+                sim::popStackItem(p->stackID, 1);
 #py else:
                 // read input argument `i+1` (`p.name`) of type array of `p.ctype()`
-                simMoveStackItemToTopE(p->stackID, 0);
-                int i = simGetStackTableInfoE(p->stackID, 0);
+                sim::moveStackItemToTop(p->stackID, 0);
+                int i = sim::getStackTableInfo(p->stackID, 0);
                 if(i < 0)
                 {
-                    throw exception((boost::format("expected array (simGetStackTableInfo(stack, 0) returned %d)") % i).str());
+                    throw sim::exception(boost::format("expected array (simGetStackTableInfo(stack, 0) returned %d)") % i);
                 }
-                int oldsz = simGetStackSizeE(p->stackID);
-                simUnfoldStackTableE(p->stackID);
-                int sz = (simGetStackSizeE(p->stackID) - oldsz + 1) / 2;
+                int oldsz = sim::getStackSize(p->stackID);
+                sim::unfoldStackTable(p->stackID);
+                int sz = (sim::getStackSize(p->stackID) - oldsz + 1) / 2;
                 for(int i = 0; i < sz; i++)
                 {
-                    simMoveStackItemToTopE(p->stackID, oldsz - 1);
+                    sim::moveStackItemToTop(p->stackID, oldsz - 1);
                     int j;
                     read__int(p->stackID, &j);
-                    simMoveStackItemToTop(p->stackID, oldsz - 1);
+                    sim::moveStackItemToTop(p->stackID, oldsz - 1);
                     `p.item_dummy().ctype()` v;
                     read__`p.ctype_normalized()`(p->stackID, &v);
                     in_args.`p.name`.push_back(v);
@@ -1353,20 +787,20 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
 
 #py if p.minsize > 0 and p.minsize == p.maxsize:
                 if(in_args.`p.name`.size() != `p.minsize`)
-                    throw exception("must have exactly `p.minsize` elements");
+                    throw sim::exception("must have exactly `p.minsize` elements");
 #py else:
 #py if p.minsize > 0:
                 if(in_args.`p.name`.size() < `p.minsize`)
-                    throw exception("must have at least `p.minsize` elements");
+                    throw sim::exception("must have at least `p.minsize` elements");
 #py endif
 #py if p.maxsize is not None:
                 if(in_args.`p.name`.size() > `p.maxsize`)
-                    throw exception("must have at most `p.maxsize` elements");
+                    throw sim::exception("must have at most `p.maxsize` elements");
 #py endif
 #py endif
 #py else:
                 // read input argument `i+1` (`p.name`) of type `p.ctype()`
-                simMoveStackItemToTopE(p->stackID, 0);
+                sim::moveStackItemToTop(p->stackID, 0);
                 read__`p.ctype_normalized()`(p->stackID, &(in_args.`p.name`));
 #py endif
             }
@@ -1376,76 +810,67 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
 #py endfor
 
 #ifndef NDEBUG
-        if(isDebugStubsEnabled())
+        if(sim::isStackDebugEnabled())
         {
-            log(sim_verbosity_debug, "DEBUG_STUBS: stack content after reading input arguments:");
-            simDebugStack(p->stackID, -1);
+            sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: stack content after reading input arguments:");
+            sim::debugStack(p->stackID);
         }
 #endif // NDEBUG
 
 #py if cmd.clear_stack_after_reading_input:
 #ifndef NDEBUG
-        if(isDebugStubsEnabled())
+        if(sim::isStackDebugEnabled())
         {
-            log(sim_verbosity_debug, "DEBUG_STUBS: clearing stack content after reading input arguments");
+            sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: clearing stack content after reading input arguments");
         }
 #endif // NDEBUG
         // clear stack
-        simPopStackItemE(p->stackID, 0);
+        sim::popStackItem(p->stackID, 0);
 
 #py endif
 
 #ifndef NDEBUG
-        if(isDebugStubsEnabled())
+        if(sim::isStackDebugEnabled())
         {
-            log(sim_verbosity_debug, "DEBUG_STUBS: calling callback");
+            sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: calling callback");
         }
 #endif // NDEBUG
         `cmd.c_name`(p, cmd, &in_args, &out_args);
     }
     catch(std::exception& e)
     {
-#ifndef NDEBUG
-        log(sim_verbosity_errors, boost::format("%s: %s") % cmd % e.what());
-#endif // NDEBUG
-        simSetLastError(cmd, e.what());
+        sim::setLastError(cmd, e.what());
     }
     catch(std::string& s)
     {
-#ifndef NDEBUG
-        log(sim_verbosity_errors, boost::format("%s: %s") % cmd % s);
-#endif // NDEBUG
-        simSetLastError(cmd, s.c_str());
+        sim::setLastError(cmd, s);
     }
     catch(int& n)
     {
         std::stringstream ss;
         ss << "error #" << n;
-#ifndef NDEBUG
-        log(sim_verbosity_errors, boost::format("%s: %s") % cmd % ss.str());
-#endif // NDEBUG
-        simSetLastError(cmd, ss.str().c_str());
+        sim::setLastError(cmd, ss.str());
     }
 
     try
     {
 #ifndef NDEBUG
-        if(isDebugStubsEnabled())
+        if(sim::isStackDebugEnabled())
         {
-            log(sim_verbosity_debug, "DEBUG_STUBS: writing output arguments...");
-            simDebugStack(p->stackID, -1);
+            sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: writing output arguments...");
+            sim::debugStack(p->stackID);
         }
 #endif // NDEBUG
 
 #py if cmd.clear_stack_before_writing_output:
 #ifndef NDEBUG
-        if(isDebugStubsEnabled())
+        if(sim::isStackDebugEnabled())
         {
-            log(sim_verbosity_debug, "DEBUG_STUBS: clearing stack content before writing output arguments");
+            sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: clearing stack content before writing output arguments");
         }
 #endif // NDEBUG
         // clear stack
-        simPopStackItemE(p->stackID, 0);
+        sim::popStackItem(p->stackID, 0);
 
 #py endif
 
@@ -1455,18 +880,18 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
         try
         {
 #ifndef NDEBUG
-            if(isDebugStubsEnabled())
-                log(sim_verbosity_debug, "DEBUG_STUBS: writing output argument `i+1` (`p.name`)...");
+            if(sim::isStackDebugEnabled())
+                sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: writing output argument `i+1` (`p.name`)...");
 #endif // NDEBUG
 
 #py if isinstance(p, model.ParamTable):
             // write output argument `i+1` (`p.name`) of type array of `p.ctype()`
-            simPushTableOntoStackE(p->stackID);
+            sim::pushTableOntoStack(p->stackID);
             for(int i = 0; i < out_args.`p.name`.size(); i++)
             {
                 write__int(i + 1, p->stackID);
                 write__`p.ctype_normalized()`(`p.argmod()`(out_args.`p.name`[i]), p->stackID);
-                simInsertDataIntoStackTableE(p->stackID);
+                sim::insertDataIntoStackTable(p->stackID);
             }
 #py else:
             // write output argument `i+1` (`p.name`) of type `p.ctype()`
@@ -1477,41 +902,32 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
 #py endfor
 
 #ifndef NDEBUG
-        if(isDebugStubsEnabled())
+        if(sim::isStackDebugEnabled())
         {
-            log(sim_verbosity_debug, "DEBUG_STUBS: stack content after writing output arguments:");
-            simDebugStack(p->stackID, -1);
+            sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: stack content after writing output arguments:");
+            sim::debugStack(p->stackID);
         }
 #endif // NDEBUG
     }
     catch(std::exception& e)
     {
-#ifndef NDEBUG
-        log(sim_verbosity_errors, boost::format("%s: %s") % cmd % e.what());
-#endif // NDEBUG
-        simSetLastError(cmd, e.what());
+        sim::setLastError(cmd, e.what());
         // clear stack
-        simPopStackItem(p->stackID, 0); // don't throw
+        try { sim::popStackItem(p->stackID, 0); } catch(...) {}
     }
     catch(std::string& s)
     {
-#ifndef NDEBUG
-        log(sim_verbosity_errors, boost::format("%s: %s") % cmd % s);
-#endif // NDEBUG
-        simSetLastError(cmd, s.c_str());
+        sim::setLastError(cmd, s);
         // clear stack
-        simPopStackItem(p->stackID, 0); // don't throw
+        try { sim::popStackItem(p->stackID, 0); } catch(...) {}
     }
     catch(int& n)
     {
         std::stringstream ss;
         ss << "error #" << n;
-#ifndef NDEBUG
-        log(sim_verbosity_errors, boost::format("%s: %s") % cmd % ss.str());
-#endif // NDEBUG
-        simSetLastError(cmd, ss.str().c_str());
+        sim::setLastError(cmd, ss.str());
         // clear stack
-        simPopStackItem(p->stackID, 0); // don't throw
+        try { sim::popStackItem(p->stackID, 0); } catch(...) {}
     }
 }
 
@@ -1538,10 +954,10 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
 bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn.c_out_name` *out_args)
 {
 #ifndef NDEBUG
-    if(isDebugStubsEnabled())
+    if(sim::isStackDebugEnabled())
     {
-        log(sim_verbosity_debug, "DEBUG_STUBS: script callback function for \"`fn.c_name`\"...");
-        log(sim_verbosity_debug, "DEBUG_STUBS: writing input arguments...");
+        sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: script callback function for \"`fn.c_name`\"...");
+        sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: writing input arguments...");
     }
 #endif // NDEBUG
 
@@ -1549,7 +965,7 @@ bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn
 
     try
     {
-        stackID = simCreateStackE();
+        stackID = sim::createStack();
 
         // write input arguments to stack
 
@@ -1558,12 +974,12 @@ bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn
         {
 #py if isinstance(p, model.ParamTable):
             // write input argument `i+1` (`p.name`) of type array of `p.ctype()`
-            simPushTableOntoStackE(stackID);
+            sim::pushTableOntoStack(stackID);
             for(int i = 0; i < in_args->`p.name`.size(); i++)
             {
                 write__int(i + 1, stackID);
                 write__`p.ctype_normalized()`(`p.argmod()`(in_args->`p.name`[i]), stackID);
-                simInsertDataIntoStackTableE(stackID);
+                sim::insertDataIntoStackTable(stackID);
             }
 #py else:
             // write input argument `i+1` (`p.name`) of type `p.ctype()`
@@ -1574,20 +990,20 @@ bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn
 #py endfor
 
 #ifndef NDEBUG
-        if(isDebugStubsEnabled())
+        if(sim::isStackDebugEnabled())
         {
-            log(sim_verbosity_debug, "DEBUG_STUBS: wrote input arguments:");
-            simDebugStack(stackID, -1);
+            sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: wrote input arguments:");
+            sim::debugStack(stackID);
         }
 #endif // NDEBUG
 
-        simCallScriptFunctionExE(scriptId, func, stackID);
+        sim::callScriptFunctionEx(scriptId, func, stackID);
 
         // read output arguments from stack
 
 #ifndef NDEBUG
-        if(isDebugStubsEnabled())
-            log(sim_verbosity_debug, "DEBUG_STUBS: reading output arguments...");
+        if(sim::isStackDebugEnabled())
+            sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: reading output arguments...");
 #endif // NDEBUG
 
 #py for i, p in enumerate(fn.returns):
@@ -1595,41 +1011,41 @@ bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn
         {
 #py if isinstance(p, model.ParamTable):
             // read output argument `i+1` (`p.name`) of type array of `p.ctype()`
-            simMoveStackItemToTopE(stackID, 0);
-            int i = simGetStackTableInfoE(stackID, 0);
+            sim::moveStackItemToTop(stackID, 0);
+            int i = sim::getStackTableInfo(stackID, 0);
             if(i < 0)
             {
-                throw exception((boost::format("expected array (simGetStackTableInfo(stack, 0) returned %d)") % i).str());
+                throw sim::exception(boost::format("expected array (simGetStackTableInfo(stack, 0) returned %d)") % i);
             }
-            int oldsz = simGetStackSizeE(stackID);
-            simUnfoldStackTableE(stackID);
-            int sz = (simGetStackSizeE(stackID) - oldsz + 1) / 2;
+            int oldsz = sim::getStackSize(stackID);
+            sim::unfoldStackTable(stackID);
+            int sz = (sim::getStackSize(stackID) - oldsz + 1) / 2;
             for(int i = 0; i < sz; i++)
             {
-                simMoveStackItemToTopE(stackID, oldsz - 1);
+                sim::moveStackItemToTop(stackID, oldsz - 1);
                 int j;
                 read__int(stackID, &j);
-                simMoveStackItemToTop(stackID, oldsz - 1);
+                sim::moveStackItemToTop(stackID, oldsz - 1);
                 `p.ctype_normalized()` v;
                 read__`p.ctype_normalized()`(stackID, &v);
                 out_args->`p.name`.push_back(v);
             }
 #py if p.minsize > 0 and p.minsize == p.maxsize:
             if(out_args->`p.name`.size() != `p.minsize`)
-                throw exception("must have exactly `p.minsize` elements");
+                throw sim::exception("must have exactly `p.minsize` elements");
 #py else:
 #py if p.minsize > 0:
             if(out_args->`p.name`.size() < `p.minsize`)
-                throw exception("must have at least `p.minsize` elements");
+                throw sim::exception("must have at least `p.minsize` elements");
 #py endif
 #py if p.maxsize is not None:
             if(out_args->`p.name`.size() > `p.maxsize`)
-                throw exception("must have at most `p.maxsize` elements");
+                throw sim::exception("must have at most `p.maxsize` elements");
 #py endif
 #py endif
 #py else:
             // read output argument `i+1` (`p.name`) of type `p.ctype()`
-            simMoveStackItemToTopE(stackID, 0);
+            sim::moveStackItemToTop(stackID, 0);
             read__`p.ctype_normalized()`(stackID, &(out_args->`p.name`));
 #py endif
         }
@@ -1637,37 +1053,37 @@ bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn
 #py endfor
 
 #ifndef NDEBUG
-        if(isDebugStubsEnabled())
+        if(sim::isStackDebugEnabled())
         {
-            log(sim_verbosity_debug, "DEBUG_STUBS: stack content after reading output arguments:");
-            simDebugStack(stackID, -1);
+            sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: stack content after reading output arguments:");
+            sim::debugStack(stackID);
         }
 #endif // NDEBUG
 
-        simReleaseStackE(stackID);
+        sim::releaseStack(stackID);
         stackID = -1;
     }
     catch(std::exception& ex)
     {
         if(stackID != -1)
-            simReleaseStack(stackID); // don't throw
-        simSetLastError(func, ex.what());
+            try { sim::releaseStack(stackID); } catch(...) {}
+        sim::setLastError(func, ex.what());
         return false;
     }
     catch(std::string& s)
     {
         if(stackID != -1)
-            simReleaseStack(stackID); // don't throw
-        simSetLastError(func, s.c_str());
+            try { sim::releaseStack(stackID); } catch(...) {}
+        sim::setLastError(func, s);
         return false;
     }
     catch(int& n)
     {
         if(stackID != -1)
-            simReleaseStack(stackID); // don't throw
+            try { sim::releaseStack(stackID); } catch(...) {}
         std::stringstream ss;
         ss << "error #" << n;
-        simSetLastError(func, ss.str().c_str());
+        sim::setLastError(func, ss.str());
         return false;
     }
 

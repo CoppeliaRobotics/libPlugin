@@ -4,39 +4,12 @@
 #ifndef STUBS_H__INCLUDED
 #define STUBS_H__INCLUDED
 
-#include <simLib.h>
+#include <simPlusPlus/Lib.h>
 #include <string>
 #include <vector>
 #include <boost/assign/list_of.hpp>
 #include <boost/format.hpp>
 #include <boost/optional.hpp>
-
-struct exception : public std::exception
-{
-    std::string s;
-    exception(std::string s_) : s(s_) {}
-    ~exception() throw() {}
-    const char* what() const throw() {return s.c_str();}
-};
-
-void log(int v, const std::string &msg);
-void log(int v, boost::format &fmt);
-
-template<typename... Arguments>
-static void log(int v, const std::string &fmt, Arguments&&... args)
-{
-    try
-    {
-        boost::format fmt_(fmt);
-        log(v, fmt_, std::forward<Arguments>(args)...);
-    }
-    catch(boost::io::too_many_args &ex)
-    {
-        std::string s = fmt;
-        s += " (error during formatting)";
-        log(v, s);
-    }
-}
 
 class FuncTracer
 {
@@ -69,58 +42,21 @@ void simThread();
 
 #define ASSERT_THREAD(ID) \
     if(UI_THREAD == NULL) {\
-        log(sim_verbosity_debug, "warning: cannot check ASSERT_THREAD(" #ID ") because global variable UI_THREAD is not set yet.");\
+        sim::addLog(sim_verbosity_debug, "warning: cannot check ASSERT_THREAD(" #ID ") because global variable UI_THREAD is not set yet.");\
     } else if(strcmp(#ID, "UI") == 0) {\
         if(QThread::currentThreadId() != UI_THREAD) {\
-            log(sim_verbosity_errors, boost::format("%s:%d %s should be called from UI thread") % __FILE__ % __LINE__ % __FUNC__);\
+            sim::addLog(sim_verbosity_errors, boost::format("%s:%d %s should be called from UI thread") % __FILE__ % __LINE__ % __FUNC__);\
             exit(1);\
         }\
     } else if(strcmp(#ID, "!UI") == 0) {\
         if(QThread::currentThreadId() == UI_THREAD) {\
-            log(sim_verbosity_errors, boost::format("%s:%d %s should NOT be called from UI thread") % __FILE__ % __LINE__ % __FUNC__);\
+            sim::addLog(sim_verbosity_errors, boost::format("%s:%d %s should NOT be called from UI thread") % __FILE__ % __LINE__ % __FUNC__);\
             exit(1);\
         }\
     } else {\
-        log(sim_verbosity_debug, "warning: cannot check ASSERT_THREAD(" #ID "). Can check only UI and !UI.");\
+        sim::addLog(sim_verbosity_debug, "warning: cannot check ASSERT_THREAD(" #ID "). Can check only UI and !UI.");\
     }
 #endif // QT_COMPIL
-
-simInt simRegisterScriptCallbackFunctionE(const simChar *funcNameAtPluginName, const simChar *callTips, simVoid (*callBack)(struct SScriptCallBack *cb));
-simInt simRegisterScriptVariableE(const simChar *varName, const simChar *varValue, simInt stackID);
-simVoid simCallScriptFunctionExE(simInt scriptHandleOrType,const simChar* functionNameAtScriptName,simInt stackId);
-simInt simCreateStackE();
-simVoid simReleaseStackE(simInt stackHandle);
-simInt simCopyStackE(simInt stackHandle);
-simVoid simPushNullOntoStackE(simInt stackHandle);
-simVoid simPushBoolOntoStackE(simInt stackHandle, simBool value);
-simVoid simPushInt32OntoStackE(simInt stackHandle, simInt value);
-simVoid simPushFloatOntoStackE(simInt stackHandle, simFloat value);
-simVoid simPushDoubleOntoStackE(simInt stackHandle, simDouble value);
-simVoid simPushStringOntoStackE(simInt stackHandle, const simChar *value, simInt stringSize);
-simVoid simPushUInt8TableOntoStackE(simInt stackHandle, const simUChar *values, simInt valueCnt);
-simVoid simPushInt32TableOntoStackE(simInt stackHandle, const simInt *values, simInt valueCnt);
-simVoid simPushFloatTableOntoStackE(simInt stackHandle, const simFloat *values, simInt valueCnt);
-simVoid simPushDoubleTableOntoStackE(simInt stackHandle, const simDouble *values, simInt valueCnt);
-simVoid simPushTableOntoStackE(simInt stackHandle);
-simVoid simInsertDataIntoStackTableE(simInt stackHandle);
-simInt simGetStackSizeE(simInt stackHandle);
-simInt simPopStackItemE(simInt stackHandle, simInt count);
-simVoid simMoveStackItemToTopE(simInt stackHandle, simInt cIndex);
-simInt simIsStackValueNullE(simInt stackHandle);
-simInt simGetStackBoolValueE(simInt stackHandle, simBool *boolValue);
-simInt simGetStackInt32ValueE(simInt stackHandle, simInt *numberValue);
-simInt simGetStackFloatValueE(simInt stackHandle, simFloat *numberValue);
-simInt simGetStackDoubleValueE(simInt stackHandle, simDouble *numberValue);
-simChar* simGetStackStringValueE(simInt stackHandle, simInt *stringSize);
-simInt simGetStackTableInfoE(simInt stackHandle, simInt infoType);
-simInt simGetStackUInt8TableE(simInt stackHandle, simUChar *array, simInt count);
-simInt simGetStackInt32TableE(simInt stackHandle, simInt *array, simInt count);
-simInt simGetStackFloatTableE(simInt stackHandle, simFloat *array, simInt count);
-simInt simGetStackDoubleTableE(simInt stackHandle, simDouble *array, simInt count);
-simVoid simUnfoldStackTableE(simInt stackHandle);
-simInt simGetInt32ParameterE(simInt parameter);
-simChar* simCreateBufferE(simInt size);
-simVoid simReleaseBufferE(simChar *buffer);
 
 #py for struct in plugin.structs:
 struct `struct.name`
