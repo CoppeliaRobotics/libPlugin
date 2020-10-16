@@ -637,12 +637,18 @@ simVoid simUnfoldStackTableE(simInt stackHandle)
     if(isDebugStubsEnabled())
     {
         log(sim_verbosity_debug, "DEBUG_STUBS: simUnfoldStackTable(stack)");
-        simDebugStack(stackHandle, -1);
     }
 #endif // NDEBUG
 
     if(simUnfoldStackTable(stackHandle) == -1)
         throw exception("simUnfoldStackTable: error");
+
+#ifndef NDEBUG
+    if(isDebugStubsEnabled())
+    {
+        simDebugStack(stackHandle, -1);
+    }
+#endif // NDEBUG
 }
 
 simInt simGetInt32ParameterE(simInt parameter)
