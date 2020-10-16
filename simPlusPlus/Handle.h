@@ -13,6 +13,8 @@ namespace sim
      * Usage: specialize the Handle<T>::tag() method for your class, e.g.:
      *
      * template<> std::string Handle<OcTree>::tag() { return "octomap.OcTree"; }
+     *
+     * Note: tag must not contain ":"
 	 */
     template<typename T>
     struct Handle
