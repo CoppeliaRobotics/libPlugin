@@ -849,11 +849,7 @@ void read__`struct.name`(int stack, `struct.name` *value)
             return;
         if(info != sim_stack_table_map)
         {
-#ifndef NDEBUG
-            if(isDebugStubsEnabled())
-                simDebugStack(stack, -1);
-#endif // NDEBUG
-            throw exception("expected a table");
+            throw exception("expected a map");
         }
 
         int oldsz = simGetStackSizeE(stack);
