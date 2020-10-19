@@ -44,13 +44,9 @@ namespace sim
     {
         std::string s;
 
-        exception(std::string s_)
-            : s(s_)
-        {
-        }
-
-        exception(boost::format f)
-            : s(f.str())
+        template<typename... Arguments>
+        exception(const std::string &fmt, Arguments&&... args)
+            : s(util::sprintf(fmt, std::forward<Arguments>(args)...))
         {
         }
 
@@ -64,11 +60,10 @@ namespace sim
         }
     };
 
-    struct api_error : public ::std::exception
+    struct api_error : public exception
     {
         std::string func;
         std::string error;
-        std::string msg;
 
         api_error(const std::string &func_)
             : api_error(func_, "error")
@@ -78,17 +73,12 @@ namespace sim
         api_error(const std::string &func_, const std::string &error_)
             : func(func_),
               error(error_),
-              msg((boost::format("%s: %s") % func % error).str())
+              exception("%s: %s", func_, error_)
         {
         }
 
         ~api_error() throw()
         {
-        }
-
-        const char* what() const throw()
-        {
-            return msg.c_str();
         }
     };
 

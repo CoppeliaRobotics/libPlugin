@@ -326,7 +326,7 @@ void read__`struct.name`(int stack, `struct.name` *value)
                         int i = sim::getStackTableInfo(stack, 0);
                         if(i < 0)
                         {
-                            throw sim::exception(boost::format("expected array (simGetStackTableInfo(stack, 0) returned %d)") % i);
+                            throw sim::exception("expected array (simGetStackTableInfo(stack, 0) returned %d)", i);
                         }
                         int oldsz = sim::getStackSize(stack);
                         sim::unfoldStackTable(stack);
@@ -536,11 +536,11 @@ void checkRuntimeVersion()
     // version required by simStubsGen:
     int minVer = 4010000; // 4.1.0rev0
     if(simVer < minVer)
-        throw sim::exception(boost::format("requires at least %s (libPlugin)") % versionString(minVer));
+        throw sim::exception("requires at least %s (libPlugin)", versionString(minVer));
 
     // version required by plugin:
     if(simVer < SIM_REQUIRED_PROGRAM_VERSION_NB)
-        throw sim::exception(boost::format("requires at least %s") % versionString(SIM_REQUIRED_PROGRAM_VERSION_NB));
+        throw sim::exception("requires at least %s", versionString(SIM_REQUIRED_PROGRAM_VERSION_NB));
 
     // warn if the app older than the headers used to compile:
     if(simVer < SIM_PROGRAM_FULL_VERSION_NB)
@@ -747,7 +747,7 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
                 int sz = sim::getStackTableInfo(p->stackID, 0);
                 if(sz < 0)
                 {
-                    throw sim::exception(boost::format("expected array (simGetStackTableInfo(stack, 0) returned %d)") % sz);
+                    throw sim::exception("expected array (simGetStackTableInfo(stack, 0) returned %d)", sz);
                 }
                 if(sim::getStackTableInfo(p->stackID, 2) != 1)
                 {
@@ -768,7 +768,7 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
                 int i = sim::getStackTableInfo(p->stackID, 0);
                 if(i < 0)
                 {
-                    throw sim::exception(boost::format("expected array (simGetStackTableInfo(stack, 0) returned %d)") % i);
+                    throw sim::exception("expected array (simGetStackTableInfo(stack, 0) returned %d)", i);
                 }
                 int oldsz = sim::getStackSize(p->stackID);
                 sim::unfoldStackTable(p->stackID);
@@ -1015,7 +1015,7 @@ bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn
             int i = sim::getStackTableInfo(stackID, 0);
             if(i < 0)
             {
-                throw sim::exception(boost::format("expected array (simGetStackTableInfo(stack, 0) returned %d)") % i);
+                throw sim::exception("expected array (simGetStackTableInfo(stack, 0) returned %d)", i);
             }
             int oldsz = sim::getStackSize(stackID);
             sim::unfoldStackTable(stackID);
