@@ -588,7 +588,9 @@ bool registerScriptStuff()
 #py endfor
 #py endif
 
+#py if pycpp.params['have_lua_calltips'] == 'True':
 #include "lua_calltips.cpp"
+#py endif
         }
         catch(std::exception &ex)
         {

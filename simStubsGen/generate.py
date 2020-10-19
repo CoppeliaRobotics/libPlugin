@@ -82,10 +82,6 @@ except OSError as exc:
 
 plugin = parse(args.xml_file)
 
-if args.gen_stubs:
-    for fn in ('stubs.cpp', 'stubs.h', 'stubsPlusPlus.cpp'):
-        runtool('external/pycpp/pycpp', '-p', 'xml_file=' + args.xml_file, '-i', rel('cpp/' + fn), '-o', output(fn), '-P', self_dir)
-
 if args.gen_lua_xml:
     if not args.lua_file:
         print('no lua file defined. skipping lua_to_xml')
@@ -108,11 +104,17 @@ if args.gen_reference_html:
 if args.gen_lua_calltips:
     if not plugin.short_name:
         print('plugin short-name not defined. skipping generate_lua_calltips')
+        args.gen_lua_calltips = False
     elif not args.lua_file:
         print('no lua file defined. skipping gen_lua_calltips')
+        args.gen_lua_calltips = False
     else:
         runtool('generate_lua_calltips', plugin.name, plugin.short_name, args.lua_file, output('lua_calltips.cpp'))
 
 if args.gen_deprecated_txt:
     runtool('generate_deprecated_txt', args.xml_file, output('deprecated_mapping.txt'))
+
+if args.gen_stubs:
+    for fn in ('stubs.cpp', 'stubs.h', 'stubsPlusPlus.cpp'):
+        runtool('external/pycpp/pycpp', '-p', 'xml_file=' + args.xml_file, '-p', f'have_lua_calltips={args.gen_lua_calltips}', '-i', rel('cpp/' + fn), '-o', output(fn), '-P', self_dir)
 
