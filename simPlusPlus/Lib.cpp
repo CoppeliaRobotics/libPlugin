@@ -36,7 +36,7 @@ void addLog(int verbosity, boost::format &fmt)
 void addStackDebugLog(const std::string &msg)
 {
     if(debugStackEnabled)
-        addLog(sim_verbosity_debug, boost::format("DEBUG_STUBS: %s") % msg);
+        addLog(sim_verbosity_debug, "DEBUG_STUBS: %s", msg);
 }
 
 void addStackDebugLog(boost::format fmt)
@@ -72,7 +72,7 @@ simInt registerScriptVariable(const std::string &varName, const std::string &var
     simInt ret = simRegisterScriptVariable(varName.c_str(), varValue.c_str(), stackID);
     if(ret == 0)
     {
-        addLog(sim_verbosity_warnings, boost::format("replaced variable '%s'") % varName);
+        addLog(sim_verbosity_warnings, "replaced variable '%s'", varName);
     }
     if(ret == -1)
         throw api_error("simRegisterScriptVariable");
