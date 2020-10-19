@@ -148,10 +148,40 @@ namespace sim
     simVoid setStringParameter(simInt parameter, simChar *value);
     simVoid setStringParameter(simInt parameter, const std::string &value);
 
+    simFloat getObjectFloatParameter(simInt objectHandle, simInt parameterID, simFloat *parameter);
+    simInt getObjectInt32Parameter(simInt objectHandle, simInt parameterID, simInt *parameter);
+    std::string getObjectStringParameter(simInt objectHandle, simInt parameterID);
+    simVoid setObjectFloatParameter(simInt objectHandle, simInt parameterID, simFloat parameter);
+    simVoid setObjectInt32Parameter(simInt objectHandle, simInt parameterID, simInt parameter);
+    simVoid setObjectStringParameter(simInt objectHandle, simInt parameterID, const std::string &parameter);
+
     simChar* createBuffer(simInt size);
     simVoid releaseBuffer(simChar *buffer);
 
+    std::string getLastError();
     simVoid setLastError(const std::string &func, const std::string &msg);
+
+    simInt getObjectChild(simInt objectHandle, simInt index);
+    simInt getObjectHandle(const std::string &objectName);
+    std::array<simFloat, 12> getObjectMatrix(simInt objectHandle, simInt relativeToObjectHandle);
+    simVoid setObjectMatrix(simInt objectHandle, simInt relativeToObjectHandle, const std::array<simFloat, 12> &matrix);
+    std::string getObjectName(simInt objectHandle);
+    simVoid setObjectName(simInt objectHandle, const std::string &objectName);
+    std::array<simFloat, 3> getObjectOrientation(simInt objectHandle, simInt relativeToObjectHandle);
+    simVoid setObjectOrientation(simInt objectHandle, simInt relativeToObjectHandle, const std::array<simFloat, 3> &eulerAngles);
+    simInt getObjectParent(simInt objectHandle);
+    simVoid setObjectParent(simInt objectHandle, simInt parentObjectHandle, simBool keepInPlace);
+    std::array<simFloat, 3> getObjectPosition(simInt objectHandle, simInt relativeToObjectHandle);
+    simVoid setObjectPosition(simInt objectHandle, simInt relativeToObjectHandle, const std::array<simFloat, 3> &position);
+    std::array<simFloat, 4> getObjectQuaternion(simInt objectHandle, simInt relativeToObjectHandle);
+    simVoid setObjectQuaternion(simInt objectHandle, simInt relativeToObjectHandle, const std::array<simFloat, 4> &quaternion);
+    simInt getObjectType(simInt objectHandle);
+    simInt getObjectUniqueIdentifier(simInt objectHandle);
+    std::pair<std::array<simFloat, 3>, std::array<simFloat, 3>> getObjectVelocity(simInt objectHandle);
+    simInt getObjects(simInt index, simInt objectType);
+    std::vector<simInt> getObjectsInTree(simInt treeBaseHandle, simInt objectType, simInt options);
+    std::vector<simInt> getObjectSelection();
+    simInt getObjectSelectionSize();
 
     extern std::string pluginName;
 

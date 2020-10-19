@@ -568,6 +568,52 @@ simVoid setStringParameter(simInt parameter, const std::string &value)
     setStringParameter(parameter, value.c_str());
 }
 
+simFloat getObjectFloatParameter(simInt objectHandle, simInt parameterID, simFloat *parameter)
+{
+    simFloat ret;
+    if(simGetObjectFloatParameter(objectHandle, parameterID, &ret) == -1)
+        throw api_error("simGetObjectFloatParameter");
+    return ret;
+}
+
+simInt getObjectInt32Parameter(simInt objectHandle, simInt parameterID, simInt *parameter)
+{
+    simInt ret;
+    if(simGetObjectInt32Parameter(objectHandle, parameterID, &ret) == -1)
+        throw api_error("simGetObjectInt32Parameter");
+    return ret;
+}
+
+std::string getObjectStringParameter(simInt objectHandle, simInt parameterID)
+{
+    simChar *ret;
+    simInt len;
+    if((ret = simGetObjectStringParameter(objectHandle, parameterID, &len)) == NULL)
+        throw api_error("simGetObjectStringParameter");
+    std::string s(ret, len);
+    releaseBuffer(ret);
+    return s;
+}
+
+simVoid setObjectFloatParameter(simInt objectHandle, simInt parameterID, simFloat parameter)
+{
+    if(simSetObjectFloatParameter(objectHandle, parameterID, parameter) == -1)
+        throw api_error("simSetObjectFloatParameter");
+}
+
+simVoid setObjectInt32Parameter(simInt objectHandle, simInt parameterID, simInt parameter)
+{
+    if(simSetObjectInt32Parameter(objectHandle, parameterID, parameter) == -1)
+        throw api_error("simSetObjectInt32Parameter");
+}
+
+simVoid setObjectStringParameter(simInt objectHandle, simInt parameterID, const std::string &parameter)
+{
+    // XXX: fix const ptrs in the regular API
+    if(simSetObjectStringParameter(objectHandle, parameterID, const_cast<simChar*>(parameter.data()), parameter.size()) == -1)
+        throw api_error("simSetObjectStringParameter");
+}
+
 simChar* createBuffer(simInt size)
 {
     simChar *ret = simCreateBuffer(size);
@@ -582,10 +628,185 @@ simVoid releaseBuffer(simChar *buffer)
         throw api_error("simReleaseBuffer");
 }
 
+std::string getLastError()
+{
+    simChar *ret = simGetLastError();
+    if(ret == NULL)
+        throw api_error("simGetLastError");
+    std::string s(ret);
+    releaseBuffer(ret);
+    return s;
+}
+
 simVoid setLastError(const std::string &func, const std::string &msg)
 {
     if(simSetLastError(func.c_str(), msg.c_str()) == -1)
         throw api_error("simSetLastError");
+}
+
+simInt getObjectChild(simInt objectHandle, simInt index)
+{
+    simInt ret;
+    if((ret = simGetObjectChild(objectHandle, index)) == -1)
+        throw api_error("simGetObjectChild");
+    return ret;
+}
+
+simInt getObjectHandle(const std::string &objectName)
+{
+    simInt ret;
+    if((ret = simGetObjectHandle(objectName.c_str())) == -1)
+        throw api_error("simGetObjectHandle");
+    return ret;
+}
+
+std::array<simFloat, 12> getObjectMatrix(simInt objectHandle, simInt relativeToObjectHandle)
+{
+    std::array<simFloat, 12> ret;
+    if(simGetObjectMatrix(objectHandle, relativeToObjectHandle, ret.data()) == -1)
+        throw api_error("simGetObjectMatrix");
+    return ret;
+}
+
+simVoid setObjectMatrix(simInt objectHandle, simInt relativeToObjectHandle, const std::array<simFloat, 12> &matrix)
+{
+    if(simSetObjectMatrix(objectHandle, relativeToObjectHandle, matrix.data()) == -1)
+        throw api_error("simSetObjectMatrix");
+}
+
+std::string getObjectName(simInt objectHandle)
+{
+    simChar *ret = simGetObjectName(objectHandle);
+    if(ret == NULL)
+        throw api_error("simGetObjectName");
+    std::string s(ret);
+    releaseBuffer(ret);
+    return s;
+}
+
+simVoid setObjectName(simInt objectHandle, const std::string &objectName)
+{
+    if(simSetObjectName(objectHandle, objectName.c_str()) == -1)
+        throw api_error("simSetObjectName");
+}
+
+std::array<simFloat, 3> getObjectOrientation(simInt objectHandle, simInt relativeToObjectHandle)
+{
+    std::array<simFloat, 3> ret;
+    if(simGetObjectOrientation(objectHandle, relativeToObjectHandle, ret.data()) == -1)
+        throw api_error("simGetObjectOrientation");
+    return ret;
+}
+
+simVoid setObjectOrientation(simInt objectHandle, simInt relativeToObjectHandle, const std::array<simFloat, 3> &eulerAngles)
+{
+    if(simSetObjectOrientation(objectHandle, relativeToObjectHandle, eulerAngles.data()) == -1)
+        throw api_error("simSetObjectOrientation");
+}
+
+simInt getObjectParent(simInt objectHandle)
+{
+    simInt ret;
+    if((ret = simGetObjectParent(objectHandle)) == -1)
+        throw api_error("simGetObjectParent");
+    return ret;
+}
+
+simVoid setObjectParent(simInt objectHandle, simInt parentObjectHandle, simBool keepInPlace)
+{
+    if(simSetObjectParent(objectHandle, parentObjectHandle, keepInPlace) == -1)
+        throw api_error("simSetObjectParent");
+}
+
+std::array<simFloat, 3> getObjectPosition(simInt objectHandle, simInt relativeToObjectHandle)
+{
+    std::array<simFloat, 3> ret;
+    if(simGetObjectPosition(objectHandle, relativeToObjectHandle, ret.data()) == -1)
+        throw api_error("simGetObjectPosition");
+    return ret;
+}
+
+simVoid setObjectPosition(simInt objectHandle, simInt relativeToObjectHandle, const std::array<simFloat, 3> &position)
+{
+    if(simSetObjectPosition(objectHandle, relativeToObjectHandle, position.data()) == -1)
+        throw api_error("simSetObjectPosition");
+}
+
+std::array<simFloat, 4> getObjectQuaternion(simInt objectHandle, simInt relativeToObjectHandle)
+{
+    std::array<simFloat, 4> ret;
+    if(simGetObjectQuaternion(objectHandle, relativeToObjectHandle, ret.data()) == -1)
+        throw api_error("simGetObjectQuaternion");
+    return ret;
+}
+
+simVoid setObjectQuaternion(simInt objectHandle, simInt relativeToObjectHandle, const std::array<simFloat, 4> &quaternion)
+{
+    if(simSetObjectQuaternion(objectHandle, relativeToObjectHandle, quaternion.data()) == -1)
+        throw api_error("simSetObjectQuaternion");
+}
+
+simInt getObjectType(simInt objectHandle)
+{
+    simInt ret;
+    if((ret = simGetObjectType(objectHandle)) == -1)
+        throw api_error("simGetObjectType");
+    return ret;
+}
+
+simInt getObjectUniqueIdentifier(simInt objectHandle)
+{
+    simInt ret;
+    if(simGetObjectUniqueIdentifier(objectHandle, &ret) == -1)
+        throw api_error("simGetObjectUniqueIdentifier");
+    return ret;
+}
+
+std::pair<std::array<simFloat, 3>, std::array<simFloat, 3>> getObjectVelocity(simInt objectHandle)
+{
+    std::array<simFloat, 3> lin, ang;
+    if(simGetObjectVelocity(objectHandle, lin.data(), ang.data()) == -1)
+        throw api_error("simGetObjectVelocity");
+    return std::make_pair(lin, ang);
+}
+
+simInt getObjects(simInt index, simInt objectType)
+{
+    simInt ret;
+    if((ret = simGetObjects(index, objectType)) == -1)
+        throw api_error("simGetObjects");
+    return ret;
+}
+
+std::vector<simInt> getObjectsInTree(simInt treeBaseHandle, simInt objectType, simInt options)
+{
+    simInt *ret;
+    simInt count;
+    if((ret = simGetObjectsInTree(treeBaseHandle, objectType, options, &count)) == NULL)
+        throw api_error("simGetObjectsInTree");
+    std::vector<simInt> v;
+    for(size_t i = 0; i < count; i++) v.push_back(ret[i]);
+    return v;
+}
+
+std::vector<simInt> getObjectSelection()
+{
+    std::vector<simInt> handles;
+    handles.resize(getObjectSelectionSize());
+    simInt returnedSize;
+    if((returnedSize = simGetObjectSelection(handles.data())) == -1)
+        throw api_error("simGetObjectSelection");
+    if(returnedSize != handles.size())
+        throw api_error("simGetObjectSelection", "returned size does not match getObjectSelectionSize()");
+    return handles;
+}
+
+simInt getObjectSelectionSize()
+{
+    simInt ret;
+    if((ret = simGetObjectSelectionSize()) == -1)
+        throw api_error("simGetObjectSelectionSize");
+    return ret;
 }
 
 } // namespace sim
