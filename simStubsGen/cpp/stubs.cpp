@@ -9,27 +9,6 @@
 #include <iostream>
 #include <boost/lexical_cast.hpp>
 
-#define CATCH_AND_RETHROW(prefix)   \
-    catch(std::exception &ex)       \
-    {                               \
-        std::string msg = prefix;   \
-        msg += ex.what();           \
-        throw sim::exception(msg);       \
-    }                               \
-    catch(std::string& s)           \
-    {                               \
-        std::string msg = prefix;   \
-        msg += s;                   \
-        throw sim::exception(msg);       \
-    }                               \
-    catch(int& n)                   \
-    {                               \
-        std::stringstream msg;      \
-        msg << prefix;              \
-        msg << "error #" << n;      \
-        throw sim::exception(msg.str()); \
-    }
-
 static bool isDebugStubsEnabled()
 {
     static int enabled = -1;
@@ -359,7 +338,10 @@ void read__`struct.name`(int stack, `struct.name` *value)
                         read__`field.ctype_normalized()`(stack, &(value->`field.name`));
 #py endif
                     }
-                    CATCH_AND_RETHROW("field '`field.name`': ")
+                    catch(std::exception &ex)
+                    {
+                        throw sim::exception("field '`field.name`': %s", ex.what());
+                    }
                 }
 #py endfor
                 else
@@ -372,7 +354,10 @@ void read__`struct.name`(int stack, `struct.name` *value)
             numItems = (sim::getStackSize(stack) - oldsz + 1) / 2;
         }
     }
-    CATCH_AND_RETHROW("read__`struct.name`: ")
+    catch(std::exception &ex)
+    {
+        throw sim::exception("read__`struct.name`: %s", ex.what());
+    }
 }
 
 #py endfor
@@ -495,10 +480,16 @@ void write__`struct.name`(`struct.name` *value, int stack)
 #py endif
             sim::insertDataIntoStackTable(stack);
         }
-        CATCH_AND_RETHROW("field '`field.name`': ")
+        catch(std::exception &ex)
+        {
+            throw sim::exception("field '`field.name`': %s", ex.what());
+        }
 #py endfor
     }
-    CATCH_AND_RETHROW("write__`struct.name`: ")
+    catch(std::exception &ex)
+    {
+        throw sim::exception("write__`struct.name`: %s", ex.what());
+    }
 }
 
 #py endfor
@@ -599,7 +590,10 @@ bool registerScriptStuff()
 
 #include "lua_calltips.cpp"
         }
-        CATCH_AND_RETHROW("Initialization failed (registerScriptStuff): ")
+        catch(std::exception &ex)
+        {
+            throw sim::exception("Initialization failed (registerScriptStuff): %s", ex.what());
+        }
     }
     catch(sim::exception& ex)
     {
@@ -804,7 +798,10 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
                 read__`p.ctype_normalized()`(p->stackID, &(in_args.`p.name`));
 #py endif
             }
-            CATCH_AND_RETHROW("read in arg `i+1` (`p.name`): ")
+            catch(std::exception &ex)
+            {
+                throw sim::exception("read in arg `i+1` (`p.name`): %s", ex.what());
+            }
         }
 
 #py endfor
@@ -837,19 +834,9 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
 #endif // NDEBUG
         `cmd.c_name`(p, cmd, &in_args, &out_args);
     }
-    catch(std::exception& e)
+    catch(std::exception &ex)
     {
-        sim::setLastError(cmd, e.what());
-    }
-    catch(std::string& s)
-    {
-        sim::setLastError(cmd, s);
-    }
-    catch(int& n)
-    {
-        std::stringstream ss;
-        ss << "error #" << n;
-        sim::setLastError(cmd, ss.str());
+        sim::setLastError(cmd, ex.what());
     }
 
     try
@@ -898,7 +885,10 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
             write__`p.ctype_normalized()`(`p.argmod()`(out_args.`p.name`), p->stackID);
 #py endif
         }
-        CATCH_AND_RETHROW("write out arg `i+1` (`p.name`): ")
+        catch(std::exception &ex)
+        {
+            throw sim::exception("write out arg `i+1` (`p.name`): %s", ex.what());
+        }
 #py endfor
 
 #ifndef NDEBUG
@@ -909,23 +899,9 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
         }
 #endif // NDEBUG
     }
-    catch(std::exception& e)
+    catch(std::exception &ex)
     {
-        sim::setLastError(cmd, e.what());
-        // clear stack
-        try { sim::popStackItem(p->stackID, 0); } catch(...) {}
-    }
-    catch(std::string& s)
-    {
-        sim::setLastError(cmd, s);
-        // clear stack
-        try { sim::popStackItem(p->stackID, 0); } catch(...) {}
-    }
-    catch(int& n)
-    {
-        std::stringstream ss;
-        ss << "error #" << n;
-        sim::setLastError(cmd, ss.str());
+        sim::setLastError(cmd, ex.what());
         // clear stack
         try { sim::popStackItem(p->stackID, 0); } catch(...) {}
     }
@@ -986,7 +962,10 @@ bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn
             write__`p.ctype_normalized()`(`p.argmod()`(in_args->`p.name`), stackID);
 #py endif
         }
-        CATCH_AND_RETHROW("writing input argument `i+1` (`p.name`): ")
+        catch(std::exception &ex)
+        {
+            throw sim::exception("writing input argument `i+1` (`p.name`): %s", ex.what());
+        }
 #py endfor
 
 #ifndef NDEBUG
@@ -1049,7 +1028,10 @@ bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn
             read__`p.ctype_normalized()`(stackID, &(out_args->`p.name`));
 #py endif
         }
-        CATCH_AND_RETHROW("read out arg `i+1` (`p.name`): ")
+        catch(std::exception &ex)
+        {
+            throw sim::exception("read out arg `i+1` (`p.name`): %s", ex.what());
+        }
 #py endfor
 
 #ifndef NDEBUG
@@ -1063,27 +1045,11 @@ bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn
         sim::releaseStack(stackID);
         stackID = -1;
     }
-    catch(std::exception& ex)
+    catch(std::exception &ex)
     {
         if(stackID != -1)
             try { sim::releaseStack(stackID); } catch(...) {}
         sim::setLastError(func, ex.what());
-        return false;
-    }
-    catch(std::string& s)
-    {
-        if(stackID != -1)
-            try { sim::releaseStack(stackID); } catch(...) {}
-        sim::setLastError(func, s);
-        return false;
-    }
-    catch(int& n)
-    {
-        if(stackID != -1)
-            try { sim::releaseStack(stackID); } catch(...) {}
-        std::stringstream ss;
-        ss << "error #" << n;
-        sim::setLastError(func, ss.str());
         return false;
     }
 
