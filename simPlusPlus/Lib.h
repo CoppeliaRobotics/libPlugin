@@ -16,6 +16,28 @@
 
 namespace sim
 {
+    namespace util
+    {
+        static std::string sprintf(boost::format& f)
+        {
+            return f.str();
+        }
+
+        template<class T, class... Args>
+        std::string sprintf(boost::format& f, T&& t, Args&&... args)
+        {
+            return sprintf(f % std::forward<T>(t), std::forward<Args>(args)...);
+        }
+
+        template<typename... Arguments>
+        std::string sprintf(const std::string &fmt_, Arguments&&... args)
+        {
+            boost::format f(fmt_);
+            return sprintf(f, std::forward<Arguments>(args)...);
+        }
+
+    } // namespace util
+
 	/*! \brief A basic exception class
 	 */
     struct exception : public ::std::exception
@@ -73,9 +95,6 @@ namespace sim
     void enableStackDebug();
     void disableStackDebug();
     bool isStackDebugEnabled();
-
-    void addLog(int verbosity, const std::string &msg);
-    void addLog(int verbosity, boost::format &fmt);
 
     simInt registerScriptCallbackFunction(const std::string &funcNameAtPluginName, const std::string &callTips, simVoid (*callBack)(struct SScriptCallBack *cb));
     simInt registerScriptVariable(const std::string &varName, const std::string &varValue, simInt stackID);
@@ -144,18 +163,12 @@ namespace sim
 
     simVoid setLastError(const std::string &func, const std::string &msg);
 
-    template<class T, class... Args>
-    void addLog(int verbosity, boost::format& f, T&& t, Args&&... args)
-    {
-        addLog(verbosity, f % std::forward<T>(t), std::forward<Args>(args)...);
-    }
+    extern std::string pluginName;
 
     template<typename... Arguments>
     void addLog(int verbosity, const std::string &fmt, Arguments&&... args)
     {
-        boost::format f(fmt);
-
-        addLog(verbosity, f, std::forward<Arguments>(args)...);
+        ::simAddLog(pluginName.c_str(), verbosity, util::sprintf(fmt, std::forward<Arguments>(args)...).c_str());
     }
 } // namespace sim
 

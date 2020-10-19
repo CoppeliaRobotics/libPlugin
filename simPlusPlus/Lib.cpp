@@ -21,16 +21,6 @@ bool isStackDebugEnabled()
     return debugStackEnabled;
 }
 
-void addLog(int verbosity, const std::string &msg)
-{
-    ::simAddLog(pluginName.c_str(), verbosity, msg.c_str());
-}
-
-void addLog(int verbosity, boost::format &fmt)
-{
-    addLog(verbosity, fmt.str());
-}
-
 #ifndef NDEBUG
 
 void addStackDebugLog(const std::string &msg)
