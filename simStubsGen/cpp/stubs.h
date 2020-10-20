@@ -45,12 +45,12 @@ void simThread();
         sim::addLog(sim_verbosity_debug, "warning: cannot check ASSERT_THREAD(" #ID ") because global variable UI_THREAD is not set yet.");\
     } else if(strcmp(#ID, "UI") == 0) {\
         if(QThread::currentThreadId() != UI_THREAD) {\
-            sim::addLog(sim_verbosity_errors, boost::format("%s:%d %s should be called from UI thread") % __FILE__ % __LINE__ % __FUNC__);\
+            sim::addLog(sim_verbosity_errors, "%s:%d %s should be called from UI thread", __FILE__, __LINE__, __FUNC__);\
             exit(1);\
         }\
     } else if(strcmp(#ID, "!UI") == 0) {\
         if(QThread::currentThreadId() == UI_THREAD) {\
-            sim::addLog(sim_verbosity_errors, boost::format("%s:%d %s should NOT be called from UI thread") % __FILE__ % __LINE__ % __FUNC__);\
+            sim::addLog(sim_verbosity_errors, "%s:%d %s should NOT be called from UI thread", __FILE__, __LINE__, __FUNC__);\
             exit(1);\
         }\
     } else {\
