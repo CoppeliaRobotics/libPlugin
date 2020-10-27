@@ -1,4 +1,4 @@
-#py from parse import parse
+#py from parse import parse, escape
 #py import model
 #py plugin = parse(pycpp.params['xml_file'])
 #include "stubs.h"
@@ -560,14 +560,14 @@ bool registerScriptStuff()
 #py endfor
             // register new-style short-version commands
 #py for cmd in plugin.commands:
-            sim::registerScriptCallbackFunction("sim`plugin.short_name`.`cmd.name`@`plugin.name`", "`cmd.help_out_args_text`sim`plugin.short_name`.`cmd.name`(`cmd.help_in_args_text`)`cmd.documentation`", `cmd.c_name`_callback);
+            sim::registerScriptCallbackFunction("sim`plugin.short_name`.`cmd.name`@`plugin.name`", "`escape(cmd.help_out_args_text)`sim`plugin.short_name`.`cmd.name`(`escape(cmd.help_in_args_text)`)`escape(cmd.documentation)`", `cmd.c_name`_callback);
 #py endfor
 #py endif
 
 #py if plugin.short_name:
             // commands simExt<PLUGIN_NAME>_<COMMAND_NAME> (deprecated)
 #py for cmd in plugin.commands:
-            sim::registerScriptCallbackFunction("`plugin.command_prefix``cmd.name`@`plugin.name`", "`cmd.help_text`\n\n(DEPRECATED, please use sim`plugin.short_name`.`cmd.name`)", `cmd.c_name`_callback);
+            sim::registerScriptCallbackFunction("`plugin.command_prefix``cmd.name`@`plugin.name`", "`escape(cmd.help_text)`\n\n(DEPRECATED, please use sim`plugin.short_name`.`cmd.name`)", `cmd.c_name`_callback);
 #py endfor
             // register variables (deprecated)
 #py for enum in plugin.enums:
@@ -578,7 +578,7 @@ bool registerScriptStuff()
 #py else:
             // commands simExt<PLUGIN_NAME>_<COMMAND_NAME>
 #py for cmd in plugin.commands:
-            sim::registerScriptCallbackFunction("`plugin.command_prefix``cmd.name`@`plugin.name`", "`cmd.help_text``cmd.documentation`", `cmd.c_name`_callback);
+            sim::registerScriptCallbackFunction("`plugin.command_prefix``cmd.name`@`plugin.name`", "`escape(cmd.help_text)``escape(cmd.documentation)`", `cmd.c_name`_callback);
 #py endfor
             // register variables
 #py for enum in plugin.enums:

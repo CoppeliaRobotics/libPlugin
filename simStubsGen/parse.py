@@ -6,3 +6,8 @@ def parse(xml_file):
     root = tree.getroot()
     return model.Plugin(root)
 
+def escape(s, method='C'):
+    if isinstance(s, str) and method == 'C':
+        return s.replace('\\', '\\\\').replace('"', '\\"')
+    else:
+        return s
