@@ -178,7 +178,8 @@ class ParamStruct(Param):
         return self.xoptional
 
     def cdefault(self):
-        return None
+        if self.xoptional:
+            return '{}'
 
     def argmod(self):
         return '&'
