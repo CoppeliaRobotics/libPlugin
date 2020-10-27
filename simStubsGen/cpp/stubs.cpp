@@ -316,7 +316,7 @@ void read__`struct.name`(int stack, `struct.name` *value)
                             int j;
                             read__int(stack, &j);
                             sim::moveStackItemToTop(stack, oldsz - 1);
-                            `field.ctype_normalized()` v;
+                            `field.item_dummy().ctype()` v;
                             read__`field.ctype_normalized()`(stack, &v);
                             value->`field.name`.push_back(v);
                         }
