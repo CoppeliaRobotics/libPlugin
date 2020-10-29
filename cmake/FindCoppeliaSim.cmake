@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.16.3)
 include(CMakeParseArguments)
 
+# fix CMAKE_MODULE_PATH to have forward slashes:
+file(TO_CMAKE_PATH "${CMAKE_MODULE_PATH}" CMAKE_MODULE_PATH)
+
 function(COPPELIASIM_FIND_ERROR MESSAGE)
     if(CoppeliaSim_FIND_REQUIRED)
         message(FATAL_ERROR ${MESSAGE})
