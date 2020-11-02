@@ -110,14 +110,6 @@ class ParamString(Param):
         super(ParamString, self).__init__(node)
         self.ctype_base = 'std::string'
 
-    def cdefault(self):
-        if self.default is None: return None
-        return '"%s"' % self.default.replace('\\','\\\\').replace('"','\\"')
-
-    def hdefault(self):
-        if self.default is None: return None
-        return "'%s'" % self.default.replace('\\','\\\\').replace('"','\\"')
-
 class ParamBool(Param):
     def __init__(self, node):
         super(ParamBool, self).__init__(node)
@@ -156,18 +148,6 @@ class ParamTable(Param):
             return 'table_{}'.format(self.minsize)
         return 'table'
 
-    def cdefault(self):
-        if self.default is not None:
-            m = re.match(r'^\s*{(.*)}\s*$', self.default)
-            if not m:
-                raise ValueError('invalid default value for array: must be like {value1, value2, ...}')
-            raw_vals = m.group(1).strip()
-            if not raw_vals:
-                return '{}'
-            vals = [x.strip() for x in m.group(1).split(',')]
-            list_of = ['({})'.format(x) for x in vals]
-            return 'boost::assign::list_of{}.convert_to_container<{} >()'.format(''.join(list_of), self.ctype())
-
 class ParamStruct(Param):
     def __init__(self, node, name):
         super(ParamStruct, self).__init__(node)
@@ -184,10 +164,6 @@ class ParamStruct(Param):
 
     def optional(self):
         return self.xoptional
-
-    def cdefault(self):
-        if self.xoptional:
-            return '{}'
 
     def argmod(self):
         return '&'
