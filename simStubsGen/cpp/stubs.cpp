@@ -511,6 +511,10 @@ bool registerScriptStuff()
     {
         checkRuntimeVersion();
 
+        auto dbg = sim::getStringNamedParam("simStubsGen.debug");
+        if(dbg && *dbg != "0")
+            sim::enableStackDebug();
+
         try
         {
 #py if plugin.short_name:
