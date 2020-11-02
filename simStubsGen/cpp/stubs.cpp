@@ -9,39 +9,6 @@
 #include <iostream>
 #include <boost/lexical_cast.hpp>
 
-static bool isDebugStubsEnabled()
-{
-    static int enabled = -1;
-
-    if(enabled == 0) return false;
-    if(enabled == 1) return true;
-
-    {
-        char *val = std::getenv("DEBUG_STUBS");
-        if(val)
-        {
-            enabled = boost::lexical_cast<int>(val) != 0 ? 1 : 0;
-            return enabled;
-        }
-    }
-
-    {
-        simInt len;
-        simChar *val = simGetStringNamedParam("simStubsGen.debug",&len);
-        if(val)
-        {
-            std::string s(val, len);
-            enabled = boost::lexical_cast<int>(val) != 0 ? 1 : 0;
-            sim::releaseBuffer(val);
-            return enabled;
-        }
-    }
-
-    enabled = 0;
-
-    return enabled;
-}
-
 FuncTracer::FuncTracer(const std::string &f, int l)
     : f_(f),
       l_(l)
