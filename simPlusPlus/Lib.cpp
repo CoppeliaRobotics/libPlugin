@@ -485,6 +485,7 @@ simInt getStackStringValue(simInt stackHandle, std::string *stringValue)
     if(ret)
     {
         *stringValue = std::string(ret, stringSize);
+        releaseBuffer(ret);
         return 1;
     }
     else
