@@ -277,7 +277,15 @@ simInt getStackBoolValue(simInt stackHandle, simBool *boolValue)
     if(ret == -1)
         throw api_error("simGetStackBoolValue");
 
-    addStackDebugLog("simGetStackBoolValue -> %d, value = %s", ret, *boolValue ? "true" : "false");
+#ifndef NDEBUG
+    if(debugStackEnabled)
+    {
+        if(ret)
+            addStackDebugLog("simGetStackBoolValue -> %s", *boolValue ? "true" : "false");
+        else
+            addStackDebugLog("simGetStackBoolValue -> not a bool");
+    }
+#endif
 
     return ret;
 }
@@ -288,7 +296,15 @@ simInt getStackInt32Value(simInt stackHandle, simInt *numberValue)
     if(ret == -1)
         throw api_error("simGetStackInt32Value");
 
-    addStackDebugLog("simGetStackInt32Value -> %d, value = %d", ret, *numberValue);
+#ifndef NDEBUG
+    if(debugStackEnabled)
+    {
+        if(ret)
+            addStackDebugLog("simGetStackInt32Value -> %d", *numberValue);
+        else
+            addStackDebugLog("simGetStackInt32Value -> not an int");
+    }
+#endif
 
     return ret;
 }
@@ -299,7 +315,15 @@ simInt getStackFloatValue(simInt stackHandle, simFloat *numberValue)
     if(ret == -1)
         throw api_error("simGetStackFloatValue");
 
-    addStackDebugLog("simGetStackFloatValue -> %d, value = %f", ret, *numberValue);
+#ifndef NDEBUG
+    if(debugStackEnabled)
+    {
+        if(ret)
+            addStackDebugLog("simGetStackFloatValue -> %f", *numberValue);
+        else
+            addStackDebugLog("simGetStackFloatValue -> not a float");
+    }
+#endif
 
     return ret;
 }
@@ -310,7 +334,15 @@ simInt getStackDoubleValue(simInt stackHandle, simDouble *numberValue)
     if(ret == -1)
         throw api_error("simGetStackDoubleValue");
 
-    addStackDebugLog("simGetStackDoubleValue -> %d, value = %g", ret, *numberValue);
+#ifndef NDEBUG
+    if(debugStackEnabled)
+    {
+        if(ret)
+            addStackDebugLog("simGetStackDoubleValue -> %g", *numberValue);
+        else
+            addStackDebugLog("simGetStackDoubleValue -> not a double");
+    }
+#endif
 
     return ret;
 }
@@ -323,16 +355,11 @@ simChar* getStackStringValue(simInt stackHandle, simInt *stringSize)
     if(debugStackEnabled)
     {
         if(ret)
-        {
-            std::string s(ret, *stringSize);
-            addStackDebugLog("simGetStackStringValue -> value = \"%s\"", s);
-        }
+            addStackDebugLog("simGetStackStringValue -> \"%s\"", ret);
         else
-        {
-            addStackDebugLog("simGetStackStringValue -> null");
-        }
+            addStackDebugLog("simGetStackStringValue -> not a string");
     }
-#endif // NDEBUG
+#endif
 
     // if stringSize is NULL, we cannot distinguish error (-1) from type error (0)
     if(ret == NULL && stringSize && *stringSize == -1)
@@ -374,7 +401,7 @@ simInt getStackTableInfo(simInt stackHandle, simInt infoType)
             }
         }
         else retStr = ret ? "yes" : "no";
-        addStackDebugLog("simGetStackTableInfo query = %d (%s) -> %d (%s)", infoType, infoTypeStr, ret, retStr);
+        addStackDebugLog("simGetStackTableInfo %d (%s) -> %d (%s)", infoType, infoTypeStr, ret, retStr);
     }
 #endif // NDEBUG
 
