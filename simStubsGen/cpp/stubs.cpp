@@ -135,13 +135,11 @@ void read__double(int stack, double *value)
 
 void read__std__string(int stack, std::string *value)
 {
-    simChar *str;
-    simInt strSize;
-    if((str = sim::getStackStringValue(stack, &strSize)) != NULL && strSize >= 0)
+    std::string v;
+    if(sim::getStackStringValue(stack, &v) == 1)
     {
-        *value = std::string(str, strSize);
+        *value = v;
         sim::popStackItem(stack, 1);
-        sim::releaseBuffer(str);
     }
     else
     {
@@ -223,13 +221,11 @@ void read__boost__optional__double__(int stack, boost::optional<double> *value)
 
 void read__boost__optional__std__string__(int stack, boost::optional<std::string> *value)
 {
-    simChar *str;
-    simInt strSize;
-    if((str = sim::getStackStringValue(stack, &strSize)) != NULL && strSize >= 0)
+    std::string v;
+    if(sim::getStackStringValue(stack, &v) == 1)
     {
-        *value = std::string(str, strSize);
+        *value = v;
         sim::popStackItem(stack, 1);
-        sim::releaseBuffer(str);
     }
     else if(sim::isStackValueNull(stack) == 1)
     {
