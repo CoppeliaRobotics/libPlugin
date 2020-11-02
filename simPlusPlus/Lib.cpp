@@ -23,15 +23,14 @@ bool isStackDebugEnabled()
 
 #ifndef NDEBUG
 
-void addStackDebugLog(const std::string &msg)
+template<typename... Arguments>
+void addStackDebugLog(const std::string &fmt, Arguments&&... args)
 {
     if(debugStackEnabled)
+    {
+        auto msg = util::sprintf(fmt, std::forward<Arguments>(args)...);
         addLog(sim_verbosity_debug, "DEBUG_STUBS: %s", msg);
-}
-
-void addStackDebugLog(boost::format fmt)
-{
-    addStackDebugLog(fmt.str());
+    }
 }
 
 void addStackDebugDump(int stackHandle)
@@ -118,7 +117,7 @@ simVoid pushNullOntoStack(simInt stackHandle)
 
 simVoid pushBoolOntoStack(simInt stackHandle, simBool value)
 {
-    addStackDebugLog(boost::format("simPushBoolOntoStack %d") % value);
+    addStackDebugLog("simPushBoolOntoStack %d", value);
 
     if(simPushBoolOntoStack(stackHandle, value) == -1)
         throw api_error("simPushBoolOntoStack");
@@ -128,7 +127,7 @@ simVoid pushBoolOntoStack(simInt stackHandle, simBool value)
 
 simVoid pushInt32OntoStack(simInt stackHandle, simInt value)
 {
-    addStackDebugLog(boost::format("simPushInt32OntoStack %d") % value);
+    addStackDebugLog("simPushInt32OntoStack %d", value);
 
     if(simPushInt32OntoStack(stackHandle, value) == -1)
         throw api_error("simPushInt32OntoStack");
@@ -138,7 +137,7 @@ simVoid pushInt32OntoStack(simInt stackHandle, simInt value)
 
 simVoid pushFloatOntoStack(simInt stackHandle, simFloat value)
 {
-    addStackDebugLog(boost::format("simPushFloatOntoStack %f") % value);
+    addStackDebugLog("simPushFloatOntoStack %f", value);
 
     if(simPushFloatOntoStack(stackHandle, value) == -1)
         throw api_error("simPushFloatOntoStack");
@@ -148,7 +147,7 @@ simVoid pushFloatOntoStack(simInt stackHandle, simFloat value)
 
 simVoid pushDoubleOntoStack(simInt stackHandle, simDouble value)
 {
-    addStackDebugLog(boost::format("simPushDoubleOntoStack %g") % value);
+    addStackDebugLog("simPushDoubleOntoStack %g", value);
 
     if(simPushDoubleOntoStack(stackHandle, value) == -1)
         throw api_error("simPushDoubleOntoStack");
@@ -158,7 +157,7 @@ simVoid pushDoubleOntoStack(simInt stackHandle, simDouble value)
 
 simVoid pushStringOntoStack(simInt stackHandle, const simChar *value, simInt stringSize)
 {
-    addStackDebugLog(boost::format("simPushStringOntoStack \"%s\" [%d]") % value % stringSize);
+    addStackDebugLog("simPushStringOntoStack \"%s\" [%d]", value, stringSize);
 
     if(simPushStringOntoStack(stackHandle, value, stringSize) == -1)
         throw api_error("simPushStringOntoStack");
@@ -168,7 +167,7 @@ simVoid pushStringOntoStack(simInt stackHandle, const simChar *value, simInt str
 
 simVoid pushUInt8TableOntoStack(simInt stackHandle, const simUChar *values, simInt valueCnt)
 {
-    addStackDebugLog(boost::format("simPushUInt8TableOntoStack <%d values>") % valueCnt);
+    addStackDebugLog("simPushUInt8TableOntoStack <%d values>", valueCnt);
 
     if(simPushUInt8TableOntoStack(stackHandle, values, valueCnt) == -1)
         throw api_error("simPushUInt8TableOntoStack");
@@ -178,7 +177,7 @@ simVoid pushUInt8TableOntoStack(simInt stackHandle, const simUChar *values, simI
 
 simVoid pushInt32TableOntoStack(simInt stackHandle, const simInt *values, simInt valueCnt)
 {
-    addStackDebugLog(boost::format("simPushInt32TableOntoStack <%d values>") % valueCnt);
+    addStackDebugLog("simPushInt32TableOntoStack <%d values>", valueCnt);
 
     if(simPushInt32TableOntoStack(stackHandle, values, valueCnt) == -1)
         throw api_error("simPushInt32TableOntoStack");
@@ -188,7 +187,7 @@ simVoid pushInt32TableOntoStack(simInt stackHandle, const simInt *values, simInt
 
 simVoid pushFloatTableOntoStack(simInt stackHandle, const simFloat *values, simInt valueCnt)
 {
-    addStackDebugLog(boost::format("simPushFloatTableOntoStack <%d values>") % valueCnt);
+    addStackDebugLog("simPushFloatTableOntoStack <%d values>", valueCnt);
 
     if(simPushFloatTableOntoStack(stackHandle, values, valueCnt) == -1)
         throw api_error("simPushFloatTableOntoStack");
@@ -198,7 +197,7 @@ simVoid pushFloatTableOntoStack(simInt stackHandle, const simFloat *values, simI
 
 simVoid pushDoubleTableOntoStack(simInt stackHandle, const simDouble *values, simInt valueCnt)
 {
-    addStackDebugLog(boost::format("simPushDoubleTableOntoStack <%d values>") % valueCnt);
+    addStackDebugLog("simPushDoubleTableOntoStack <%d values>", valueCnt);
 
     if(simPushDoubleTableOntoStack(stackHandle, values, valueCnt) == -1)
         throw api_error("simPushDoubleTableOntoStack");
@@ -230,7 +229,7 @@ simInt getStackSize(simInt stackHandle)
 {
     simInt ret = simGetStackSize(stackHandle);
 
-    addStackDebugLog(boost::format("simGetStackSize -> %d") % ret);
+    addStackDebugLog("simGetStackSize -> %d", ret);
 
     if(ret == -1)
         throw api_error("simGetStackSize");
@@ -241,7 +240,7 @@ simInt popStackItem(simInt stackHandle, simInt count)
 {
     simInt ret = simPopStackItem(stackHandle, count);
 
-    addStackDebugLog(boost::format("simPopStackItem %d -> %d") % count % ret);
+    addStackDebugLog("simPopStackItem %d -> %d", count, ret);
 
     if(ret == -1)
         throw api_error("simPopStackItem");
@@ -253,7 +252,7 @@ simInt popStackItem(simInt stackHandle, simInt count)
 
 simVoid moveStackItemToTop(simInt stackHandle, simInt cIndex)
 {
-    addStackDebugLog(boost::format("simMoveStackItemToTop %d") % cIndex);
+    addStackDebugLog("simMoveStackItemToTop %d", cIndex);
 
     if(simMoveStackItemToTop(stackHandle, cIndex) == -1)
         throw api_error("simMoveStackItemToTop");
@@ -267,7 +266,7 @@ simInt isStackValueNull(simInt stackHandle)
     if(ret == -1)
         throw api_error("simIsStackValueNull");
 
-    addStackDebugLog(boost::format("simIsStackValueNull -> %d") % ret);
+    addStackDebugLog("simIsStackValueNull -> %d", ret);
 
     return ret;
 }
@@ -278,7 +277,7 @@ simInt getStackBoolValue(simInt stackHandle, simBool *boolValue)
     if(ret == -1)
         throw api_error("simGetStackBoolValue");
 
-    addStackDebugLog(boost::format("simGetStackBoolValue -> %d, value = %d") % ret % boolValue);
+    addStackDebugLog("simGetStackBoolValue -> %d, value = %d", ret, boolValue);
 
     return ret;
 }
@@ -289,7 +288,7 @@ simInt getStackInt32Value(simInt stackHandle, simInt *numberValue)
     if(ret == -1)
         throw api_error("simGetStackInt32Value");
 
-    addStackDebugLog(boost::format("simGetStackInt32Value -> %d, value = %d") % ret % numberValue);
+    addStackDebugLog("simGetStackInt32Value -> %d, value = %d", ret, numberValue);
 
     return ret;
 }
@@ -300,7 +299,7 @@ simInt getStackFloatValue(simInt stackHandle, simFloat *numberValue)
     if(ret == -1)
         throw api_error("simGetStackFloatValue");
 
-    addStackDebugLog(boost::format("simGetStackFloatValue -> %d, value = %f") % ret % numberValue);
+    addStackDebugLog("simGetStackFloatValue -> %d, value = %f", ret, numberValue);
 
     return ret;
 }
@@ -311,7 +310,7 @@ simInt getStackDoubleValue(simInt stackHandle, simDouble *numberValue)
     if(ret == -1)
         throw api_error("simGetStackDoubleValue");
 
-    addStackDebugLog(boost::format("simGetStackDoubleValue -> %d, value = %g") % ret % numberValue);
+    addStackDebugLog("simGetStackDoubleValue -> %d, value = %g", ret, numberValue);
 
     return ret;
 }
@@ -326,7 +325,7 @@ simChar* getStackStringValue(simInt stackHandle, simInt *stringSize)
         if(ret)
         {
             std::string s(ret, *stringSize);
-            addStackDebugLog(boost::format("simGetStackStringValue -> value = %s") % s);
+            addStackDebugLog("simGetStackStringValue -> value = %s", s);
         }
         else
         {
@@ -346,7 +345,7 @@ simInt getStackTableInfo(simInt stackHandle, simInt infoType)
 {
     simInt ret = simGetStackTableInfo(stackHandle, infoType);
 
-    addStackDebugLog(boost::format("simGetStackTableInfo %d -> %d") % infoType % ret);
+    addStackDebugLog("simGetStackTableInfo %d -> %d", infoType, ret);
 
     if(ret == -1)
         throw api_error("simGetStackTableInfo");
@@ -357,7 +356,7 @@ simInt getStackUInt8Table(simInt stackHandle, simUChar *array, simInt count)
 {
     simInt ret = simGetStackUInt8Table(stackHandle, array, count);
 
-    addStackDebugLog(boost::format("simGetStackUInt8Table count = %d -> %d") % count % ret);
+    addStackDebugLog("simGetStackUInt8Table count = %d -> %d", count, ret);
 
     if(ret == -1)
         throw api_error("simGetStackUInt8Table");
@@ -368,7 +367,7 @@ simInt getStackInt32Table(simInt stackHandle, simInt *array, simInt count)
 {
     simInt ret = simGetStackInt32Table(stackHandle, array, count);
 
-    addStackDebugLog(boost::format("simGetStackInt32Table count = %d -> %d") % count % ret);
+    addStackDebugLog("simGetStackInt32Table count = %d -> %d", count, ret);
 
     if(ret == -1)
         throw api_error("simGetStackInt32Table");
@@ -379,7 +378,7 @@ simInt getStackFloatTable(simInt stackHandle, simFloat *array, simInt count)
 {
     simInt ret = simGetStackFloatTable(stackHandle, array, count);
 
-    addStackDebugLog(boost::format("simGetStackFloatTable count = %d -> %d") % count % ret);
+    addStackDebugLog("simGetStackFloatTable count = %d -> %d", count, ret);
 
     if(ret == -1)
         throw api_error("simGetStackFloatTable");
@@ -390,7 +389,7 @@ simInt getStackDoubleTable(simInt stackHandle, simDouble *array, simInt count)
 {
     simInt ret = simGetStackDoubleTable(stackHandle, array, count);
 
-    addStackDebugLog(boost::format("simGetStackDoubleTable, count = %d -> %d") % count % ret);
+    addStackDebugLog("simGetStackDoubleTable, count = %d -> %d", count, ret);
 
     if(ret == -1)
         throw api_error("simGetStackDoubleTable");
@@ -420,7 +419,7 @@ simVoid debugStack(simInt stackHandle, simInt index)
 
 simVoid pushStringOntoStack(simInt stackHandle, const std::string &value)
 {
-    addStackDebugLog(boost::format("simPushStringOntoStack \"%s\" [%d]") % value.c_str() % value.size());
+    addStackDebugLog("simPushStringOntoStack \"%s\" [%d]", value.c_str(), value.size());
 
     if(simPushStringOntoStack(stackHandle, value.c_str(), value.size()) == -1)
         throw api_error("simPushStringOntoStack");
