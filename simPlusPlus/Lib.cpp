@@ -338,6 +338,7 @@ simChar* getStackStringValue(simInt stackHandle, simInt *stringSize)
     if(ret == NULL && stringSize && *stringSize == -1)
         throw api_error("simGetStackStringValue");
 
+    // ret might be NULL, indicating type error:
     return ret;
 }
 
@@ -477,11 +478,19 @@ simVoid pushDoubleTableOntoStack(simInt stackHandle, const std::vector<simDouble
     pushDoubleTableOntoStack(stackHandle, values.data(), values.size());
 }
 
-simVoid getStackStringValue(simInt stackHandle, std::string *stringValue)
+simInt getStackStringValue(simInt stackHandle, std::string *stringValue)
 {
     simInt stringSize = -1;
     simChar *ret = getStackStringValue(stackHandle, &stringSize);
-    *stringValue = std::string(ret, stringSize);
+    if(ret)
+    {
+        *stringValue = std::string(ret, stringSize);
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 simInt getStackUInt8Table(simInt stackHandle, std::vector<simUChar> *v)

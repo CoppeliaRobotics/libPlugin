@@ -129,7 +129,7 @@ namespace sim
     simVoid pushInt32TableOntoStack(simInt stackHandle, const std::vector<simInt> &values);
     simVoid pushFloatTableOntoStack(simInt stackHandle, const std::vector<simFloat> &values);
     simVoid pushDoubleTableOntoStack(simInt stackHandle, const std::vector<simDouble> &values);
-    simVoid getStackStringValue(simInt stackHandle, std::string *stringValue);
+    simInt getStackStringValue(simInt stackHandle, std::string *stringValue);
     simInt getStackUInt8Table(simInt stackHandle, std::vector<simUChar> *v);
     simInt getStackInt32Table(simInt stackHandle, std::vector<simInt> *v);
     simInt getStackFloatTable(simInt stackHandle, std::vector<simFloat> *v);
