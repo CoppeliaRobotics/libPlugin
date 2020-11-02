@@ -77,7 +77,7 @@ void simThread()
 
 #endif // QT_COMPIL
 
-void read__bool(int stack, bool *value)
+void readFromStack(int stack, bool *value, const ReadOptions &rdopt)
 {
     simBool v;
     if(sim::getStackBoolValue(stack, &v) == 1)
@@ -91,7 +91,7 @@ void read__bool(int stack, bool *value)
     }
 }
 
-void read__int(int stack, int *value)
+void readFromStack(int stack, int *value, const ReadOptions &rdopt)
 {
     int v;
     if(sim::getStackInt32Value(stack, &v) == 1)
@@ -105,7 +105,7 @@ void read__int(int stack, int *value)
     }
 }
 
-void read__float(int stack, float *value)
+void readFromStack(int stack, float *value, const ReadOptions &rdopt)
 {
     simFloat v;
     if(sim::getStackFloatValue(stack, &v) == 1)
@@ -119,7 +119,7 @@ void read__float(int stack, float *value)
     }
 }
 
-void read__double(int stack, double *value)
+void readFromStack(int stack, double *value, const ReadOptions &rdopt)
 {
     simDouble v;
     if(sim::getStackDoubleValue(stack, &v) == 1)
@@ -133,7 +133,7 @@ void read__double(int stack, double *value)
     }
 }
 
-void read__std__string(int stack, std::string *value)
+void readFromStack(int stack, std::string *value, const ReadOptions &rdopt)
 {
     std::string v;
     if(sim::getStackStringValue(stack, &v) == 1)
@@ -147,7 +147,7 @@ void read__std__string(int stack, std::string *value)
     }
 }
 
-void read__boost__optional__bool__(int stack, boost::optional<bool> *value)
+void readFromStack(int stack, boost::optional<bool> *value, const ReadOptions &rdopt)
 {
     simBool v;
     if(sim::getStackBoolValue(stack, &v) == 1)
@@ -165,7 +165,7 @@ void read__boost__optional__bool__(int stack, boost::optional<bool> *value)
     }
 }
 
-void read__boost__optional__int__(int stack, boost::optional<int> *value)
+void readFromStack(int stack, boost::optional<int> *value, const ReadOptions &rdopt)
 {
     int v;
     if(sim::getStackInt32Value(stack, &v) == 1)
@@ -183,7 +183,7 @@ void read__boost__optional__int__(int stack, boost::optional<int> *value)
     }
 }
 
-void read__boost__optional__float__(int stack, boost::optional<float> *value)
+void readFromStack(int stack, boost::optional<float> *value, const ReadOptions &rdopt)
 {
     simFloat v;
     if(sim::getStackFloatValue(stack, &v) == 1)
@@ -201,7 +201,7 @@ void read__boost__optional__float__(int stack, boost::optional<float> *value)
     }
 }
 
-void read__boost__optional__double__(int stack, boost::optional<double> *value)
+void readFromStack(int stack, boost::optional<double> *value, const ReadOptions &rdopt)
 {
     simDouble v;
     if(sim::getStackDoubleValue(stack, &v) == 1)
@@ -219,7 +219,7 @@ void read__boost__optional__double__(int stack, boost::optional<double> *value)
     }
 }
 
-void read__boost__optional__std__string__(int stack, boost::optional<std::string> *value)
+void readFromStack(int stack, boost::optional<std::string> *value, const ReadOptions &rdopt)
 {
     std::string v;
     if(sim::getStackStringValue(stack, &v) == 1)
@@ -237,30 +237,30 @@ void read__boost__optional__std__string__(int stack, boost::optional<std::string
     }
 }
 
-void check_table_size(size_t sz, size_t minSize, size_t maxSize)
+void checkTableSize(size_t sz, const ReadOptions &rdopt)
 {
-    if(minSize == maxSize)
+    if(rdopt.minSize == rdopt.maxSize)
     {
-        if(sz != minSize)
-            throw sim::exception("must have exactly %d elements", minSize);
+        if(sz != rdopt.minSize)
+            throw sim::exception("must have exactly %d elements", rdopt.minSize);
     }
     else
     {
-        if(sz < minSize)
-            throw sim::exception("must have at least %d elements", minSize);
-        if(sz > maxSize)
-            throw sim::exception("must have at most %d elements", maxSize);
+        if(sz < rdopt.minSize)
+            throw sim::exception("must have at least %d elements", rdopt.minSize);
+        if(sz > rdopt.maxSize)
+            throw sim::exception("must have at most %d elements", rdopt.maxSize);
     }
 }
 
 template<typename T>
-void read__table__unfold(int stack, std::vector<T> *vec, void (*readItemFunc)(int, T*), size_t minSize = 0, size_t maxSize = -1)
+void readFromStack(int stack, std::vector<T> *vec, const ReadOptions &rdopt = {})
 {
     int sz = sim::getStackTableInfo(stack, 0);
     if(sz < 0)
         throw sim::exception("expected array (simGetStackTableInfo(stack, 0) returned %d)", sz);
 
-    check_table_size(sz, minSize, maxSize);
+    checkTableSize(sz, rdopt);
 
     int oldsz = sim::getStackSize(stack);
     sim::unfoldStackTable(stack);
@@ -274,29 +274,29 @@ void read__table__unfold(int stack, std::vector<T> *vec, void (*readItemFunc)(in
     {
         sim::moveStackItemToTop(stack, oldsz - 1);
         int j;
-        read__int(stack, &j);
+        readFromStack(stack, &j);
         sim::moveStackItemToTop(stack, oldsz - 1);
         if constexpr(std::is_same<T, bool>::value)
         {
             T v;
-            readItemFunc(stack, &v);
+            readFromStack(stack, &v);
             (*vec)[i] = v;
         }
         else
         {
-            readItemFunc(stack, &vec->at(i));
+            readFromStack(stack, &vec->at(i));
         }
     }
 }
 
 template<typename T>
-void read__table__oneshot(int stack, std::vector<T> *vec, simInt (*readFunc)(simInt, std::vector<T>*), size_t minSize = 0, size_t maxSize = -1)
+void readFromStack(int stack, std::vector<T> *vec, simInt (*f)(simInt, std::vector<T>*), const ReadOptions &rdopt = {})
 {
     int sz = sim::getStackTableInfo(stack, 0);
     if(sz < 0)
         throw sim::exception("expected array (simGetStackTableInfo(stack, 0) returned %d)", sz);
 
-    check_table_size(sz, minSize, maxSize);
+    checkTableSize(sz, rdopt);
 
     int chk = sim::getStackTableInfo(stack, 2);
     if(chk != 1)
@@ -304,17 +304,35 @@ void read__table__oneshot(int stack, std::vector<T> *vec, simInt (*readFunc)(sim
 
     vec->resize(sz);
 
-    int ret = readFunc(stack, vec);
+    int ret = f(stack, vec);
     if(ret != 1)
         throw sim::exception("readFunc error %d", ret);
 
     sim::popStackItem(stack, 1);
 }
 
-#py for struct in plugin.structs:
-void read__`struct.name`(int stack, `struct.name` *value)
+template<>
+void readFromStack(int stack, std::vector<float> *vec, const ReadOptions &rdopt)
 {
-    addStubsDebugLog("read__`struct.name`: begin reading...");
+    readFromStack(stack, vec, sim::getStackFloatTable, rdopt);
+}
+
+template<>
+void readFromStack(int stack, std::vector<double> *vec, const ReadOptions &rdopt)
+{
+    readFromStack(stack, vec, sim::getStackDoubleTable, rdopt);
+}
+
+template<>
+void readFromStack(int stack, std::vector<int> *vec, const ReadOptions &rdopt)
+{
+    readFromStack(stack, vec, sim::getStackInt32Table, rdopt);
+}
+
+#py for struct in plugin.structs:
+void readFromStack(int stack, `struct.name` *value, const ReadOptions &rdopt)
+{
+    addStubsDebugLog("readFromStack(`struct.name`): begin reading...");
     addStubsDebugStackDump(stack);
 
     try
@@ -335,28 +353,20 @@ void read__`struct.name`(int stack, `struct.name` *value)
         {
             sim::moveStackItemToTop(stack, oldsz - 1); // move key to top
             std::string key;
-            read__std__string(stack, &key);
+            readFromStack(stack, &key);
 
             sim::moveStackItemToTop(stack, oldsz - 1); // move value to top
             if(0) {}
 #py for field in struct.fields:
             else if(key == "`field.name`")
             {
-                addStubsDebugLog("read__`struct.name`: reading field \"`field.name`\" (`field.ctype()`)...");
+                addStubsDebugLog("readFromStack(`struct.name`): reading field \"`field.name`\" (`field.ctype()`)...");
                 try
                 {
 #py if isinstance(field, model.ParamTable):
-#py if field.itype == 'float':
-                    read__table__oneshot(stack, &(value->`field.name`), sim::getStackFloatTable, `field.minsize`, `field.maxsize`);
-#py elif field.itype == 'double':
-                    read__table__oneshot(stack, &(value->`field.name`), sim::getStackDoubleTable, `field.minsize`, `field.maxsize`);
-#py elif field.itype == 'int':
-                    read__table__oneshot(stack, &(value->`field.name`), sim::getStackInt32Table, `field.minsize`, `field.maxsize`);
+                    readFromStack(stack, &(value->`field.name`), ReadOptions().setTableBounds(`field.minsize`, `field.maxsize`));
 #py else:
-                    read__table__unfold(stack, &(value->`field.name`), read__`field.ctype_normalized()`, `field.minsize`, `field.maxsize`);
-#py endif
-#py else:
-                    read__`field.ctype_normalized()`(stack, &(value->`field.name`));
+                    readFromStack(stack, &(value->`field.name`));
 #py endif
                 }
                 catch(std::exception &ex)
@@ -375,44 +385,39 @@ void read__`struct.name`(int stack, `struct.name` *value)
     }
     catch(std::exception &ex)
     {
-        throw sim::exception("read__`struct.name`: %s", ex.what());
+        throw sim::exception("readFromStack(`struct.name`): %s", ex.what());
     }
 
-    addStubsDebugLog("read__`struct.name`: finished reading");
+    addStubsDebugLog("readFromStack(`struct.name`): finished reading");
 }
 
 #py endfor
-void write__bool(const bool &value, int stack)
+void writeToStack(const bool &value, int stack, const WriteOptions &wropt)
 {
-    simBool v = value;
-    sim::pushBoolOntoStack(stack, v);
+    sim::pushBoolOntoStack(stack, value);
 }
 
-void write__int(const int &value, int stack)
+void writeToStack(const int &value, int stack, const WriteOptions &wropt)
 {
-    simInt v = value;
-    sim::pushInt32OntoStack(stack, v);
+    sim::pushInt32OntoStack(stack, value);
 }
 
-void write__float(const float &value, int stack)
+void writeToStack(const float &value, int stack, const WriteOptions &wropt)
 {
-    simFloat v = value;
-    sim::pushFloatOntoStack(stack, v);
+    sim::pushFloatOntoStack(stack, value);
 }
 
-void write__double(const double &value, int stack)
+void writeToStack(const double &value, int stack, const WriteOptions &wropt)
 {
-    simDouble v = value;
-    sim::pushDoubleOntoStack(stack, v);
+    sim::pushDoubleOntoStack(stack, value);
 }
 
-void write__std__string(const std::string &value, int stack)
+void writeToStack(const std::string &value, int stack, const WriteOptions &wropt)
 {
-    const simChar *v = value.c_str();
-    sim::pushStringOntoStack(stack, v, value.length());
+    sim::pushStringOntoStack(stack, value);
 }
 
-void write__boost__optional__bool__(const boost::optional<bool> &value, int stack)
+void writeToStack(const boost::optional<bool> &value, int stack, const WriteOptions &wropt)
 {
     if(value)
     {
@@ -422,7 +427,7 @@ void write__boost__optional__bool__(const boost::optional<bool> &value, int stac
     else sim::pushNullOntoStack(stack);
 }
 
-void write__boost__optional__int__(const boost::optional<int> &value, int stack)
+void writeToStack(const boost::optional<int> &value, int stack, const WriteOptions &wropt)
 {
     if(value)
     {
@@ -432,7 +437,7 @@ void write__boost__optional__int__(const boost::optional<int> &value, int stack)
     else sim::pushNullOntoStack(stack);
 }
 
-void write__boost__optional__float__(const boost::optional<float> &value, int stack)
+void writeToStack(const boost::optional<float> &value, int stack, const WriteOptions &wropt)
 {
     if(value)
     {
@@ -442,7 +447,7 @@ void write__boost__optional__float__(const boost::optional<float> &value, int st
     else sim::pushNullOntoStack(stack);
 }
 
-void write__boost__optional__double__(const boost::optional<double> &value, int stack)
+void writeToStack(const boost::optional<double> &value, int stack, const WriteOptions &wropt)
 {
     if(value)
     {
@@ -452,7 +457,7 @@ void write__boost__optional__double__(const boost::optional<double> &value, int 
     else sim::pushNullOntoStack(stack);
 }
 
-void write__boost__optional__std__string__(const boost::optional<std::string> &value, int stack)
+void writeToStack(const boost::optional<std::string> &value, int stack, const WriteOptions &wropt)
 {
     if(value)
     {
@@ -464,50 +469,50 @@ void write__boost__optional__std__string__(const boost::optional<std::string> &v
 }
 
 template<typename T>
-void write__table__insert(const std::vector<T> &vec, void (*writeItemFunc)(const T&, int), int stack)
+void writeToStack(const std::vector<T> &vec, int stack, const WriteOptions &wropt = {})
 {
     sim::pushTableOntoStack(stack);
     for(size_t i = 0; i < vec.size(); i++)
     {
-        write__int(i + 1, stack);
-        writeItemFunc(vec.at(i), stack);
+        writeToStack(int(i + 1), stack);
+        writeToStack(vec.at(i), stack);
         sim::insertDataIntoStackTable(stack);
     }
 }
 
-template<typename T>
-void write__table__oneshot(const std::vector<T> &vec, void (*writeFunc)(simInt, const std::vector<T>&), int stack)
+template<>
+void writeToStack(const std::vector<float> &vec, int stack, const WriteOptions &wropt)
 {
-    writeFunc(stack, vec);
+    sim::pushFloatTableOntoStack(stack, vec);
+}
+
+template<>
+void writeToStack(const std::vector<double> &vec, int stack, const WriteOptions &wropt)
+{
+    sim::pushDoubleTableOntoStack(stack, vec);
+}
+
+template<>
+void writeToStack(const std::vector<int> &vec, int stack, const WriteOptions &wropt)
+{
+    sim::pushInt32TableOntoStack(stack, vec);
 }
 
 #py for struct in plugin.structs:
-void write__`struct.name`(const `struct.name` &value, int stack)
+void writeToStack(const `struct.name` &value, int stack, const WriteOptions &wropt)
 {
-    addStubsDebugLog("write__`struct.name`: begin writing...");
+    addStubsDebugLog("writeToStack(`struct.name`): begin writing...");
 
     try
     {
         sim::pushTableOntoStack(stack);
 
 #py for field in struct.fields:
-        addStubsDebugLog("write__`struct.name`: writing field \"`field.name`\" (`field.ctype()`)...");
+        addStubsDebugLog("writeToStack(`struct.name`): writing field \"`field.name`\" (`field.ctype()`)...");
         try
         {
-            sim::pushStringOntoStack(stack, "`field.name`", 0);
-#py if isinstance(field, model.ParamTable):
-#py if field.itype == 'float':
-            write__table__oneshot(value.`field.name`, sim::pushFloatTableOntoStack, stack);
-#py elif field.itype == 'double':
-            write__table__oneshot(value.`field.name`, sim::pushDoubleTableOntoStack, stack);
-#py elif field.itype == 'int':
-            write__table__oneshot(value.`field.name`, sim::pushInt32TableOntoStack, stack);
-#py else:
-            write__table__insert(value.`field.name`, write__`field.ctype_normalized()`, stack);
-#py endif
-#py else:
-            write__`field.ctype_normalized()`(value.`field.name`, stack);
-#py endif
+            writeToStack(std::string{"`field.name`"}, stack);
+            writeToStack(value.`field.name`, stack);
             sim::insertDataIntoStackTable(stack);
         }
         catch(std::exception &ex)
@@ -518,10 +523,10 @@ void write__`struct.name`(const `struct.name` &value, int stack)
     }
     catch(std::exception &ex)
     {
-        throw sim::exception("write__`struct.name`: %s", ex.what());
+        throw sim::exception("writeToStack(`struct.name`): %s", ex.what());
     }
 
-    addStubsDebugLog("write__`struct.name`: finished writing");
+    addStubsDebugLog("writeToStack(`struct.name`): finished writing");
 }
 
 #py endfor
@@ -762,21 +767,11 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
             addStubsDebugLog("`cmd.c_name`_callback: reading input argument `i+1` \"`p.name`\" (`p.ctype()`)...");
             try
             {
-                // moving the first arg (stack pos 0) to top (the other end of the stack)
-                // which then it will be popped, thus consuming items from the beginning (stack bottom)
                 sim::moveStackItemToTop(p->stackID, 0);
 #py if isinstance(p, model.ParamTable):
-#py if p.itype == 'float':
-                read__table__oneshot(p->stackID, &(in_args.`p.name`), sim::getStackFloatTable, `p.minsize`, `p.maxsize`);
-#py elif p.itype == 'double':
-                read__table__oneshot(p->stackID, &(in_args.`p.name`), sim::getStackDoubleTable, `p.minsize`, `p.maxsize`);
-#py elif p.itype == 'int':
-                read__table__oneshot(p->stackID, &(in_args.`p.name`), sim::getStackInt32Table, `p.minsize`, `p.maxsize`);
+                readFromStack(p->stackID, &(in_args.`p.name`), ReadOptions().setTableBounds(`p.minsize`, `p.maxsize`));
 #py else:
-                read__table__unfold(p->stackID, &(in_args.`p.name`), read__`p.ctype_normalized()`, `p.minsize`, `p.maxsize`);
-#py endif
-#py else:
-                read__`p.ctype_normalized()`(p->stackID, &(in_args.`p.name`));
+                readFromStack(p->stackID, &(in_args.`p.name`));
 #py endif
             }
             catch(std::exception &ex)
@@ -823,19 +818,7 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
         addStubsDebugLog("`cmd.c_name`_callback: writing output argument `i+1` \"`p.name`\" (`p.ctype()`)...");
         try
         {
-#py if isinstance(p, model.ParamTable):
-#py if p.itype == 'float':
-            write__table__oneshot(out_args.`p.name`, sim::pushFloatTableOntoStack, p->stackID);
-#py elif p.itype == 'double':
-            write__table__oneshot(out_args.`p.name`, sim::pushDoubleTableOntoStack, p->stackID);
-#py elif p.itype == 'int':
-            write__table__oneshot(out_args.`p.name`, sim::pushInt32TableOntoStack, p->stackID);
-#py else:
-            write__table__insert(out_args.`p.name`, write__`p.ctype_normalized()`, p->stackID);
-#py endif
-#py else:
-            write__`p.ctype_normalized()`(out_args.`p.name`, p->stackID);
-#py endif
+            writeToStack(out_args.`p.name`, p->stackID);
         }
         catch(std::exception &ex)
         {
@@ -892,19 +875,7 @@ bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn
         addStubsDebugLog("`fn.c_name`: writing input argument `i+1` \"`p.name`\" (`p.ctype()`)...");
         try
         {
-#py if isinstance(p, model.ParamTable):
-#py if p.itype == 'float':
-            write__table__oneshot(in_args.`p.name`, sim::pushFloatTableOntoStack, stackID);
-#py elif p.itype == 'double':
-            write__table__oneshot(in_args.`p.name`, sim::pushDoubleTableOntoStack, stackID);
-#py elif p.itype == 'int':
-            write__table__oneshot(in_args.`p.name`, sim::pushInt32TableOntoStack, stackID);
-#py else:
-            write__table__insert(in_args.`p.name`, write__`p.ctype_normalized()`, stackID);
-#py endif
-#py else:
-            write__`p.ctype_normalized()`(in_args->`p.name`, stackID);
-#py endif
+            writeToStack(in_args->`p.name`, stackID);
         }
         catch(std::exception &ex)
         {
@@ -927,17 +898,9 @@ bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn
         {
             sim::moveStackItemToTop(stackID, 0);
 #py if isinstance(p, model.ParamTable):
-#py if p.itype == 'float':
-            read__table__oneshot(stackID, &(out_args->`p.name`), sim::getStackFloatTable, `p.minsize`, `p.maxsize`);
-#py elif p.itype == 'double':
-            read__table__oneshot(stackID, &(out_args->`p.name`), sim::getStackDoubleTable, `p.minsize`, `p.maxsize`);
-#py elif p.itype == 'int':
-            read__table__oneshot(stackID, &(out_args->`p.name`), sim::getStackInt32Table, `p.minsize`, `p.maxsize`);
+            readFromStack(stackID, &(out_args->`p.name`), ReadOptions().setTableBounds(`p.minsize`, `p.maxsize`));
 #py else:
-            read__table__unfold(stackID, &(out_args->`p.name`), read__`p.ctype_normalized()`, `p.minsize`, `p.maxsize`);
-#py endif
-#py else:
-            read__`p.ctype_normalized()`(stackID, &(out_args->`p.name`));
+            readFromStack(stackID, &(out_args->`p.name`));
 #py endif
         }
         catch(std::exception &ex)
