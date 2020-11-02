@@ -62,9 +62,6 @@ class Param(object):
     def hdefault(self):
         return self.default
 
-    def argmod(self):
-        return ''
-
     @staticmethod
     def register_type(dtype, clazz):
         Param.mapping[dtype] = clazz
@@ -122,10 +119,12 @@ class ParamTable(Param):
             if old in node.attrib:
                 raise AttributeError('Attribute "{}" should be changed to "{}"'.format(old, new))
         self.minsize = int(node.attrib.get('min-size', 0))
-        self.maxsize = int(node.attrib['max-size']) if 'max-size' in node.attrib else None
+        self.maxsize = int(node.attrib.get('max-size', -1))
         if 'size' in node.attrib:
             self.minsize = int(node.attrib['size'])
             self.maxsize = int(node.attrib['size'])
+        if self.minsize < 0:
+            raise ValueError('Invalid min-size: cannot be negative')
         if self.itype is None:
             self.write_in = False
             self.write_out = False
@@ -144,7 +143,7 @@ class ParamTable(Param):
         return self.item_dummy().ctype().replace('::', '__')
 
     def htype(self):
-        if self.minsize and self.maxsize and self.minsize == self.maxsize:
+        if self.minsize == self.maxsize:
             return 'table_{}'.format(self.minsize)
         return 'table'
 
@@ -164,9 +163,6 @@ class ParamStruct(Param):
 
     def optional(self):
         return self.xoptional
-
-    def argmod(self):
-        return '&'
 
 Param.register_type('anything', Param)
 Param.register_type('int', ParamInt)

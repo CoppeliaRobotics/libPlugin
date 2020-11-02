@@ -66,6 +66,7 @@ struct `struct.name`
 #py endfor
 
     `struct.name`();
+    `struct.name`(`', '.join(f'const {f.ctype()} &{f.name}_' for f in struct.fields)`) : `', '.join(f'{f.name}({f.name}_)' for f in struct.fields)` {}
 };
 
 #py endfor
@@ -82,16 +83,16 @@ void read__boost__optional__std__string__(int stack, boost::optional<std::string
 #py for struct in plugin.structs:
 void read__`struct.name`(int stack, `struct.name` *value);
 #py endfor
-void write__bool(bool value, int stack);
-void write__int(int value, int stack);
-void write__float(float value, int stack);
-void write__double(double value, int stack);
-void write__std__string(std::string value, int stack);
-void write__boost__optional__bool__(boost::optional<bool> value, int stack);
-void write__boost__optional__int__(boost::optional<int> value, int stack);
-void write__boost__optional__float__(boost::optional<float> value, int stack);
-void write__boost__optional__double__(boost::optional<double> value, int stack);
-void write__boost__optional__std__string__(boost::optional<std::string> value, int stack);
+void write__bool(const bool &value, int stack);
+void write__int(const int &value, int stack);
+void write__float(const float &value, int stack);
+void write__double(const double &value, int stack);
+void write__std__string(const std::string &value, int stack);
+void write__boost__optional__bool__(const boost::optional<bool> &value, int stack);
+void write__boost__optional__int__(const boost::optional<int> &value, int stack);
+void write__boost__optional__float__(const boost::optional<float> &value, int stack);
+void write__boost__optional__double__(const boost::optional<double> &value, int stack);
+void write__boost__optional__std__string__(const boost::optional<std::string> &value, int stack);
 #py for struct in plugin.structs:
 void write__`struct.name`(`struct.name` *value, int stack);
 #py endfor
