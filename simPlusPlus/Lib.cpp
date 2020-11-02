@@ -345,7 +345,37 @@ simInt getStackTableInfo(simInt stackHandle, simInt infoType)
 {
     simInt ret = simGetStackTableInfo(stackHandle, infoType);
 
-    addStackDebugLog("simGetStackTableInfo %d -> %d", infoType, ret);
+#ifndef NDEBUG
+    if(debugStackEnabled)
+    {
+        std::string infoTypeStr = "???", retStr = "???";
+        switch(infoType)
+        {
+        case 0: infoTypeStr = "check table type"; break;
+        case 1: infoTypeStr = "check array of nil"; break;
+        case 2: infoTypeStr = "check array of number"; break;
+        case 3: infoTypeStr = "check array of boolean"; break;
+        case 4: infoTypeStr = "check array of string"; break;
+        case 5: infoTypeStr = "check array of table"; break;
+        }
+        if(infoType == 0)
+        {
+            switch(ret)
+            {
+            case -4: retStr = "sim_stack_table_circular_ref"; break;
+            case -3: retStr = "sim_stack_table_not_table"; break;
+            case -2: retStr = "sim_stack_table_map"; break;
+            case  0: retStr = "sim_stack_table_empty"; break;
+            default:
+                if(ret > 0)
+                    retStr = util::sprintf("array of %d elements", ret);
+                break;
+            }
+        }
+        else retStr = ret ? "yes" : "no";
+        addStackDebugLog("simGetStackTableInfo query = %d (%s) -> %d (%s)", infoType, infoTypeStr, ret, retStr);
+    }
+#endif // NDEBUG
 
     if(ret == -1)
         throw api_error("simGetStackTableInfo");
