@@ -21,6 +21,29 @@ FuncTracer::~FuncTracer()
     sim::addLog(l_, f_ + " [leave]");
 }
 
+#ifndef NDEBUG
+
+template<typename... Arguments>
+void addStubsDebugLog(const std::string &fmt, Arguments&&... args)
+{
+    if(sim::isStackDebugEnabled())
+    {
+        auto msg = sim::util::sprintf(fmt, std::forward<Arguments>(args)...);
+        sim::addLog(sim_verbosity_debug, "STUBS DEBUG: %s", msg);
+    }
+}
+
+static void addStubsDebugStackDump(int stackHandle)
+{
+    if(sim::isStackDebugEnabled())
+        sim::debugStack(stackHandle);
+}
+
+#else // RELEASE
+#define addStubsDebugLog(...)
+#define addStubsDebugStackDump(x)
+#endif
+
 #ifdef QT_COMPIL
 
 Qt::HANDLE UI_THREAD = NULL;
@@ -221,13 +244,8 @@ void read__boost__optional__std__string__(int stack, boost::optional<std::string
 #py for struct in plugin.structs:
 void read__`struct.name`(int stack, `struct.name` *value)
 {
-#ifndef NDEBUG
-    if(sim::isStackDebugEnabled())
-    {
-        sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: reading struct \"`struct.name`\"...");
-        sim::debugStack(stack);
-    }
-#endif // NDEBUG
+    addStubsDebugLog("read__`struct.name`: begin reading...");
+    addStubsDebugStackDump(stack);
 
     try
     {
@@ -243,81 +261,67 @@ void read__`struct.name`(int stack, `struct.name` *value)
         sim::unfoldStackTable(stack);
         int numItems = (sim::getStackSize(stack) - oldsz + 1) / 2;
 
-        char *str;
-        int strSz;
-
         while(numItems >= 1)
         {
             sim::moveStackItemToTop(stack, oldsz - 1); // move key to top
-            if((str = sim::getStackStringValue(stack, &strSz)) != NULL && strSz >= 0)
-            {
-                sim::popStackItem(stack, 1);
+            std::string key;
+            read__std__string(stack, &key);
 
-                sim::moveStackItemToTop(stack, oldsz - 1); // move value to top
-
-                if(0) {}
+            sim::moveStackItemToTop(stack, oldsz - 1); // move value to top
+            if(0) {}
 #py for field in struct.fields:
-                else if(strcmp(str, "`field.name`") == 0)
+            else if(key == "`field.name`")
+            {
+                addStubsDebugLog("read__`struct.name`: reading field \"`field.name`\" (`field.ctype()`)...");
+                try
                 {
-#ifndef NDEBUG
-                    if(sim::isStackDebugEnabled())
-                        sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: reading field \"`field.name`\"...");
-#endif // NDEBUG
-
-                    try
-                    {
 #py if isinstance(field, model.ParamTable):
-                        // read field '`field.name`' of type array of `field.ctype()`
-                        sim::moveStackItemToTop(stack, 0);
-                        int i = sim::getStackTableInfo(stack, 0);
-                        if(i < 0)
-                        {
-                            throw sim::exception("expected array (simGetStackTableInfo(stack, 0) returned %d)", i);
-                        }
-                        int oldsz = sim::getStackSize(stack);
-                        sim::unfoldStackTable(stack);
-                        int sz = (sim::getStackSize(stack) - oldsz + 1) / 2;
-                        for(int i = 0; i < sz; i++)
-                        {
-                            sim::moveStackItemToTop(stack, oldsz - 1);
-                            int j;
-                            read__int(stack, &j);
-                            sim::moveStackItemToTop(stack, oldsz - 1);
-                            `field.item_dummy().ctype()` v;
-                            read__`field.ctype_normalized()`(stack, &v);
-                            value->`field.name`.push_back(v);
-                        }
+                    int i = sim::getStackTableInfo(stack, 0);
+                    if(i < 0)
+                    {
+                        throw sim::exception("expected array (simGetStackTableInfo(stack, 0) returned %d)", i);
+                    }
+                    int oldsz = sim::getStackSize(stack);
+                    sim::unfoldStackTable(stack);
+                    int sz = (sim::getStackSize(stack) - oldsz + 1) / 2;
+                    for(int i = 0; i < sz; i++)
+                    {
+                        sim::moveStackItemToTop(stack, oldsz - 1);
+                        int j;
+                        read__int(stack, &j);
+                        sim::moveStackItemToTop(stack, oldsz - 1);
+                        `field.item_dummy().ctype()` v;
+                        read__`field.ctype_normalized()`(stack, &v);
+                        value->`field.name`.push_back(v);
+                    }
 #py if field.minsize > 0 and field.minsize == field.maxsize:
-                        if(value->`field.name`.size() != `field.minsize`)
-                            throw sim::exception("must have exactly `field.minsize` elements");
+                    if(value->`field.name`.size() != `field.minsize`)
+                        throw sim::exception("must have exactly `field.minsize` elements");
 #py else:
 #py if field.minsize > 0:
-                        if(value->`field.name`.size() < `field.minsize`)
-                            throw sim::exception("must have at least `field.minsize` elements");
+                    if(value->`field.name`.size() < `field.minsize`)
+                        throw sim::exception("must have at least `field.minsize` elements");
 #py endif
 #py if field.maxsize is not None:
-                        if(value->`field.name`.size() > `field.maxsize`)
-                            throw sim::exception("must have at most `field.maxsize` elements");
+                    if(value->`field.name`.size() > `field.maxsize`)
+                        throw sim::exception("must have at most `field.maxsize` elements");
 #py endif
 #py endif
 #py else:
-                        // read field '`field.name`' of type `field.ctype()`
-                        read__`field.ctype_normalized()`(stack, &(value->`field.name`));
+                    read__`field.ctype_normalized()`(stack, &(value->`field.name`));
 #py endif
-                    }
-                    catch(std::exception &ex)
-                    {
-                        throw sim::exception("field '`field.name`': %s", ex.what());
-                    }
                 }
-#py endfor
-                else
+                catch(std::exception &ex)
                 {
-                    std::string msg = "unexpected key: ";
-                    msg += str;
-                    throw sim::exception(msg);
+                    throw sim::exception("field '`field.name`': %s", ex.what());
                 }
             }
+#py endfor
+            else
+            {
+                throw sim::exception("unexpected key: %s", key);
+            }
+
             numItems = (sim::getStackSize(stack) - oldsz + 1) / 2;
         }
     }
@@ -325,6 +329,8 @@ void read__`struct.name`(int stack, `struct.name` *value)
     {
         throw sim::exception("read__`struct.name`: %s", ex.what());
     }
+
+    addStubsDebugLog("read__`struct.name`: finished reading");
 }
 
 #py endfor
@@ -412,28 +418,18 @@ void write__boost__optional__std__string__(boost::optional<std::string> value, i
 #py for struct in plugin.structs:
 void write__`struct.name`(`struct.name` *value, int stack)
 {
-#ifndef NDEBUG
-    if(sim::isStackDebugEnabled())
-    {
-        sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: writing struct \"`struct.name`\"...");
-    }
-#endif // NDEBUG
+    addStubsDebugLog("write__`struct.name`: begin writing...");
 
     try
     {
         sim::pushTableOntoStack(stack);
 
 #py for field in struct.fields:
+        addStubsDebugLog("write__`struct.name`: writing field \"`field.name`\" (`field.ctype()`)...");
         try
         {
-#ifndef NDEBUG
-            if(sim::isStackDebugEnabled())
-                sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: writing field \"`field.name`\"...");
-#endif // NDEBUG
-
             sim::pushStringOntoStack(stack, "`field.name`", 0);
 #py if isinstance(field, model.ParamTable):
-            // write field '`field.name`' of type array of `field.ctype()`
             sim::pushTableOntoStack(stack);
             for(int i = 0; i < value->`field.name`.size(); i++)
             {
@@ -442,7 +438,6 @@ void write__`struct.name`(`struct.name` *value, int stack)
                 sim::insertDataIntoStackTable(stack);
             }
 #py else:
-            // write field '`field.name`' of type `field.ctype()`
             write__`field.ctype_normalized()`(`field.argmod()`(value->`field.name`), stack);
 #py endif
             sim::insertDataIntoStackTable(stack);
@@ -457,6 +452,8 @@ void write__`struct.name`(`struct.name` *value, int stack)
     {
         throw sim::exception("write__`struct.name`: %s", ex.what());
     }
+
+    addStubsDebugLog("write__`struct.name`: finished writing");
 }
 
 #py endfor
@@ -666,14 +663,8 @@ void `cmd.c_name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p', '%s *out_args'
 
 void `cmd.c_name`_callback(SScriptCallBack *p)
 {
-#ifndef NDEBUG
-    if(sim::isStackDebugEnabled())
-    {
-        sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: script callback for \"`cmd.c_name`\"...");
-        sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: reading input arguments...");
-        sim::debugStack(p->stackID);
-    }
-#endif // NDEBUG
+    addStubsDebugLog("`cmd.c_name`_callback: reading input arguments...");
+    addStubsDebugStackDump(p->stackID);
 
     const char *cmd = "`plugin.command_prefix``cmd.c_name`";
 
@@ -700,17 +691,15 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
 #py for i, p in enumerate(cmd.params):
         if(numArgs >= `i+1`)
         {
-#ifndef NDEBUG
-            if(sim::isStackDebugEnabled())
-                sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: reading input argument `i+1` (`p.name`)...");
-#endif // NDEBUG
-
+            addStubsDebugLog("`cmd.c_name`_callback: reading input argument `i+1` \"`p.name`\" (`p.ctype()`)...");
             try
             {
+                // moving the first arg (stack pos 0) to top (the other end of the stack)
+                // which then it will be popped, thus consuming items from the beginning (stack bottom)
+                sim::moveStackItemToTop(p->stackID, 0);
 #py if isinstance(p, model.ParamTable):
 #py if p.itype in ('float', 'double', 'int'):
-                // read input argument `i+1` (`p.name`) of type array of `p.ctype()` using fast function
-                sim::moveStackItemToTop(p->stackID, 0);
+                addStubsDebugLog("`cmd.c_name`_callback: ...using fast reader");
                 int sz = sim::getStackTableInfo(p->stackID, 0);
                 if(sz < 0)
                 {
@@ -730,8 +719,6 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
 #py endif
                 sim::popStackItem(p->stackID, 1);
 #py else:
-                // read input argument `i+1` (`p.name`) of type array of `p.ctype()`
-                sim::moveStackItemToTop(p->stackID, 0);
                 int i = sim::getStackTableInfo(p->stackID, 0);
                 if(i < 0)
                 {
@@ -766,8 +753,6 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
 #py endif
 #py endif
 #py else:
-                // read input argument `i+1` (`p.name`) of type `p.ctype()`
-                sim::moveStackItemToTop(p->stackID, 0);
                 read__`p.ctype_normalized()`(p->stackID, &(in_args.`p.name`));
 #py endif
             }
@@ -779,32 +764,17 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
 
 #py endfor
 
-#ifndef NDEBUG
-        if(sim::isStackDebugEnabled())
-        {
-            sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: stack content after reading input arguments:");
-            sim::debugStack(p->stackID);
-        }
-#endif // NDEBUG
+        addStubsDebugLog("`cmd.c_name`_callback: stack content after reading input arguments:");
+        addStubsDebugStackDump(p->stackID);
 
 #py if cmd.clear_stack_after_reading_input:
-#ifndef NDEBUG
-        if(sim::isStackDebugEnabled())
-        {
-            sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: clearing stack content after reading input arguments");
-        }
-#endif // NDEBUG
+        addStubsDebugLog("`cmd.c_name`_callback: clearing stack content after reading input arguments");
         // clear stack
         sim::popStackItem(p->stackID, 0);
 
 #py endif
 
-#ifndef NDEBUG
-        if(sim::isStackDebugEnabled())
-        {
-            sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: calling callback");
-        }
-#endif // NDEBUG
+        addStubsDebugLog("`cmd.c_name`_callback: calling callback (`cmd.c_name`)");
         `cmd.c_name`(p, cmd, &in_args, &out_args);
     }
     catch(std::exception &ex)
@@ -814,21 +784,11 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
 
     try
     {
-#ifndef NDEBUG
-        if(sim::isStackDebugEnabled())
-        {
-            sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: writing output arguments...");
-            sim::debugStack(p->stackID);
-        }
-#endif // NDEBUG
+        addStubsDebugLog("`cmd.c_name`_callback: writing output arguments...");
+        addStubsDebugStackDump(p->stackID);
 
 #py if cmd.clear_stack_before_writing_output:
-#ifndef NDEBUG
-        if(sim::isStackDebugEnabled())
-        {
-            sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: clearing stack content before writing output arguments");
-        }
-#endif // NDEBUG
+        addStubsDebugLog("`cmd.c_name`_callback: clearing stack content before writing output arguments");
         // clear stack
         sim::popStackItem(p->stackID, 0);
 
@@ -837,15 +797,10 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
         // write output arguments to stack
 
 #py for i, p in enumerate(cmd.returns):
+        addStubsDebugLog("`cmd.c_name`_callback: writing output argument `i+1` \"`p.name`\" (`p.ctype()`)...");
         try
         {
-#ifndef NDEBUG
-            if(sim::isStackDebugEnabled())
-                sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: writing output argument `i+1` (`p.name`)...");
-#endif // NDEBUG
-
 #py if isinstance(p, model.ParamTable):
-            // write output argument `i+1` (`p.name`) of type array of `p.ctype()`
             sim::pushTableOntoStack(p->stackID);
             for(int i = 0; i < out_args.`p.name`.size(); i++)
             {
@@ -854,7 +809,6 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
                 sim::insertDataIntoStackTable(p->stackID);
             }
 #py else:
-            // write output argument `i+1` (`p.name`) of type `p.ctype()`
             write__`p.ctype_normalized()`(`p.argmod()`(out_args.`p.name`), p->stackID);
 #py endif
         }
@@ -864,13 +818,8 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
         }
 #py endfor
 
-#ifndef NDEBUG
-        if(sim::isStackDebugEnabled())
-        {
-            sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: stack content after writing output arguments:");
-            sim::debugStack(p->stackID);
-        }
-#endif // NDEBUG
+        addStubsDebugLog("`cmd.c_name`_callback: stack content after writing output arguments:");
+        addStubsDebugStackDump(p->stackID);
     }
     catch(std::exception &ex)
     {
@@ -878,6 +827,8 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
         // clear stack
         try { sim::popStackItem(p->stackID, 0); } catch(...) {}
     }
+
+    addStubsDebugLog("`cmd.c_name`_callback: finished");
 }
 
 #py endfor
@@ -902,13 +853,7 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
 
 bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn.c_out_name` *out_args)
 {
-#ifndef NDEBUG
-    if(sim::isStackDebugEnabled())
-    {
-        sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: script callback function for \"`fn.c_name`\"...");
-        sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: writing input arguments...");
-    }
-#endif // NDEBUG
+    addStubsDebugLog("`fn.c_name`: writing input arguments...");
 
     int stackID = -1;
 
@@ -919,10 +864,10 @@ bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn
         // write input arguments to stack
 
 #py for i, p in enumerate(fn.params):
+        addStubsDebugLog("`fn.c_name`: writing input argument `i+1` \"`p.name`\" (`p.ctype()`)...");
         try
         {
 #py if isinstance(p, model.ParamTable):
-            // write input argument `i+1` (`p.name`) of type array of `p.ctype()`
             sim::pushTableOntoStack(stackID);
             for(int i = 0; i < in_args->`p.name`.size(); i++)
             {
@@ -931,7 +876,6 @@ bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn
                 sim::insertDataIntoStackTable(stackID);
             }
 #py else:
-            // write input argument `i+1` (`p.name`) of type `p.ctype()`
             write__`p.ctype_normalized()`(`p.argmod()`(in_args->`p.name`), stackID);
 #py endif
         }
@@ -941,29 +885,21 @@ bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn
         }
 #py endfor
 
-#ifndef NDEBUG
-        if(sim::isStackDebugEnabled())
-        {
-            sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: wrote input arguments:");
-            sim::debugStack(stackID);
-        }
-#endif // NDEBUG
+        addStubsDebugLog("`fn.c_name`: wrote input arguments:");
+        addStubsDebugStackDump(stackID);
 
         sim::callScriptFunctionEx(scriptId, func, stackID);
 
         // read output arguments from stack
 
-#ifndef NDEBUG
-        if(sim::isStackDebugEnabled())
-            sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: reading output arguments...");
-#endif // NDEBUG
+        addStubsDebugLog("`fn.c_name`: reading output arguments...");
 
 #py for i, p in enumerate(fn.returns):
+        addStubsDebugLog("`fn.c_name`: reading output argument `i+1` \"`p.name`\" (`p.ctype()`)...");
         try
         {
-#py if isinstance(p, model.ParamTable):
-            // read output argument `i+1` (`p.name`) of type array of `p.ctype()`
             sim::moveStackItemToTop(stackID, 0);
+#py if isinstance(p, model.ParamTable):
             int i = sim::getStackTableInfo(stackID, 0);
             if(i < 0)
             {
@@ -996,8 +932,6 @@ bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn
 #py endif
 #py endif
 #py else:
-            // read output argument `i+1` (`p.name`) of type `p.ctype()`
-            sim::moveStackItemToTop(stackID, 0);
             read__`p.ctype_normalized()`(stackID, &(out_args->`p.name`));
 #py endif
         }
@@ -1007,13 +941,8 @@ bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn
         }
 #py endfor
 
-#ifndef NDEBUG
-        if(sim::isStackDebugEnabled())
-        {
-            sim::addLog(sim_verbosity_debug, "DEBUG_STUBS: stack content after reading output arguments:");
-            sim::debugStack(stackID);
-        }
-#endif // NDEBUG
+        addStubsDebugLog("`fn.c_name`: stack content after reading output arguments:");
+        addStubsDebugStackDump(stackID);
 
         sim::releaseStack(stackID);
         stackID = -1;
@@ -1025,6 +954,8 @@ bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn
         sim::setLastError(func, ex.what());
         return false;
     }
+
+    addStubsDebugLog("`fn.c_name`: finished");
 
     return true;
 }
