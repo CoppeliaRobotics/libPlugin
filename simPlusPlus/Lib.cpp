@@ -277,7 +277,7 @@ simInt getStackBoolValue(simInt stackHandle, simBool *boolValue)
     if(ret == -1)
         throw api_error("simGetStackBoolValue");
 
-    addStackDebugLog("simGetStackBoolValue -> %d, value = %d", ret, *boolValue);
+    addStackDebugLog("simGetStackBoolValue -> %d, value = %s", ret, *boolValue ? "true" : "false");
 
     return ret;
 }
