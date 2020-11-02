@@ -613,6 +613,23 @@ simVoid setObjectStringParameter(simInt objectHandle, simInt parameterID, const 
         throw api_error("simSetObjectStringParameter");
 }
 
+boost::optional<std::string> getStringNamedParam(const std::string &parameter)
+{
+    simChar *ret;
+    simInt len;
+    if((ret = simGetStringNamedParam(parameter.c_str(), &len)) == NULL)
+        return {};
+    std::string s(ret, len);
+    releaseBuffer(ret);
+    return s;
+}
+
+simVoid setStringNamedParam(const std::string &parameter, const std::string &value)
+{
+    if(simSetStringNamedParam(parameter.c_str(), value.c_str(), value.size()) == -1)
+        throw api_error("simSetStringNamedParam");
+}
+
 simChar* createBuffer(simInt size)
 {
     simChar *ret = simCreateBuffer(size);
