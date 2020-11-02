@@ -325,7 +325,7 @@ simChar* getStackStringValue(simInt stackHandle, simInt *stringSize)
         if(ret)
         {
             std::string s(ret, *stringSize);
-            addStackDebugLog("simGetStackStringValue -> value = %s", s);
+            addStackDebugLog("simGetStackStringValue -> value = \"%s\"", s);
         }
         else
         {
