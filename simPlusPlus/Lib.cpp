@@ -29,18 +29,18 @@ void addStackDebugLog(const std::string &fmt, Arguments&&... args)
     if(debugStackEnabled)
     {
         auto msg = util::sprintf(fmt, std::forward<Arguments>(args)...);
-        addLog(sim_verbosity_debug, "DEBUG_STUBS: %s", msg);
+        addLog(sim_verbosity_debug, "STACK DEBUG: %s", msg);
     }
 }
 
-void addStackDebugDump(int stackHandle)
+static void addStackDebugDump(int stackHandle)
 {
     if(debugStackEnabled)
         debugStack(stackHandle);
 }
 
 #else // RELEASE
-#define addStackDebugLog(x)
+#define addStackDebugLog(...)
 #define addStackDebugDump(x)
 #endif
 
