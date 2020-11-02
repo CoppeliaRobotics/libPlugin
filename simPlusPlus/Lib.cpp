@@ -277,7 +277,7 @@ simInt getStackBoolValue(simInt stackHandle, simBool *boolValue)
     if(ret == -1)
         throw api_error("simGetStackBoolValue");
 
-    addStackDebugLog("simGetStackBoolValue -> %d, value = %d", ret, boolValue);
+    addStackDebugLog("simGetStackBoolValue -> %d, value = %d", ret, *boolValue);
 
     return ret;
 }
@@ -288,7 +288,7 @@ simInt getStackInt32Value(simInt stackHandle, simInt *numberValue)
     if(ret == -1)
         throw api_error("simGetStackInt32Value");
 
-    addStackDebugLog("simGetStackInt32Value -> %d, value = %d", ret, numberValue);
+    addStackDebugLog("simGetStackInt32Value -> %d, value = %d", ret, *numberValue);
 
     return ret;
 }
@@ -299,7 +299,7 @@ simInt getStackFloatValue(simInt stackHandle, simFloat *numberValue)
     if(ret == -1)
         throw api_error("simGetStackFloatValue");
 
-    addStackDebugLog("simGetStackFloatValue -> %d, value = %f", ret, numberValue);
+    addStackDebugLog("simGetStackFloatValue -> %d, value = %f", ret, *numberValue);
 
     return ret;
 }
@@ -310,7 +310,7 @@ simInt getStackDoubleValue(simInt stackHandle, simDouble *numberValue)
     if(ret == -1)
         throw api_error("simGetStackDoubleValue");
 
-    addStackDebugLog("simGetStackDoubleValue -> %d, value = %g", ret, numberValue);
+    addStackDebugLog("simGetStackDoubleValue -> %d, value = %g", ret, *numberValue);
 
     return ret;
 }
