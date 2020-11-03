@@ -153,15 +153,14 @@ void readFromStack(int stack, boost::optional<T> *value, const ReadOptions &rdop
     if(sim::isStackValueNull(stack) == 1)
     {
         *value = boost::none;
+        sim::popStackItem(stack, 1);
     }
     else
     {
         T v;
-        readFromStack(stack, &v, rdopt);
+        readFromStack(stack, &v, rdopt); // will call sim::popStackItem() by itself
         *value = v;
     }
-
-    sim::popStackItem(stack, 1);
 }
 
 void checkTableSize(size_t sz, const ReadOptions &rdopt)
