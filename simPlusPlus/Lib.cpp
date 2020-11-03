@@ -892,4 +892,86 @@ simInt getObjectSelectionSize()
     return ret;
 }
 
+simVoid setModuleInfo(const std::string &moduleName, simInt infoType, const std::string &stringInfo)
+{
+    if(simSetModuleInfo(moduleName.c_str(), infoType, stringInfo.c_str(), 0) == -1)
+        throw api_error("simSetModuleInfo");
+}
+
+simVoid setModuleInfo(const std::string &moduleName, simInt infoType, simInt intInfo)
+{
+    if(simSetModuleInfo(moduleName.c_str(), infoType, nullptr, intInfo) == -1)
+        throw api_error("simSetModuleInfo");
+}
+
+simVoid getModuleInfo(const std::string &moduleName, simInt infoType, std::string &stringInfo)
+{
+    simInt intInfo = 0;
+    simChar *s = nullptr;
+    if(simGetModuleInfo(moduleName.c_str(), infoType, &s, &intInfo) == -1)
+        throw api_error("simGetModuleInfo");
+    if(s)
+    {
+        stringInfo = std::string(s);
+        releaseBuffer(s);
+    }
+}
+
+simVoid getModuleInfo(const std::string &moduleName, simInt infoType, simInt &intInfo)
+{
+    simChar *s = nullptr;
+    if(simGetModuleInfo(moduleName.c_str(), infoType, &s, &intInfo) == -1)
+        throw api_error("simGetModuleInfo");
+    if(s)
+        releaseBuffer(s);
+}
+
+std::string getModuleInfoStr(const std::string &moduleName, simInt infoType)
+{
+    std::string s;
+    getModuleInfo(moduleName, infoType, s);
+    return s;
+}
+
+simInt getModuleInfoInt(const std::string &moduleName, simInt infoType)
+{
+    simInt i;
+    getModuleInfo(moduleName, infoType, i);
+    return i;
+}
+
+simVoid setModuleInfo(simInt infoType, const std::string &stringInfo)
+{
+    setModuleInfo(pluginName, infoType, stringInfo);
+}
+
+simVoid setModuleInfo(simInt infoType, simInt intInfo)
+{
+    setModuleInfo(pluginName, infoType, intInfo);
+}
+
+simVoid getModuleInfo(simInt infoType, std::string &stringInfo)
+{
+    getModuleInfo(pluginName, infoType, stringInfo);
+}
+
+simVoid getModuleInfo(simInt infoType, simInt &intInfo)
+{
+    getModuleInfo(pluginName, infoType, intInfo);
+}
+
+std::string getModuleInfoStr(simInt infoType)
+{
+    std::string s;
+    getModuleInfo(infoType, s);
+    return s;
+}
+
+simInt getModuleInfoInt(simInt infoType)
+{
+    simInt i;
+    getModuleInfo(infoType, i);
+    return i;
+}
+
 } // namespace sim

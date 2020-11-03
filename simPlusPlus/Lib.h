@@ -186,6 +186,20 @@ namespace sim
     std::vector<simInt> getObjectSelection();
     simInt getObjectSelectionSize();
 
+    simVoid setModuleInfo(const std::string &moduleName, simInt infoType, const std::string &stringInfo);
+    simVoid setModuleInfo(const std::string &moduleName, simInt infoType, simInt intInfo);
+    simVoid getModuleInfo(const std::string &moduleName, simInt infoType, std::string &stringInfo);
+    simVoid getModuleInfo(const std::string &moduleName, simInt infoType, simInt &intInfo);
+    std::string getModuleInfoStr(const std::string &moduleName, simInt infoType);
+    simInt getModuleInfoInt(const std::string &moduleName, simInt infoType);
+
+    simVoid setModuleInfo(simInt infoType, const std::string &stringInfo);
+    simVoid setModuleInfo(simInt infoType, simInt intInfo);
+    simVoid getModuleInfo(simInt infoType, std::string &stringInfo);
+    simVoid getModuleInfo(simInt infoType, simInt &intInfo);
+    std::string getModuleInfoStr(simInt infoType);
+    simInt getModuleInfoInt(simInt infoType);
+
     extern std::string pluginName;
 
     template<typename... Arguments>
