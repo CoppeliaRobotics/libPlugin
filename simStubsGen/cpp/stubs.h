@@ -93,11 +93,6 @@ void readFromStack(int stack, int *value, const ReadOptions &rdopt = {});
 void readFromStack(int stack, float *value, const ReadOptions &rdopt = {});
 void readFromStack(int stack, double *value, const ReadOptions &rdopt = {});
 void readFromStack(int stack, std::string *value, const ReadOptions &rdopt = {});
-void readFromStack(int stack, boost::optional<bool> *value, const ReadOptions &rdopt = {});
-void readFromStack(int stack, boost::optional<int> *value, const ReadOptions &rdopt = {});
-void readFromStack(int stack, boost::optional<float> *value, const ReadOptions &rdopt = {});
-void readFromStack(int stack, boost::optional<double> *value, const ReadOptions &rdopt = {});
-void readFromStack(int stack, boost::optional<std::string> *value, const ReadOptions &rdopt = {});
 #py for struct in plugin.structs:
 void readFromStack(int stack, `struct.name` *value, const ReadOptions &rdopt = {});
 #py endfor
@@ -106,11 +101,6 @@ void writeToStack(const int &value, int stack, const WriteOptions &wropt = {});
 void writeToStack(const float &value, int stack, const WriteOptions &wropt = {});
 void writeToStack(const double &value, int stack, const WriteOptions &wropt = {});
 void writeToStack(const std::string &value, int stack, const WriteOptions &wropt = {});
-void writeToStack(const boost::optional<bool> &value, int stack, const WriteOptions &wropt = {});
-void writeToStack(const boost::optional<int> &value, int stack, const WriteOptions &wropt = {});
-void writeToStack(const boost::optional<float> &value, int stack, const WriteOptions &wropt = {});
-void writeToStack(const boost::optional<double> &value, int stack, const WriteOptions &wropt = {});
-void writeToStack(const boost::optional<std::string> &value, int stack, const WriteOptions &wropt = {});
 #py for struct in plugin.structs:
 void writeToStack(const `struct.name` &value, int stack, const WriteOptions &wropt = {});
 #py endfor

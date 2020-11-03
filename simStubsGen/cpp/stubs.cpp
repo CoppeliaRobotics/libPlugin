@@ -147,94 +147,21 @@ void readFromStack(int stack, std::string *value, const ReadOptions &rdopt)
     }
 }
 
-void readFromStack(int stack, boost::optional<bool> *value, const ReadOptions &rdopt)
+template<typename T>
+void readFromStack(int stack, boost::optional<T> *value, const ReadOptions &rdopt = {})
 {
-    simBool v;
-    if(sim::getStackBoolValue(stack, &v) == 1)
-    {
-        *value = v;
-        sim::popStackItem(stack, 1);
-    }
-    else if(sim::isStackValueNull(stack) == 1)
+    if(sim::isStackValueNull(stack) == 1)
     {
         *value = boost::none;
     }
     else
     {
-        throw sim::exception("expected bool or nil");
+        T v;
+        readFromStack(stack, &v, rdopt);
+        *value = v;
     }
-}
 
-void readFromStack(int stack, boost::optional<int> *value, const ReadOptions &rdopt)
-{
-    int v;
-    if(sim::getStackInt32Value(stack, &v) == 1)
-    {
-        *value = v;
-        sim::popStackItem(stack, 1);
-    }
-    else if(sim::isStackValueNull(stack) == 1)
-    {
-        *value = boost::none;
-    }
-    else
-    {
-        throw sim::exception("expected int or nil");
-    }
-}
-
-void readFromStack(int stack, boost::optional<float> *value, const ReadOptions &rdopt)
-{
-    simFloat v;
-    if(sim::getStackFloatValue(stack, &v) == 1)
-    {
-        *value = v;
-        sim::popStackItem(stack, 1);
-    }
-    else if(sim::isStackValueNull(stack) == 1)
-    {
-        *value = boost::none;
-    }
-    else
-    {
-        throw sim::exception("expected float or nil");
-    }
-}
-
-void readFromStack(int stack, boost::optional<double> *value, const ReadOptions &rdopt)
-{
-    simDouble v;
-    if(sim::getStackDoubleValue(stack, &v) == 1)
-    {
-        *value = v;
-        sim::popStackItem(stack, 1);
-    }
-    else if(sim::isStackValueNull(stack) == 1)
-    {
-        *value = boost::none;
-    }
-    else
-    {
-        throw sim::exception("expected double or nil");
-    }
-}
-
-void readFromStack(int stack, boost::optional<std::string> *value, const ReadOptions &rdopt)
-{
-    std::string v;
-    if(sim::getStackStringValue(stack, &v) == 1)
-    {
-        *value = v;
-        sim::popStackItem(stack, 1);
-    }
-    else if(sim::isStackValueNull(stack) == 1)
-    {
-        *value = boost::none;
-    }
-    else
-    {
-        throw sim::exception("expected string or nil");
-    }
+    sim::popStackItem(stack, 1);
 }
 
 void checkTableSize(size_t sz, const ReadOptions &rdopt)
@@ -417,55 +344,16 @@ void writeToStack(const std::string &value, int stack, const WriteOptions &wropt
     sim::pushStringOntoStack(stack, value);
 }
 
-void writeToStack(const boost::optional<bool> &value, int stack, const WriteOptions &wropt)
+template<typename T>
+void writeToStack(const boost::optional<T> &value, int stack, const WriteOptions &wropt = {})
 {
-    if(value)
+    if(!value)
     {
-        simBool v = value.get();
-        sim::pushBoolOntoStack(stack, v);
+        sim::pushNullOntoStack(stack);
+        return;
     }
-    else sim::pushNullOntoStack(stack);
-}
 
-void writeToStack(const boost::optional<int> &value, int stack, const WriteOptions &wropt)
-{
-    if(value)
-    {
-        simInt v = value.get();
-        sim::pushInt32OntoStack(stack, v);
-    }
-    else sim::pushNullOntoStack(stack);
-}
-
-void writeToStack(const boost::optional<float> &value, int stack, const WriteOptions &wropt)
-{
-    if(value)
-    {
-        simFloat v = value.get();
-        sim::pushFloatOntoStack(stack, v);
-    }
-    else sim::pushNullOntoStack(stack);
-}
-
-void writeToStack(const boost::optional<double> &value, int stack, const WriteOptions &wropt)
-{
-    if(value)
-    {
-        simDouble v = value.get();
-        sim::pushDoubleOntoStack(stack, v);
-    }
-    else sim::pushNullOntoStack(stack);
-}
-
-void writeToStack(const boost::optional<std::string> &value, int stack, const WriteOptions &wropt)
-{
-    if(value)
-    {
-        std::string s = value.get();
-        const simChar *v = s.c_str();
-        sim::pushStringOntoStack(stack, v, s.length());
-    }
-    else sim::pushNullOntoStack(stack);
+    writeToStack(*value, stack, wropt);
 }
 
 template<typename T>
