@@ -28,8 +28,6 @@ class Param(object):
         self.nullable = node.attrib.get('nullable', 'false').lower() in ('true', 'yes', '1')
         self.write_in = True
         self.write_out = True
-        if self.dtype == 'table' and self.nullable:
-            raise ValueError('cannot have nullable table')
 
     def mandatory(self):
         return self.default is None
@@ -38,20 +36,8 @@ class Param(object):
         return self.default is not None
 
     def ctype(self):
-        if self.nullable: return 'boost::optional<%s>' % self.ctype_base
+        if self.nullable: return 'boost::optional< %s >' % self.ctype_base
         else: return self.ctype_base
-
-    def ctype_normalized(self):
-        replacements = {
-            '::': '__',
-            '<': '__',
-            '>': '__',
-            ' ': '',
-        }
-        ret = self.ctype()
-        for a, b in replacements.items():
-            ret = ret.replace(a, b)
-        return ret
 
     def htype(self):
         return self.dtype
@@ -115,6 +101,11 @@ class ParamTable(Param):
     def __init__(self, node):
         super(ParamTable, self).__init__(node)
         self.itype = node.attrib.get('item-type', None)
+        if self.itype is not None:
+            self.ctype_base = 'std::vector< %s >' % self.item_dummy().ctype()
+        else:
+            self.ctype_base = 'void *'
+
         for (old, new) in (('minsize', 'min-size'), ('maxsize', 'max-size')):
             if old in node.attrib:
                 raise AttributeError('Attribute "{}" should be changed to "{}"'.format(old, new))
@@ -132,15 +123,6 @@ class ParamTable(Param):
     def item_dummy(self):
         n = type('dummyNode', (object,), dict(tag='param', attrib={'name': 'dummy', 'type': self.itype}))
         return Param.factory(n)
-
-    def ctype(self):
-        if self.itype is not None:
-            return 'std::vector<%s>' % self.item_dummy().ctype()
-        else:
-            return 'void *'
-
-    def ctype_normalized(self):
-        return self.item_dummy().ctype().replace('::', '__')
 
     def htype(self):
         if self.minsize == self.maxsize:
