@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<?xml-stylesheet type="text/xsl" href="callbacks.xsl"?>
+
+<plugin name="StubsGenTests" short-name="StubsGenTests" author="federico.ferri.it@gmail.com">
+    <description>Test suite for simStubsGen</description>
+
+    <command name="basic">
+        <params>
+            <param name="i" type="int" />
+            <param name="f" type="float" />
+            <param name="d" type="double" />
+            <param name="s" type="string" />
+            <param name="b" type="bool" />
+            <param name="ti" type="table" item-type="int" min-size="1" max-size="2" />
+            <param name="z" type="struct1" />
+        </params>
+        <return>
+            <param name="i" type="int" />
+            <param name="f" type="float" />
+            <param name="d" type="double" />
+            <param name="s" type="string" />
+            <param name="b" type="bool" />
+            <param name="ti" type="table" item-type="int" />
+            <param name="z" type="struct1" />
+        </return>
+    </command>
+
+    <command name="nullable">
+        <params>
+            <param name="i" type="int" nullable="true" />
+            <param name="f" type="float" nullable="true" />
+            <param name="d" type="double" nullable="true" />
+            <param name="s" type="string" nullable="true" />
+            <param name="b" type="bool" nullable="true" />
+            <param name="ti" type="table" item-type="int" min-size="1" max-size="2" nullable="true" />
+            <param name="z" type="struct1" nullable="true" />
+        </params>
+        <return>
+            <param name="i" type="int" nullable="true" />
+            <param name="f" type="float" nullable="true" />
+            <param name="d" type="double" nullable="true" />
+            <param name="s" type="string" nullable="true" />
+            <param name="b" type="bool" nullable="true" />
+            <param name="ti" type="table" item-type="int" nullable="true" />
+            <param name="z" type="struct1" nullable="true" />
+        </return>
+    </command>
+
+    <command name="struct_table">
+        <params>
+            <param name="i" type="int" />
+            <param name="s" type="string" />
+            <param name="tz" type="table" item-type="struct1" min-size="1" max-size="2" />
+        </params>
+        <return>
+            <param name="i" type="int" nullable="true" />
+            <param name="f" type="float" nullable="true" />
+            <param name="d" type="double" nullable="true" />
+            <param name="s" type="string" nullable="true" />
+            <param name="b" type="bool" nullable="true" />
+        </return>
+    </command>
+
+    <enum name="enum1" item-prefix="e1_" base="40">
+        <item name="a" />
+        <item name="b" />
+        <item name="the_answer" />
+    </enum>
+
+    <struct name="struct1">
+        <param name="i" type="int" />
+        <param name="f" type="float" />
+        <param name="d" type="double" />
+        <param name="s" type="string" />
+        <param name="b" type="bool" />
+    </struct>
+</plugin>
