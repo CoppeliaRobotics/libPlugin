@@ -352,6 +352,10 @@ end
 
 function assertOk(n,f)
     logDebug('test "%s"...',n)
+    if runTest and runTest[n]==nil then
+        logInfo('test "%s": SKIPPED',n)
+        return
+    end
     local r,e=pcall(f)
     if not r then
         logDebug('test "%s": error: %s',n,e)
@@ -365,6 +369,10 @@ end
 
 function assertFail(n,f)
     logDebug('test "%s"...',n)
+    if runTest and runTest[n]==nil then
+        logInfo('test "%s": SKIPPED',n)
+        return
+    end
     local r,e=pcall(f)
     if r then
         logDebug('test "%s": succeeded, but should have failed',n)
@@ -412,6 +420,12 @@ end
 function sysCall_init()
     local v=sim.getStringNamedParam('simStubsGenTests.verbosity')
     if v then sim.setInt32Parameter(sim.intparam_verbosity,sim['verbosity_'..v]) end
+
+    local tests=sim.getStringNamedParam('simStubsGenTests.tests')
+    if tests then
+        runTest={}
+        for test in string.gmatch(tests,'([^,]+)') do runTest[test]=1 end
+    end
 
     logInfo('add-on initialized')
     local r,e=pcall(loadModule)
