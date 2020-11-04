@@ -63,6 +63,51 @@ public:
             sim::setModuleInfo(sim_moduleinfo_verbosity, v ? verbosityFromString(*v) : sim_verbosity_infos);
 #endif
     }
+
+    void basic(basic_in *in, basic_out *out)
+    {
+        out->i = in->i;
+        out->f = in->f;
+        out->d = in->d;
+        out->s = in->s;
+        out->b = in->b;
+        out->ti = in->ti;
+        out->z = in->z;
+        sim::addLog(sim_verbosity_debug, "basic: i=%d", in->i);
+        sim::addLog(sim_verbosity_debug, "basic: f=%f", in->f);
+        sim::addLog(sim_verbosity_debug, "basic: d=%f", in->d);
+        sim::addLog(sim_verbosity_debug, "basic: b=%d", in->b);
+        sim::addLog(sim_verbosity_debug, "basic: s=%s", in->s);
+        sim::addLog(sim_verbosity_debug, "basic: ti=<%d values>", in->ti.size());
+        sim::addLog(sim_verbosity_debug, "basic: z=%08x", &in->z);
+    }
+
+    void nullable(nullable_in *in, nullable_out *out)
+    {
+        if(in->i) out->i = in->i;
+        if(in->f) out->f = in->f;
+        if(in->d) out->d = in->d;
+        if(in->s) out->s = in->s;
+        if(in->b) out->b = in->b;
+        if(in->ti) out->ti = in->ti;
+        if(in->z) out->z = in->z;
+        sim::addLog(sim_verbosity_debug, "nullable: i=%d", in->i);
+        sim::addLog(sim_verbosity_debug, "nullable: f=%f", in->f);
+        sim::addLog(sim_verbosity_debug, "nullable: d=%f", in->d);
+        sim::addLog(sim_verbosity_debug, "nullable: b=%d", in->s);
+        sim::addLog(sim_verbosity_debug, "nullable: s=%s", in->b);
+        sim::addLog(sim_verbosity_debug, "nullable: ti=<%d values>", in->ti ? in->ti->size() : 0);
+        sim::addLog(sim_verbosity_debug, "nullable: z=%08x", in->z ? &(*in->z) : nullptr);
+    }
+
+    void struct_table(struct_table_in *in, struct_table_out *out)
+    {
+        if(in->s == "i") out->i = in->tz.at(in->i).i;
+        if(in->s == "f") out->f = in->tz.at(in->i).f;
+        if(in->s == "d") out->d = in->tz.at(in->i).d;
+        if(in->s == "s") out->s = in->tz.at(in->i).s;
+        if(in->s == "b") out->b = in->tz.at(in->i).b;
+    }
 };
 
 SIM_PLUGIN("StubsGenTests", 1, Plugin)

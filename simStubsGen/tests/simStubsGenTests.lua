@@ -3,6 +3,282 @@ function main()
 
     numPassed,numFailed=0,0
 
+    assertOk('basic.valid.1', function()
+        -- valid args
+        a,b,c,d,e,f,g=simStubsGenTests.basic(5,3.3,4.444444,'x',true,{1,2},struct1)
+        -- output args are copied from input args
+        assertEq(a,5)
+        assertEq(b,3.3)
+        assertEq(c,4.444444)
+        assertEq(d,'x')
+        assertEq(e,true)
+        assertEq(f,{1,2})
+        assertEq(g,struct1)
+    end)
+
+    assertOk('basic.valid.2', function()
+        -- more valid args
+        simStubsGenTests.basic(0,0,0,'',false,{1},struct1)
+    end)
+
+    assertFail('basic.toofew', function()
+        simStubsGenTests.basic(0,0,0,'',false,{1})
+    end)
+
+    assertFail('basic.toomany', function()
+        simStubsGenTests.basic(0,0,0,'',false,{1},struct1,8)
+    end)
+
+    assertFail('basic.toomany.2', function()
+        simStubsGenTests.basic(0,0,0,'',false,{1},struct1,nil)
+    end)
+
+    assertFail('basic.1.badnil', function()
+        -- pass nil to first (is not nullable)
+        simStubsGenTests.basic(nil,3.3,6,'x',true,{1},struct1)
+    end)
+
+    assertFail('basic.1.badtype', function()
+        -- pass incorrect type to first (requires int)
+        simStubsGenTests.basic('z',3.3,6,'x',true,{1},struct1)
+    end)
+
+    assertFail('basic.2.badtype', function()
+        -- pass incorrect type to second (requires float)
+        simStubsGenTests.basic(0,true,6,'x',true,{1},struct1)
+    end)
+
+    assertFail('basic.2.badnil', function()
+        -- pass nil to second (is not nullable)
+        simStubsGenTests.basic(1,nil,6,'x',true,{1},struct1)
+    end)
+
+    assertFail('basic.3.badnil', function()
+        -- pass nil to third (is not nullable)
+        simStubsGenTests.basic(2,3.7,nil,'x',true,{1},struct1)
+    end)
+
+    assertFail('basic.4.badtype', function()
+        -- pass incorrect type to fourth (requires string)
+        simStubsGenTests.basic(9,3.3,6,false,true,{1},struct1)
+    end)
+
+    assertFail('basic.5.badtype', function()
+        -- pass incorrect type to fifth (requires bool)
+        simStubsGenTests.basic(9,3.3,6,'x',0,{1},struct1)
+    end)
+
+    assertFail('basic.5.badnil', function()
+        -- pass nil to fifth (is not nullable)
+        simStubsGenTests.basic(9,3.3,6,'x',nil,{1},struct1)
+    end)
+
+    assertFail('basic.6.badsize.1', function()
+        -- pass incorrect table size to sixth (requires 1<=sz<=2)
+        simStubsGenTests.basic(9,3.3,6,'x',false,{},struct1)
+    end)
+
+    assertFail('basic.6.badsize.2', function()
+        -- pass incorrect table size to sixth (requires 1<=sz<=2)
+        simStubsGenTests.basic(9,3.3,6,'x',false,{1,2,3},struct1)
+    end)
+
+    assertFail('basic.6.badtype', function()
+        -- pass incorrect item type to sixth (requires int)
+        simStubsGenTests.basic(9,3.3,6,'x',false,{'a','b'},struct1)
+    end)
+
+    assertFail('basic.7.badnil', function()
+        -- pass nil to seventh (is not nullable, requires struct)
+        simStubsGenTests.basic(9,3.3,6,'x',true,{1},nil)
+    end)
+
+    assertFail('basic.7.badnil', function()
+        -- pass nil to seventh (is not nullable, requires struct)
+        simStubsGenTests.basic(9,3.3,6,'x',true,{1},nil)
+    end)
+
+    assertFail('basic.7.badnil', function()
+        -- pass nil to seventh (is not nullable, requires struct)
+        simStubsGenTests.basic(9,3.3,6,'x',true,{1},nil)
+    end)
+
+    assertFail('basic.7.badtype', function()
+        -- pass incorrect type to seventh (requires struct)
+        simStubsGenTests.basic(9,3.3,6,'x',true,{1},'')
+    end)
+
+    assertFail('basic.struct.badtype.1', function()
+        -- pass bad struct (z.i requires int) to seventh
+        simStubsGenTests.basic(9,3.3,6,'x',true,{1},{i='',f=6.6,d=4.444444,s='xx',b=false})
+    end)
+
+    assertFail('basic.struct.badtype.2', function()
+        -- pass bad struct (z.f requires float) to seventh
+        simStubsGenTests.basic(9,3.3,6,'x',true,{1},{i=6,f=false,d=4.444444,s='xx',b=false})
+    end)
+
+    assertFail('basic.struct.badtype.3', function()
+        -- pass bad struct (z.d requires double) to seventh
+        simStubsGenTests.basic(9,3.3,6,'x',true,{1},{i=6,f=6.6,d={},s='xx',b=false})
+    end)
+
+    assertFail('basic.struct.badtype.4', function()
+        -- pass bad struct (z.s requires string) to seventh
+        simStubsGenTests.basic(9,3.3,6,'x',true,{1},{i=6,f=6.6,d=4.444444,s=true,b=false})
+    end)
+
+    assertFail('basic.struct.badtype.5', function()
+        -- pass bad struct (z.b requires bool) to seventh
+        simStubsGenTests.basic(9,3.3,6,'x',true,{1},{i=6,f=6.6,d=4.444444,s='xx',b={}})
+    end)
+
+    assertFail('basic.struct.missing.1', function()
+        -- pass bad struct (z.i is not nullable) to seventh
+        simStubsGenTests.basic(9,3.3,6,'x',true,{1},{f=6.6,d=4.444444,s='xx',b=false})
+    end)
+
+    assertFail('basic.struct.missing.2', function()
+        -- pass bad struct (z.f is not nullable) to seventh
+        simStubsGenTests.basic(9,3.3,6,'x',true,{1},{i=6,d=4.444444,s='xx',b=false})
+    end)
+
+    assertFail('basic.struct.missing.3', function()
+        -- pass bad struct (z.d is not nullable) to seventh
+        simStubsGenTests.basic(9,3.3,6,'x',true,{1},{i=6,f=6.6,s='xx',b=false})
+    end)
+
+    assertFail('basic.struct.missing.4', function()
+        -- pass bad struct (z.s is not nullable) to seventh
+        simStubsGenTests.basic(9,3.3,6,'x',true,{1},{i=6,f=6.6,d=4.444444,b=false})
+    end)
+
+    assertFail('basic.struct.missing.5', function()
+        -- pass bad struct (z.b is not nullable) to seventh
+        simStubsGenTests.basic(9,3.3,6,'x',true,{1},{i=6,f=6.6,d=4.444444,s='xx'})
+    end)
+
+    assertFail('basic.struct.extra', function()
+        -- pass bad struct (z.z is not a valid field) to seventh
+        simStubsGenTests.basic(9,3.3,6,'x',true,{1},{i=6,f=6.6,d=4.444444,s='xx',b=false,z=9})
+    end)
+
+    assertOk('nullable.valid.1', function()
+        a,b,c,d,e,f=simStubsGenTests.nullable(nil,nil,nil,nil,nil,nil,nil)
+        assertEq(a,nil)
+        assertEq(b,nil)
+        assertEq(c,nil)
+        assertEq(d,nil)
+        assertEq(e,nil)
+        assertEq(f,nil)
+    end)
+
+    assertFail('nullable.toofew', function()
+        simStubsGenTests.nullable(nil,nil,nil,nil,nil)
+    end)
+
+    assertFail('nullable.toomany', function()
+        simStubsGenTests.nullable(nil,nil,nil,nil,nil,nil,nil,nil,nil)
+    end)
+
+    assertOk('nullable.valid.1', function()
+        a=simStubsGenTests.nullable(56,nil,nil,nil,nil,nil,nil)
+        assertEq(a,56)
+    end)
+
+    assertOk('nullable.valid.2', function()
+        a,b=simStubsGenTests.nullable(nil,1.23,nil,nil,nil,nil,nil)
+        assertEq(b,1.23)
+    end)
+
+    assertOk('nullable.valid.3', function()
+        a,b,c=simStubsGenTests.nullable(nil,nil,1.2345,nil,nil,nil,nil)
+        assertEq(c,1.2345)
+    end)
+
+    assertOk('nullable.valid.4', function()
+        a,b,c,d=simStubsGenTests.nullable(nil,nil,nil,'fg',nil,nil,nil)
+        assertEq(d,'fg')
+    end)
+
+    assertOk('nullable.valid.5', function()
+        a,b,c,d,e=simStubsGenTests.nullable(nil,nil,nil,nil,true,nil,nil)
+        assertEq(e,true)
+    end)
+
+    assertOk('nullable.valid.6', function()
+        a,b,c,d,e,f=simStubsGenTests.nullable(nil,nil,nil,nil,nil,{7,8},nil)
+        assertEq(f,{7,8})
+    end)
+
+    assertOk('nullable.valid.7', function()
+        a,b,c,d,e,f,g=simStubsGenTests.nullable(nil,nil,nil,nil,nil,nil,struct1)
+        assertEq(g,struct1)
+    end)
+
+    assertOk('struct_table.valid.1', function()
+        i,f,d,s,b=simStubsGenTests.struct_table(0,'i',{{i=1,f=4.4,d=6.6,s='a',b=false},{i=2,f=4.5,d=6.7,s='b',b=true}})
+        assertEq(i,1)
+        assertEq(f,nil)
+        assertEq(d,nil)
+        assertEq(s,nil)
+        assertEq(b,nil)
+    end)
+
+    assertOk('struct_table.valid.2', function()
+        i,f,d,s,b=simStubsGenTests.struct_table(0,'f',{{i=1,f=4.4,d=6.6,s='a',b=false},{i=2,f=4.5,d=6.7,s='b',b=true}})
+        assertEq(i,nil)
+        assertEq(f,4.4)
+        assertEq(d,nil)
+        assertEq(s,nil)
+        assertEq(b,nil)
+    end)
+
+    assertOk('struct_table.valid.3', function()
+        i,f,d,s,b=simStubsGenTests.struct_table(0,'d',{{i=1,f=4.4,d=6.6,s='a',b=false},{i=2,f=4.5,d=6.7,s='b',b=true}})
+        assertEq(d,6.6)
+    end)
+
+    assertOk('struct_table.valid.4', function()
+        i,f,d,s,b=simStubsGenTests.struct_table(0,'s',{{i=1,f=4.4,d=6.6,s='a',b=false},{i=2,f=4.5,d=6.7,s='b',b=true}})
+        assertEq(s,'a')
+    end)
+
+    assertOk('struct_table.valid.5', function()
+        i,f,d,s,b=simStubsGenTests.struct_table(0,'b',{{i=1,f=4.4,d=6.6,s='a',b=false},{i=2,f=4.5,d=6.7,s='b',b=true}})
+        assertEq(b,false)
+    end)
+
+    assertOk('struct_table.valid.6', function()
+        i,f,d,s,b=simStubsGenTests.struct_table(1,'i',{{i=1,f=4.4,d=6.6,s='a',b=false},{i=2,f=4.5,d=6.7,s='b',b=true}})
+        assertEq(i,2)
+    end)
+
+    assertOk('struct_table.valid.7', function()
+        i,f,d,s,b=simStubsGenTests.struct_table(1,'f',{{i=1,f=4.4,d=6.6,s='a',b=false},{i=2,f=4.5,d=6.7,s='b',b=true}})
+        assertEq(f,4.5)
+    end)
+
+    assertOk('struct_table.valid.8', function()
+        i,f,d,s,b=simStubsGenTests.struct_table(1,'d',{{i=1,f=4.4,d=6.6,s='a',b=false},{i=2,f=4.5,d=6.7,s='b',b=true}})
+        assertEq(d,6.7)
+    end)
+
+    assertOk('struct_table.valid.9', function()
+        i,f,d,s,b=simStubsGenTests.struct_table(1,'s',{{i=1,f=4.4,d=6.6,s='a',b=false},{i=2,f=4.5,d=6.7,s='b',b=true}})
+        assertEq(s,'b')
+    end)
+
+    assertOk('struct_table.valid.10', function()
+        i,f,d,s,b=simStubsGenTests.struct_table(1,'b',{{i=1,f=4.4,d=6.6,s='a',b=false},{i=2,f=4.5,d=6.7,s='b',b=true}})
+        assertEq(b,true)
+    end)
+
+    assertFail('struct_table.item.missing.field', function()
+        -- field 'i' missing in first item
+        simStubsGenTests.struct_table(1,'b',{{f=4.4,d=6.6,s='a',b=false},{i=2,f=4.5,d=6.7,s='b',b=true}})
+    end)
+
     logInfo('%d/%d tests passed successfully',numPassed,numPassed+numFailed)
 end
 
