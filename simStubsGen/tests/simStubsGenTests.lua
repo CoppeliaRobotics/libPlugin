@@ -280,6 +280,27 @@ function main()
         simStubsGenTests.struct_table(1,'b',{{f=4.4,d=6.6,s='a',b=false},{i=2,f=4.5,d=6.7,s='b',b=true}})
     end)
 
+    assertOk('test_struct2.i.provided', function()
+        i,in_,id,idn=simStubsGenTests.test_struct2{i=1}
+        assertEq('i',i,1)
+        assertEq('id',id,42) -- default val
+        assertEq('idn',idn,43) -- default val
+    end)
+
+    assertFail('test_struct2.i.missing', function()
+        i,in_,id,idn=simStubsGenTests.test_struct2{}
+    end)
+
+    assertOk('test_struct2.id.override', function()
+        i,in_,id,idn=simStubsGenTests.test_struct2{i=10,id=5}
+        assertEq('id',id,5)
+    end)
+
+    assertOk('test_struct2.idn.reset', function()
+        i,in_,id,idn=simStubsGenTests.test_struct2{i=-1} -- i<0 will cause idn to be set to nil
+        assertEq('idn',idn,nil)
+    end)
+
     logInfo('%d/%d tests passed successfully',numPassed,numPassed+numFailed)
 end
 

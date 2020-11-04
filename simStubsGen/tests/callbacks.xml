@@ -46,6 +46,18 @@
         </return>
     </command>
 
+    <command name="test_struct2">
+        <params>
+            <param name="a" type="struct2" />
+        </params>
+        <return>
+            <param name="i" type="int" />
+            <param name="in" type="int" nullable="true" />
+            <param name="id" type="int" />
+            <param name="idn" type="int" nullable="true" />
+        </return>
+    </command>
+
     <command name="struct_table">
         <params>
             <param name="i" type="int" />
@@ -73,5 +85,12 @@
         <param name="d" type="double" />
         <param name="s" type="string" />
         <param name="b" type="bool" />
+    </struct>
+
+    <struct name="struct2">
+        <param name="i" type="int" />
+        <param name="in" type="int" nullable="true" />
+        <param name="id" type="int" default="42" />
+        <param name="idn" type="int" default="43" nullable="true" />
     </struct>
 </plugin>

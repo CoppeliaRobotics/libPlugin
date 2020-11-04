@@ -108,6 +108,15 @@ public:
         if(in->s == "s") out->s = in->tz.at(in->i).s;
         if(in->s == "b") out->b = in->tz.at(in->i).b;
     }
+
+    void test_struct2(test_struct2_in *in, test_struct2_out *out)
+    {
+        out->i = in->a.i;
+        out->in = in->a.in;
+        out->id = in->a.id;
+        out->idn = in->a.idn;
+        if(in->a.i < 0) out->idn = boost::none;
+    }
 };
 
 SIM_PLUGIN("StubsGenTests", 1, Plugin)
