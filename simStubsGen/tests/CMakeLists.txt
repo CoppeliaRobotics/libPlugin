@@ -36,7 +36,10 @@ add_test(
 set_tests_properties(build_tests PROPERTIES FIXTURES_SETUP test_fixture)
 add_test(
     NAME tests
-    COMMAND "${COPPELIASIM_EXECUTABLE}"
+    COMMAND "${CMAKE_COMMAND}"
+        -E env
+        "COPPELIASIM_CONSOLE_LOG_FORMAT={verbosity}:\t{message}"
+        "${COPPELIASIM_EXECUTABLE}"
         -h # run in headless mode
         -vnone # will be raised after add-on is loaded
         "-a${CMAKE_CURRENT_SOURCE_DIR}/simStubsGenTests.lua" # load add-on script
