@@ -276,7 +276,7 @@ void readFromStack(int stack, `struct.name` *value, const ReadOptions &rdopt)
         sim::unfoldStackTable(stack);
         int numItems = (sim::getStackSize(stack) - oldsz + 1) / 2;
 
-        std::set<std::string> requiredFields{`', '.join(f'"{field.name}"' for field in struct.fields if not field.nullable and field.default is None)`};
+        std::set<std::string> requiredFields{`', '.join(f'"{field.name}"' for field in struct.fields if not field.nullable and field.mandatory())`};
 
         while(numItems >= 1)
         {
