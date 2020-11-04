@@ -4,6 +4,9 @@
 #include "stubs.h"
 #include <simPlusPlus/Lib.h>
 
+#include <string>
+#include <vector>
+#include <set>
 #include <cstdlib>
 #include <sstream>
 #include <iostream>
@@ -273,6 +276,8 @@ void readFromStack(int stack, `struct.name` *value, const ReadOptions &rdopt)
         sim::unfoldStackTable(stack);
         int numItems = (sim::getStackSize(stack) - oldsz + 1) / 2;
 
+        std::set<std::string> requiredFields{`', '.join(f'"{field.name}"' for field in struct.fields if not field.nullable and field.default is None)`};
+
         while(numItems >= 1)
         {
             sim::moveStackItemToTop(stack, oldsz - 1); // move key to top
@@ -304,8 +309,12 @@ void readFromStack(int stack, `struct.name` *value, const ReadOptions &rdopt)
                 throw sim::exception("unexpected key: %s", key);
             }
 
+            requiredFields.erase(key);
             numItems = (sim::getStackSize(stack) - oldsz + 1) / 2;
         }
+
+        for(const auto &field : requiredFields)
+            throw sim::exception("missing required field '%s'", field);
     }
     catch(std::exception &ex)
     {
