@@ -264,9 +264,7 @@ void readFromStack(int stack, `struct.name` *value, const ReadOptions &rdopt)
     try
     {
         simInt info = sim::getStackTableInfo(stack, 0);
-        if(info == sim_stack_table_empty)
-            return;
-        if(info != sim_stack_table_map)
+        if(info != sim_stack_table_map && info != sim_stack_table_empty)
         {
             throw sim::exception("expected a map");
         }
