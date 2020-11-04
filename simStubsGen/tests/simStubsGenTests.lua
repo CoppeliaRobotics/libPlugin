@@ -301,6 +301,11 @@ function main()
         assertEq('idn',idn,nil)
     end)
 
+    assertOk('struct_default.1', function()
+        z=simStubsGenTests.struct_default()
+        assertEq('z',z,{i=10,["in"]=20,id=30,idn=40})
+    end)
+
     logInfo('%d/%d tests passed successfully',numPassed,numPassed+numFailed)
 end
 

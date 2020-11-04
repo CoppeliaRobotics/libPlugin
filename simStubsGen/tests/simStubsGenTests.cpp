@@ -117,6 +117,11 @@ public:
         out->idn = in->a.idn;
         if(in->a.i < 0) out->idn = boost::none;
     }
+
+    void struct_default(struct_default_in *in, struct_default_out *out)
+    {
+        out->z = in->z;
+    }
 };
 
 SIM_PLUGIN("StubsGenTests", 1, Plugin)

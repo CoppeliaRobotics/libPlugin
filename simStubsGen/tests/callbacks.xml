@@ -73,6 +73,15 @@
         </return>
     </command>
 
+    <command name="struct_default">
+        <params>
+            <param name="z" type="struct2" default="{10,20,30,40}" />
+        </params>
+        <return>
+            <param name="z" type="struct2" />
+        </return>
+    </command>
+
     <enum name="enum1" item-prefix="e1_" base="40">
         <item name="a" />
         <item name="b" />
