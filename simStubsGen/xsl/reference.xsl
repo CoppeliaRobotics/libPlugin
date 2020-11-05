@@ -267,11 +267,13 @@
                         <tr>
                             <td>
                                 <h1><xsl:value-of select="/plugin/@name"/> Plugin API reference</h1>
+                                <!-- Short info -->
                                 <xsl:if test="/plugin/description and (/plugin/description != '')">
                                     <p class="infoBox">
                                         <xsl:apply-templates select="/plugin/description/node()"/>
                                     </p>
                                 </xsl:if>
+                                <!-- Commands reference list -->
                                 <xsl:for-each select="plugin/command">
                                     <xsl:sort select="@name"/>
                                     <xsl:if test="description != ''">
@@ -327,6 +329,7 @@
                                         <br/>
                                     </xsl:if>
                                 </xsl:for-each>
+                                <!-- Enums reference list -->
                                 <xsl:if test="plugin/enum/*">
                                     <br/>
                                     <br/>
@@ -358,6 +361,7 @@
                                     </table>
                                     </xsl:for-each>
                                 </xsl:if>
+                                <!-- Data structures reference list -->
                                 <xsl:if test="plugin/struct/*">
                                     <br/>
                                     <br/>
@@ -395,6 +399,7 @@
                                     <br/>
                                     </xsl:for-each>
                                 </xsl:if>
+                                <!-- Script functions reference list -->
                                 <xsl:if test="plugin/script-function/*">
                                     <br/>
                                     <br/>
