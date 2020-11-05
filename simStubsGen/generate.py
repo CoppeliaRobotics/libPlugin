@@ -21,6 +21,7 @@ parser.add_argument("--gen-reference-xml", help='generate merged XML (from callb
 parser.add_argument("--gen-reference-html", help='generate HTML documentation (from reference.xml or callbacks.xml)', action='store_true')
 parser.add_argument("--gen-lua-calltips", help='generate C++ code for Lua calltips', action='store_true')
 parser.add_argument("--gen-deprecated-txt", help='generate deprecated functions mapping for CoppeliaSim', action='store_true')
+parser.add_argument("--gen-api-index", help='generate api index mapping for CodeEditor plugin', action='store_true')
 parser.add_argument("--gen-all", help='generate everything', action='store_true')
 parser.add_argument("--print-name", help='print plugin\'s name and exit', action='store_true')
 parser.add_argument("--print-short-name", help='print plugin\'s short-name and exit', action='store_true')
@@ -29,11 +30,6 @@ args = parser.parse_args()
 
 if args is False:
     SystemExit
-
-args.verbose = True
-
-if args.verbose:
-    print(' '.join(['"%s"' % arg if ' ' in arg else arg for arg in sys.argv]))
 
 self_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -71,9 +67,17 @@ if args.gen_all:
     args.gen_reference_html = True
     args.gen_lua_calltips = True
     args.gen_deprecated_txt = True
+    args.gen_api_index = True
+if args.gen_api_index:
+    args.gen_reference_xml = True
 if args.gen_reference_xml:
     input_xml = output('reference.xml')
     args.gen_lua_xml = True
+if args.print_name or args.print_short_name:
+    args.verbose = False
+
+if args.verbose:
+    print(' '.join(['"%s"' % arg if ' ' in arg else arg for arg in sys.argv]))
 
 # create output dir if needed:
 try:
@@ -124,6 +128,28 @@ if args.gen_lua_calltips:
 
 if args.gen_deprecated_txt:
     runtool('generate_deprecated_txt', args.xml_file, output('deprecated_mapping.txt'))
+
+if args.gen_api_index:
+    if not plugin.short_name:
+        print('plugin short-name not defined. skipping generate_api_index')
+    else:
+        print('generating api index', output('index.json'))
+        plugin_all = parse(input_xml) # include lua functions
+        mapping = {}
+        htmFile = f'sim{plugin.short_name}.htm'
+        for cmd in plugin_all.commands:
+            mapping[f'{cmd.name}'] = f'{htmFile}#{cmd.name}'
+        for enum in plugin_all.enums:
+            mapping[f'{enum.name}'] = f'{htmFile}#enum:{enum.name}'
+            for item in enum.items:
+                mapping[f'{enum.name}.{item.name}'] = f'{htmFile}#enum:{enum.name}'
+        for scrfun in plugin_all.script_functions:
+            mapping[f'{scrfun.name}'] = f'{htmFile}#scriptfun:{scrfun.name}'
+        for struct in plugin_all.structs:
+            mapping[f'{struct.name}'] = f'{htmFile}#struct:{struct.name}'
+        import json
+        with open(output('index.json'),'w') as f:
+            json.dump({f'sim{plugin.short_name}': mapping}, f, indent=4)
 
 if args.gen_stubs:
     for fn in ('stubs.cpp', 'stubs.h', 'stubsPlusPlus.cpp'):
