@@ -184,14 +184,23 @@ function(COPPELIASIM_GENERATE_STUBS GENERATED_OUTPUT_DIR)
         message(STATUS "Adding simStubsGen command...")
     endif()
     find_package(Python3 REQUIRED COMPONENTS Interpreter)
-    execute_process(COMMAND ${Python3_EXECUTABLE} ${LIBPLUGIN_DIR}/simStubsGen/generate.py --xml-file ${COPPELIASIM_GENERATE_STUBS_XML_FILE} --print-short-name ${GENERATED_OUTPUT_DIR}
-        OUTPUT_VARIABLE PLUGIN_SHORT_NAME OUTPUT_STRIP_TRAILING_WHITESPACE
-        RESULT_VARIABLE PLUGIN_SHORT_NAME_EXITCODE)
-    if(NOT PLUGIN_SHORT_NAME_EXITCODE EQUAL 0)
-        message(FATAL_ERROR "Failed simStubsGen (error in XML file?)")
+    if(NOT CoppeliaSim_FIND_QUIETLY)
+        message(STATUS "Reading plugin metadata...")
     endif()
-    if(NOT CoppeliaSim_FIND_QUIETLY AND PLUGIN_SHORT_NAME)
-        message(STATUS "Plugin: ${PLUGIN_SHORT_NAME}")
+    execute_process(
+        COMMAND ${Python3_EXECUTABLE}
+            ${LIBPLUGIN_DIR}/simStubsGen/generate.py
+            --xml-file ${COPPELIASIM_GENERATE_STUBS_XML_FILE}
+            --gen-cmake-meta
+            ${GENERATED_OUTPUT_DIR}
+        OUTPUT_FILE ${GENERATED_OUTPUT_DIR}/meta.cmake
+        RESULT_VARIABLE READ_PLUGIN_META_EXITCODE)
+    if(NOT READ_PLUGIN_META_EXITCODE EQUAL 0)
+        message(FATAL_ERROR "Failed reading plugin metadata (error in XML file?)")
+    endif()
+    include(${GENERATED_OUTPUT_DIR}/meta.cmake)
+    if(NOT CoppeliaSim_FIND_QUIETLY)
+        message(STATUS "Plugin: ${PLUGIN_NAME} (${PLUGIN_SHORT_NAME})")
     endif()
     if("${COPPELIASIM_GENERATE_STUBS_LUA_FILE}" STREQUAL "")
         add_custom_command(OUTPUT ${GENERATED_OUTPUT_DIR}/stubs.cpp ${GENERATED_OUTPUT_DIR}/stubs.h
@@ -203,7 +212,7 @@ function(COPPELIASIM_GENERATE_STUBS GENERATED_OUTPUT_DIR)
             DEPENDS ${COPPELIASIM_GENERATE_STUBS_XML_FILE} ${COPPELIASIM_GENERATE_STUBS_LUA_FILE})
         install(FILES ${COPPELIASIM_GENERATE_STUBS_LUA_FILE} DESTINATION ${COPPELIASIM_LUA_DIR})
     endif()
-    if(NOT CoppeliaSim_FIND_QUIETLY AND PLUGIN_SHORT_NAME)
+    if(PLUGIN_SHORT_NAME)
         install(FILES ${GENERATED_OUTPUT_DIR}/reference.html RENAME sim${PLUGIN_SHORT_NAME}.htm DESTINATION ${COPPELIASIM_HELPFILES_DIR}/en)
         install(FILES ${GENERATED_OUTPUT_DIR}/index.json RENAME sim${PLUGIN_SHORT_NAME}.json DESTINATION ${COPPELIASIM_HELPFILES_DIR}/index)
     endif()
