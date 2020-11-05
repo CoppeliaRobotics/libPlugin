@@ -22,6 +22,8 @@ parser.add_argument("--gen-reference-html", help='generate HTML documentation (f
 parser.add_argument("--gen-lua-calltips", help='generate C++ code for Lua calltips', action='store_true')
 parser.add_argument("--gen-deprecated-txt", help='generate deprecated functions mapping for CoppeliaSim', action='store_true')
 parser.add_argument("--gen-all", help='generate everything', action='store_true')
+parser.add_argument("--print-name", help='print plugin\'s name and exit', action='store_true')
+parser.add_argument("--print-short-name", help='print plugin\'s short-name and exit', action='store_true')
 parser.add_argument("--verbose", help='print commands being executed', action='store_true')
 args = parser.parse_args()
 
@@ -81,6 +83,15 @@ except OSError as exc:
         pass
 
 plugin = parse(args.xml_file)
+
+if args.print_name:
+    print(plugin.name)
+    sys.exit(0)
+
+if args.print_short_name:
+    if plugin.short_name is not None:
+        print(plugin.short_name)
+    sys.exit(0)
 
 if args.gen_lua_xml:
     if not args.lua_file:
