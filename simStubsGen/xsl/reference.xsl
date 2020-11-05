@@ -260,19 +260,54 @@
                 <meta http-equiv="Content-Language" content="en-us"/>
                 <title>API Functions</title>
                 <link rel="stylesheet" type="text/css" href="../../helpFiles/style.css"/>
+                <script type="text/javascript">
+//<![CDATA[
+function getParameterByName(name, url = window.location.href)
+{
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if(!results) return null;
+    if(!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+//]]>
+                </script>
+                <style type="text/css">
+td.section { margin: 0; padding: 0; }
+                </style>
             </head>
             <body>
                 <div align="center">
                     <table class="allEncompassingTable">
                         <tr>
-                            <td>
+                            <td id="title" class="section">
                                 <h1><xsl:value-of select="/plugin/@name"/> Plugin API reference</h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="info" class="section">
                                 <!-- Short info -->
                                 <xsl:if test="/plugin/description and (/plugin/description != '')">
                                     <p class="infoBox">
                                         <xsl:apply-templates select="/plugin/description/node()"/>
                                     </p>
                                 </xsl:if>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="alphabetical" class="section">
+                                <!-- Alphabetical list -->
+                                <pre class="lightGreyBox">
+                                    <xsl:for-each select="plugin/command">
+                                        <xsl:sort select="@name"/>
+                                        <a href="?#{@name}"><xsl:call-template name="renderCmdName"><xsl:with-param name="name" select="@name"/></xsl:call-template></a><xsl:text>&#10;</xsl:text>
+                                    </xsl:for-each>
+                                </pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="commands" class="section">
                                 <!-- Commands reference list -->
                                 <xsl:for-each select="plugin/command">
                                     <xsl:sort select="@name"/>
@@ -329,6 +364,10 @@
                                         <br/>
                                     </xsl:if>
                                 </xsl:for-each>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="enums" class="section">
                                 <!-- Enums reference list -->
                                 <xsl:if test="plugin/enum/*">
                                     <br/>
@@ -361,6 +400,10 @@
                                     </table>
                                     </xsl:for-each>
                                 </xsl:if>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="structs" class="section">
                                 <!-- Data structures reference list -->
                                 <xsl:if test="plugin/struct/*">
                                     <br/>
@@ -399,6 +442,10 @@
                                     <br/>
                                     </xsl:for-each>
                                 </xsl:if>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="scriptFunctions" class="section">
                                 <!-- Script functions reference list -->
                                 <xsl:if test="plugin/script-function/*">
                                     <br/>
@@ -462,6 +509,16 @@
                         </tr>
                     </table>
                 </div>
+                <script type="text/javascript">
+//<![CDATA[
+view = getParameterByName('view')
+document.getElementById('alphabetical').style.display = view == 'alphabetical' ? 'table-cell' : 'none'
+document.getElementById('commands').style.display = view == null ? 'table-cell' : 'none'
+document.getElementById('enums').style.display = view == null ? 'table-cell' : 'none'
+document.getElementById('structs').style.display = view == null ? 'table-cell' : 'none'
+document.getElementById('scriptFunctions').style.display = view == null ? 'table-cell' : 'none'
+//]]>
+                </script>
             </body>
         </html>
     </xsl:template>
