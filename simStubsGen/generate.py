@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import argparse
 import os
 import os.path
@@ -72,8 +70,6 @@ if args.gen_api_index:
 if args.gen_reference_xml:
     input_xml = output('reference.xml')
     args.gen_lua_xml = True
-if args.gen_cmake_meta:
-    args.verbose = False
 
 if args.verbose:
     print(' '.join(['"%s"' % arg if ' ' in arg else arg for arg in sys.argv]))
@@ -88,7 +84,7 @@ except OSError as exc:
 plugin = parse(args.xml_file)
 
 if args.gen_cmake_meta:
-    runtool('generate_cmake_metadata', args.xml_file)
+    runtool('generate_cmake_metadata', args.xml_file, output('meta.cmake'))
     sys.exit(0)
 
 if args.gen_lua_xml:

@@ -201,7 +201,6 @@ function(COPPELIASIM_GENERATE_STUBS GENERATED_OUTPUT_DIR)
             --xml-file ${COPPELIASIM_GENERATE_STUBS_XML_FILE}
             --gen-cmake-meta
             ${GENERATED_OUTPUT_DIR}
-        OUTPUT_FILE ${GENERATED_OUTPUT_DIR}/meta.cmake
         RESULT_VARIABLE READ_PLUGIN_META_EXITCODE)
     if(NOT READ_PLUGIN_META_EXITCODE EQUAL 0)
         message(FATAL_ERROR "Failed reading plugin metadata (error in XML file?)")

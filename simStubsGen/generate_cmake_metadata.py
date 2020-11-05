@@ -1,16 +1,21 @@
-from sys import argv, exit
+import argparse
+import sys
 from parse import parse
 
-if len(argv) != 2:
-    print(f'usage: {argv[0]} <xml-file>')
-    exit(1)
+parser = argparse.ArgumentParser(description='Generate CMake metadata.')
+parser.add_argument('xml_file', type=str, default=None, help='the (merged) XML file')
+parser.add_argument('out_file', type=str, default=None, help='the output CMake file')
+args = parser.parse_args()
 
-xmlFile = argv[1]
-plugin = parse(xmlFile)
+if args is False:
+    SystemExit
 
-def output_cmake_var(cmake_name, value):
-    print(f'set({cmake_name} "{value}")')
+plugin = parse(args.xml_file)
 
-output_cmake_var('PLUGIN_NAME', plugin.name)
-if plugin.short_name:
-    output_cmake_var('PLUGIN_SHORT_NAME', plugin.short_name)
+def output_cmake_var(f, cmake_name, value):
+    f.write(f'set({cmake_name} "{value}")\n')
+
+with open(args.out_file, 'wt') as f:
+    output_cmake_var(f, 'PLUGIN_NAME', plugin.name)
+    if plugin.short_name:
+        output_cmake_var(f, 'PLUGIN_SHORT_NAME', plugin.short_name)
