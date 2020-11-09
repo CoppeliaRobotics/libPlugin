@@ -17,7 +17,7 @@ class Command(object):
 
         descnode = node.find('description')
         self.description = '' if descnode is None else '' if descnode.text is None else descnode.text
-        self.description = self.description.replace('\n', '')
+        self.description = self.description.split('\n')[0]
         self.description = re.sub(' +', ' ', self.description)
 
         self.clear_stack_after_reading_input = True
