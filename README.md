@@ -11,5 +11,5 @@ Minimum versions:
 
 ## See also
 
-- simStubsGen/README.md
-- simPlusPlus/README.md
+- [simStubsGen/README.md](simStubsGen/README.md)
+- [simPlusPlus/README.md](simPlusPlus/README.md)
