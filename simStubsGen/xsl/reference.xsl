@@ -186,8 +186,10 @@
                         <xsl:text> (</xsl:text>
                         <xsl:value-of select="@type"/>
                         <xsl:if test="@type='table'">
-                            <xsl:text> of </xsl:text>
-                            <xsl:value-of select="@item-type"/>
+                            <xsl:if test="@item-type">
+                                <xsl:text> of </xsl:text>
+                                <xsl:value-of select="@item-type"/>
+                            </xsl:if>
                             <xsl:if test="@minsize and @maxsize">
                                 <xsl:if test="@minsize = @maxsize">
                                     <xsl:text>, size </xsl:text>
