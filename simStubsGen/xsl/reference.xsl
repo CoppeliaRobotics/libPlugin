@@ -22,6 +22,12 @@
         </xsl:call-template>
     </xsl:template>
 
+    <xsl:template match="script-function-ref">
+        <xsl:call-template name="renderScriptFunctionRef">
+            <xsl:with-param name="name" select="@name"/>
+        </xsl:call-template>
+    </xsl:template>
+
     <xsl:template match="code">
         <pre><xsl:value-of select="."/></pre>
     </xsl:template>
@@ -174,6 +180,11 @@
     <xsl:template name="renderScriptFunctionName">
         <xsl:param name="name"/>
         <xsl:value-of select="$name"/>
+    </xsl:template>
+
+    <xsl:template name="renderScriptFunctionRef">
+        <xsl:param name="name"/>
+        <a href="#scriptfun:{$name}"><xsl:call-template name="renderScriptFunctionName"><xsl:with-param name="name" select="$name"/></xsl:call-template></a>
     </xsl:template>
 
     <xsl:template name="renderParamsBlock">
