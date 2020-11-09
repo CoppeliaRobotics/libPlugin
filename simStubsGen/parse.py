@@ -8,6 +8,6 @@ def parse(xml_file):
 
 def escape(s, method='C'):
     if isinstance(s, str) and method == 'C':
-        return s.replace('\\', '\\\\').replace('"', '\\"')
+        return s.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n').replace('\r', '')
     else:
         return s

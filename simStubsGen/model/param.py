@@ -17,6 +17,8 @@ class Param(object):
             self.description = '' if descnode is None else descnode.text
         except AttributeError:
             self.description = ''
+        self.description = self.description.replace('\n', '')
+        self.description = re.sub(' +', ' ', self.description)
 
         if 'type' not in node.attrib:
             raise ValueError('attribute "type" is missing in <param>')

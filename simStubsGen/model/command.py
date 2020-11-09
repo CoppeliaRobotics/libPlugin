@@ -1,4 +1,5 @@
 from .param import Param
+import re
 
 class Command(object):
     def __init__(self, plugin, node):
@@ -16,6 +17,8 @@ class Command(object):
 
         descnode = node.find('description')
         self.description = '' if descnode is None else '' if descnode.text is None else descnode.text
+        self.description = self.description.replace('\n', '')
+        self.description = re.sub(' +', ' ', self.description)
 
         self.clear_stack_after_reading_input = True
         self.clear_stack_before_writing_output = True
@@ -59,9 +62,8 @@ class Command(object):
 
         self.documentation = ''
         if self.description.strip():
-            self.documentation = '\\n\\n' + self.description.strip()
-            while self.documentation[-2:] == '\\n':
-                self.documentation = self.documentation[:-2]
+            self.documentation = '\n\n' + self.description.strip()
+            self.documentation = self.documentation.rstrip('\n')
 
     def c_arg_list(self, defaults=False, pre_args=[], post_args=[]):
         if isinstance(pre_args, str): pre_args = [pre_args]
