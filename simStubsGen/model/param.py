@@ -14,7 +14,7 @@ class Param(object):
 
         try:
             descnode = node.find('description')
-            self.description = '' if descnode is None else descnode.text
+            self.description = '' if descnode is None else '' if descnode.text is None else descnode.text
         except AttributeError:
             self.description = ''
         self.description = self.description.split('\n')[0]
