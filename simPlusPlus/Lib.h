@@ -18,24 +18,29 @@ namespace sim
 {
     namespace util
     {
-        static std::string sprintf(boost::format& f)
+        static std::string sprintf(boost::format &fmt)
         {
-            return f.str();
+            return fmt.str();
         }
 
-        template<class T, class... Args>
-        std::string sprintf(boost::format& f, T&& t, Args&&... args)
+        template<typename Arg, typename... Args>
+        std::string sprintf(boost::format &fmt, Arg &&arg, Args &&...args)
         {
-            return sprintf(f % std::forward<T>(t), std::forward<Args>(args)...);
+            return sprintf(fmt % std::forward<Arg>(arg), std::forward<Args>(args)...);
         }
 
-        template<typename... Arguments>
-        std::string sprintf(const std::string &fmt_, Arguments&&... args)
+        template<typename... Args>
+        std::string sprintf(const std::string &msg, Args &&...args)
         {
-            boost::format f(fmt_);
-            return sprintf(f, std::forward<Arguments>(args)...);
+            return msg;
         }
 
+        template<typename Arg, typename... Args>
+        std::string sprintf(const std::string &fmt, Arg &&arg, Args &&...args)
+        {
+            boost::format f(fmt);
+            return sprintf(f, std::forward<Arg>(arg), std::forward<Args>(args)...);
+        }
     } // namespace util
 
 	/*! \brief A basic exception class
