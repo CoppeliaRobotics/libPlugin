@@ -631,7 +631,8 @@ simVoid setStringParameter(simInt parameter, simChar *value)
 
 simVoid setStringParameter(simInt parameter, const std::string &value)
 {
-    setStringParameter(parameter, value.c_str());
+    if(simSetStringParameter(parameter, value.c_str()) == -1)
+        throw api_error("simSetStringParameter");
 }
 
 simFloat getObjectFloatParameter(simInt objectHandle, simInt parameterID, simFloat *parameter)
