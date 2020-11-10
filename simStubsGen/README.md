@@ -14,6 +14,7 @@ similar documentation for pure Lua functions. See [below](#lua-comments).
 ## Dependencies
 
 - Python interpreter (3.7 or greater)
+- xmlschema (`pip install xmlschema`)
 - xsltproc program in your PATH (an XSLT processor) if you want to generate documentation (windows binary available [here](https://github.com/CoppeliaRobotics/xsltproc-win/raw/master/xsltproc-win.zip))
 
 ## Usage
