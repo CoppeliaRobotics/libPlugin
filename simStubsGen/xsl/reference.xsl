@@ -62,6 +62,17 @@
         <br />
     </xsl:template>
 
+    <xsl:template match="a">
+        <xsl:element name="a">
+            <xsl:if test="@href">
+                <xsl:attribute name="href">
+                    <xsl:value-of select="@href" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:apply-templates select="node()" />
+        </xsl:element>
+    </xsl:template>
+
     <xsl:preserve-space elements="code" />
     <xsl:template match="code">
         <code><pre><xsl:apply-templates select="node()"/></pre></code>
