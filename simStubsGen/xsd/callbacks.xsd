@@ -111,6 +111,8 @@
                         </xsd:sequence>
                         <xsd:attribute name="name" type="identifier" use="required" />
                         <xsd:attribute name="c-name" type="identifier" />
+                        <xsd:attribute name="c-in-name" type="identifier" />
+                        <xsd:attribute name="c-out-name" type="identifier" />
                     </xsd:complexType>
                 </xsd:element>
                 <xsd:element name="enum">
@@ -147,6 +149,9 @@
                             <xsd:element name="return" type="funcParamsSpec" minOccurs="0" />
                         </xsd:sequence>
                         <xsd:attribute name="name" type="identifier" use="required" />
+                        <xsd:attribute name="c-name" type="identifier" />
+                        <xsd:attribute name="c-in-name" type="identifier" />
+                        <xsd:attribute name="c-out-name" type="identifier" />
                     </xsd:complexType>
                 </xsd:element>
             </xsd:choice>
