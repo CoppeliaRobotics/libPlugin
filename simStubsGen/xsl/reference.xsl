@@ -238,7 +238,7 @@
     <xsl:template name="renderRelated">
         <xsl:variable name="sname" select="@name"/>
         <!-- manual cross references (within tag <see-also>): -->
-        <xsl:for-each select="see-also/*[name()='command-ref' or name()='enum-ref' or name()='struct-ref']">
+        <xsl:for-each select="see-also/*[name()='command-ref' or name()='enum-ref' or name()='struct-ref' or name()='script-function-ref']">
             <xsl:text> </xsl:text>
             <xsl:apply-templates select="."/>
         </xsl:for-each>
