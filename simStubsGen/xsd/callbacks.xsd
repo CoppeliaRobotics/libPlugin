@@ -121,7 +121,15 @@
                             <xsd:element name="description" type="formattedText" minOccurs="0" />
                             <xsd:element name="categories" type="categoriesSpec" minOccurs="0" />
                             <xsd:element name="see-also" type="seeAlsoSpec" minOccurs="0" />
-                            <xsd:element name="item" maxOccurs="unbounded" />
+                            <xsd:element name="item" maxOccurs="unbounded">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="description" type="formattedText" minOccurs="0" />
+                                    </xsd:sequence>
+                                    <xsd:attribute name="name" type="identifier" use="required" />
+                                    <xsd:attribute name="value" type="xsd:integer" />
+                                </xsd:complexType>
+                            </xsd:element>
                         </xsd:sequence>
                         <xsd:attribute name="name" type="identifier" use="required" />
                         <xsd:attribute name="item-prefix" type="xsd:string" />
