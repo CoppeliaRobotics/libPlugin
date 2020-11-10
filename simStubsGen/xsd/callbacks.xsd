@@ -57,13 +57,20 @@
         <xsd:attribute name="max-size" type="xsd:integer" />
         <xsd:attribute name="size" type="xsd:integer" />
         <xsd:attribute name="default" type="xsd:string" />
-        <xsd:attribute name="skip" type="xsd:boolean" />
         <xsd:attribute name="nullable" type="xsd:boolean" />
     </xsd:complexType>
 
-    <xsd:complexType name="paramsSpec">
+    <xsd:complexType name="funcParamSpec">
+        <xsd:complexContent>
+            <xsd:extension base="paramSpec">
+                <xsd:attribute name="skip" type="xsd:boolean" />
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="funcParamsSpec">
         <xsd:sequence>
-            <xsd:element name="param" type="paramSpec" minOccurs="0" maxOccurs="unbounded" />
+            <xsd:element name="param" type="funcParamSpec" minOccurs="0" maxOccurs="unbounded" />
         </xsd:sequence>
     </xsd:complexType>
 
@@ -99,8 +106,8 @@
                             <xsd:element name="description" type="formattedText" minOccurs="0" />
                             <xsd:element name="categories" type="categoriesSpec" minOccurs="0" />
                             <xsd:element name="see-also" type="seeAlsoSpec" minOccurs="0" />
-                            <xsd:element name="params" type="paramsSpec" minOccurs="0" />
-                            <xsd:element name="return" type="paramsSpec" minOccurs="0" />
+                            <xsd:element name="params" type="funcParamsSpec" minOccurs="0" />
+                            <xsd:element name="return" type="funcParamsSpec" minOccurs="0" />
                         </xsd:sequence>
                         <xsd:attribute name="name" type="identifier" use="required" />
                         <xsd:attribute name="c-name" type="identifier" />
@@ -136,8 +143,8 @@
                             <xsd:element name="description" type="formattedText" minOccurs="0"/>
                             <xsd:element name="categories" type="categoriesSpec" minOccurs="0" />
                             <xsd:element name="see-also" type="seeAlsoSpec" minOccurs="0" />
-                            <xsd:element name="params" type="paramsSpec" minOccurs="0" />
-                            <xsd:element name="return" type="paramsSpec" minOccurs="0" />
+                            <xsd:element name="params" type="funcParamsSpec" minOccurs="0" />
+                            <xsd:element name="return" type="funcParamsSpec" minOccurs="0" />
                         </xsd:sequence>
                         <xsd:attribute name="name" type="identifier" use="required" />
                     </xsd:complexType>
