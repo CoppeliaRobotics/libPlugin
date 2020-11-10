@@ -127,7 +127,7 @@
                                         <xsd:element name="description" type="formattedText" minOccurs="0" />
                                     </xsd:sequence>
                                     <xsd:attribute name="name" type="identifier" use="required" />
-                                    <xsd:attribute name="value" type="xsd:integer" />
+                                    <xsd:attribute name="value" type="xsd:string" />
                                 </xsd:complexType>
                             </xsd:element>
                         </xsd:sequence>
