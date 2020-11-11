@@ -306,7 +306,12 @@ function main()
         assertEq('z',z,{i=10,["in"]=20,id=30,idn=40})
     end)
 
-    logInfo('%d/%d tests passed successfully',numPassed,numPassed+numFailed)
+    local totalTests=numPassed+numFailed
+    logInfo('%d/%d tests passed successfully',numPassed,totalTests)
+
+    if numPassed<totalTests then
+        sim.setInt32Parameter(sim.intparam_exitcode,1)
+    end
 end
 
 function log(level,fmt,...)
@@ -457,6 +462,7 @@ function sysCall_init()
     local r,e=pcall(loadModule)
     if not r then
         logError('aborted: %s',e)
+        sim.setInt32Parameter(sim.intparam_exitcode,2)
         sim.quitSimulator()
     end
 end
@@ -465,6 +471,7 @@ function sysCall_nonSimulation()
     local r,e=pcall(main)
     if not r then
         logError('aborted: %s',e)
+        sim.setInt32Parameter(sim.intparam_exitcode,3)
         sim.quitSimulator()
     end
     sim.quitSimulator()
