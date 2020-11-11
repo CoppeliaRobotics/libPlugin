@@ -207,6 +207,7 @@ The `<description>` elements can contain basic HTML markup elements, such as `<b
 The `<description>` element of the various items can reference other items in the document, via the tags:
 
 - `<command-ref>`: reference to a command
+- `<script-function-ref>`: reference to a script function
 - `<enum-ref>`: reference to an enum
 - `<struct-ref>`: reference to a struct
 
