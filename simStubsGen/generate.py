@@ -123,6 +123,6 @@ if args.gen_api_index:
     runtool('generate_api_index', input_xml, output('index.json'))
 
 if args.gen_stubs:
-    for fn in ('stubs.cpp', 'stubs.h', 'stubsPlusPlus.cpp'):
+    for fn in ('stubs.cpp', 'stubs.h', 'plugin.h', 'stubsPlusPlus.cpp'):
         runtool('external/pycpp/pycpp', '-p', 'xml_file=' + args.xml_file, '-p', f'have_lua_calltips={args.gen_lua_calltips}', '-i', rel('cpp/' + fn), '-o', output(fn), '-P', self_dir)
 

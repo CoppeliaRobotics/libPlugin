@@ -207,10 +207,10 @@ function(COPPELIASIM_GENERATE_STUBS GENERATED_OUTPUT_DIR)
     endif()
     include(${GENERATED_OUTPUT_DIR}/meta.cmake)
     if(NOT CoppeliaSim_FIND_QUIETLY)
-        message(STATUS "Plugin: ${PLUGIN_NAME} (${PLUGIN_SHORT_NAME})")
+        message(STATUS "Plugin: ${PLUGIN_NAME} (${PLUGIN_SHORT_NAME}) [version=${PLUGIN_VERSION}]")
     endif()
     if("${COPPELIASIM_GENERATE_STUBS_LUA_FILE}" STREQUAL "")
-        add_custom_command(OUTPUT ${GENERATED_OUTPUT_DIR}/stubs.cpp ${GENERATED_OUTPUT_DIR}/stubs.h
+        add_custom_command(OUTPUT ${GENERATED_OUTPUT_DIR}/stubs.cpp ${GENERATED_OUTPUT_DIR}/stubs.h ${GENERATED_OUTPUT_DIR}/plugin.h ${GENERATED_OUTPUT_DIR}/stubsPlusPlus.cpp
             COMMAND ${Python3_EXECUTABLE} ${LIBPLUGIN_DIR}/simStubsGen/generate.py --verbose --xml-file ${COPPELIASIM_GENERATE_STUBS_XML_FILE} --gen-all ${GENERATED_OUTPUT_DIR}
             DEPENDS ${COPPELIASIM_GENERATE_STUBS_XML_FILE})
     else()

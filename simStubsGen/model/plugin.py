@@ -9,6 +9,7 @@ class Plugin(object):
             raise ValueError('expected <plugin>, got <%s>' % node.tag)
         self.name = node.attrib['name']
         self.short_name = node.attrib.get('short-name', None)
+        self.version = node.attrib.get('version', 1)
         self.command_prefix = 'simExt{}_'.format(self.name)
         self.enums = [Enum(self, n) for n in node.findall('enum')]
         self.structs = [Struct(self, n) for n in node.findall('struct')]
