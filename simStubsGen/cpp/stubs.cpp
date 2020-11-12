@@ -183,6 +183,20 @@ void checkTableSize(size_t sz, const ReadOptions &rdopt)
 }
 
 template<typename T>
+void wrapReadFromStack(int stack, std::vector<T> *vec, size_t i)
+{
+    readFromStack(stack, &vec->at(i));
+}
+
+template<>
+void wrapReadFromStack(int stack, std::vector<bool> *vec, size_t i)
+{
+    bool v;
+    readFromStack(stack, &v);
+    (*vec)[i] = v;
+}
+
+template<typename T>
 void readFromStack(int stack, std::vector<T> *vec, const ReadOptions &rdopt = {})
 {
     int sz = sim::getStackTableInfo(stack, 0);
@@ -205,16 +219,7 @@ void readFromStack(int stack, std::vector<T> *vec, const ReadOptions &rdopt = {}
         int j;
         readFromStack(stack, &j);
         sim::moveStackItemToTop(stack, oldsz - 1);
-        if constexpr(std::is_same<T, bool>::value)
-        {
-            T v;
-            readFromStack(stack, &v);
-            (*vec)[i] = v;
-        }
-        else
-        {
-            readFromStack(stack, &vec->at(i));
-        }
+        wrapReadFromStack(stack, vec, i);
     }
 }
 

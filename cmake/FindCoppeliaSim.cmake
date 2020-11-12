@@ -1,13 +1,7 @@
 cmake_minimum_required(VERSION 3.16.3)
 include(CMakeParseArguments)
 
-if(CMAKE_CXX_STANDARD)
-    if(CMAKE_CXX_STANDARD LESS 17)
-        message(FATAL_ERROR "Set CMAKE_CXX_STANDARD to 17 or greater (or remove it)")
-    endif()
-else()
-    set(CMAKE_CXX_STANDARD 17)
-endif()
+set(CMAKE_CXX_STANDARD 11)
 
 # fix CMAKE_MODULE_PATH to have forward slashes:
 file(TO_CMAKE_PATH "${CMAKE_MODULE_PATH}" CMAKE_MODULE_PATH)
