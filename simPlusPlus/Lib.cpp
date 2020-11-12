@@ -975,4 +975,24 @@ simInt getModuleInfoInt(simInt infoType)
     return i;
 }
 
+simInt programVersion()
+{
+    simInt simVer = sim::getInt32Parameter(sim_intparam_program_version);
+    simInt simRev = sim::getInt32Parameter(sim_intparam_program_revision);
+    simVer = simVer * 100 + simRev;
+    return simVer;
+}
+
+std::string versionString(simInt v)
+{
+    int revision = v % 100;
+    v /= 100;
+    int patch = v % 100;
+    v /= 100;
+    int minor = v % 100;
+    v /= 100;
+    int major = v % 100;
+    return util::sprintf("%d.%d.%drev%d", major, minor, patch, revision);
+}
+
 } // namespace sim

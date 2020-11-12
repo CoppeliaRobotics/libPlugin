@@ -205,6 +205,9 @@ namespace sim
     std::string getModuleInfoStr(simInt infoType);
     simInt getModuleInfoInt(simInt infoType);
 
+    simInt programVersion();
+    std::string versionString(simInt v);
+
     extern std::string pluginName;
 
     template<typename... Arguments>

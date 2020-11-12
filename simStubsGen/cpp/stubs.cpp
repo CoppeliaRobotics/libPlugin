@@ -435,38 +435,22 @@ void writeToStack(const `struct.name` &value, int stack, const WriteOptions &wro
 }
 
 #py endfor
-std::string versionString(int v)
-{
-    std::stringstream ss;
-    int revision = v % 100;
-    v /= 100;
-    int patch = v % 100;
-    v /= 100;
-    int minor = v % 100;
-    v /= 100;
-    int major = v % 100;
-    ss << major << "." << minor << "." << patch << "rev" << revision;
-    return ss.str();
-}
-
 void checkRuntimeVersion()
 {
-    simInt simVer = sim::getInt32Parameter(sim_intparam_program_version);
-    simInt simRev = sim::getInt32Parameter(sim_intparam_program_revision);
-    simVer = simVer * 100 + simRev;
+    simInt simVer = sim::programVersion();
 
     // version required by simStubsGen:
     int minVer = 4010000; // 4.1.0rev0
     if(simVer < minVer)
-        throw sim::exception("requires at least %s (libPlugin)", versionString(minVer));
+        throw sim::exception("requires at least %s (libPlugin)", sim::versionString(minVer));
 
     // version required by plugin:
     if(simVer < SIM_REQUIRED_PROGRAM_VERSION_NB)
-        throw sim::exception("requires at least %s", versionString(SIM_REQUIRED_PROGRAM_VERSION_NB));
+        throw sim::exception("requires at least %s", sim::versionString(SIM_REQUIRED_PROGRAM_VERSION_NB));
 
     // warn if the app older than the headers used to compile:
     if(simVer < SIM_PROGRAM_FULL_VERSION_NB)
-        sim::addLog(sim_verbosity_warnings, "has been built for %s", versionString(SIM_PROGRAM_FULL_VERSION_NB));
+        sim::addLog(sim_verbosity_warnings, "has been built for %s", sim::versionString(SIM_PROGRAM_FULL_VERSION_NB));
 }
 
 bool registerScriptStuff()
