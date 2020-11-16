@@ -209,16 +209,52 @@ function(COPPELIASIM_GENERATE_STUBS GENERATED_OUTPUT_DIR)
     if(NOT CoppeliaSim_FIND_QUIETLY)
         message(STATUS "Plugin: ${PLUGIN_NAME} (${PLUGIN_SHORT_NAME}) [version=${PLUGIN_VERSION}]")
     endif()
-    if("${COPPELIASIM_GENERATE_STUBS_LUA_FILE}" STREQUAL "")
-        add_custom_command(OUTPUT ${GENERATED_OUTPUT_DIR}/stubs.cpp ${GENERATED_OUTPUT_DIR}/stubs.h ${GENERATED_OUTPUT_DIR}/plugin.h ${GENERATED_OUTPUT_DIR}/stubsPlusPlus.cpp
-            COMMAND ${Python3_EXECUTABLE} ${LIBPLUGIN_DIR}/simStubsGen/generate.py --verbose --xml-file ${COPPELIASIM_GENERATE_STUBS_XML_FILE} --gen-all ${GENERATED_OUTPUT_DIR}
-            DEPENDS ${COPPELIASIM_GENERATE_STUBS_XML_FILE})
-    else()
-        add_custom_command(OUTPUT ${GENERATED_OUTPUT_DIR}/stubs.cpp ${GENERATED_OUTPUT_DIR}/stubs.h ${GENERATED_OUTPUT_DIR}/plugin.h ${GENERATED_OUTPUT_DIR}/stubsPlusPlus.cpp ${GENERATED_OUTPUT_DIR}/lua_calltips.cpp
-            COMMAND ${Python3_EXECUTABLE} ${LIBPLUGIN_DIR}/simStubsGen/generate.py --verbose --xml-file ${COPPELIASIM_GENERATE_STUBS_XML_FILE} --lua-file ${COPPELIASIM_GENERATE_STUBS_LUA_FILE} --gen-all ${GENERATED_OUTPUT_DIR}
-            DEPENDS ${COPPELIASIM_GENERATE_STUBS_XML_FILE} ${COPPELIASIM_GENERATE_STUBS_LUA_FILE})
+    set(OUTPUT_FILES
+        ${GENERATED_OUTPUT_DIR}/stubs.cpp
+        ${GENERATED_OUTPUT_DIR}/stubs.h
+        ${GENERATED_OUTPUT_DIR}/plugin.h
+        ${GENERATED_OUTPUT_DIR}/stubsPlusPlus.cpp
+        ${GENERATED_OUTPUT_DIR}/deprecated_mapping.txt
+        ${GENERATED_OUTPUT_DIR}/index.json
+        ${GENERATED_OUTPUT_DIR}/reference.html
+    )
+    set(COMMAND_ARGS
+        ${Python3_EXECUTABLE}
+        ${LIBPLUGIN_DIR}/simStubsGen/generate.py
+        --verbose
+        --xml-file ${COPPELIASIM_GENERATE_STUBS_XML_FILE}
+        --gen-all ${GENERATED_OUTPUT_DIR}
+    )
+    set(DEPENDENCIES
+        ${LIBPLUGIN_DIR}/simStubsGen/__init__.py
+        ${LIBPLUGIN_DIR}/simStubsGen/generate.py
+        ${LIBPLUGIN_DIR}/simStubsGen/generate_api_index.py
+        ${LIBPLUGIN_DIR}/simStubsGen/generate_cmake_metadata.py
+        ${LIBPLUGIN_DIR}/simStubsGen/generate_deprecated_txt.py
+        ${LIBPLUGIN_DIR}/simStubsGen/generate_lua_calltips.py
+        ${LIBPLUGIN_DIR}/simStubsGen/parse.py
+        ${LIBPLUGIN_DIR}/simStubsGen/model/__init__.py
+        ${LIBPLUGIN_DIR}/simStubsGen/model/command.py
+        ${LIBPLUGIN_DIR}/simStubsGen/model/enum.py
+        ${LIBPLUGIN_DIR}/simStubsGen/model/param.py
+        ${LIBPLUGIN_DIR}/simStubsGen/model/plugin.py
+        ${LIBPLUGIN_DIR}/simStubsGen/model/script_function.py
+        ${LIBPLUGIN_DIR}/simStubsGen/model/struct.py
+        ${LIBPLUGIN_DIR}/simStubsGen/cpp/plugin.h
+        ${LIBPLUGIN_DIR}/simStubsGen/cpp/stubs.cpp
+        ${LIBPLUGIN_DIR}/simStubsGen/cpp/stubs.h
+        ${LIBPLUGIN_DIR}/simStubsGen/cpp/stubsPlusPlus.cpp
+        ${LIBPLUGIN_DIR}/simStubsGen/xsd/callbacks.xsd
+        ${LIBPLUGIN_DIR}/simStubsGen/xsl/reference.xsl
+        ${COPPELIASIM_GENERATE_STUBS_XML_FILE}
+    )
+    if(NOT "${COPPELIASIM_GENERATE_STUBS_LUA_FILE}" STREQUAL "")
+        list(APPEND OUTPUT_FILES ${GENERATED_OUTPUT_DIR}/lua_calltips.cpp)
+        list(APPEND COMMAND_ARGS --lua-file ${COPPELIASIM_GENERATE_STUBS_LUA_FILE})
+        list(APPEND DEPENDENCIES ${COPPELIASIM_GENERATE_STUBS_LUA_FILE})
         install(FILES ${COPPELIASIM_GENERATE_STUBS_LUA_FILE} DESTINATION ${COPPELIASIM_LUA_DIR})
     endif()
+    add_custom_command(OUTPUT ${OUTPUT_FILES} COMMAND ${COMMAND_ARGS} DEPENDS ${DEPENDENCIES})
     if(PLUGIN_SHORT_NAME)
         install(FILES ${GENERATED_OUTPUT_DIR}/reference.html RENAME sim${PLUGIN_SHORT_NAME}.htm DESTINATION ${COPPELIASIM_HELPFILES_DIR}/en)
         install(FILES ${GENERATED_OUTPUT_DIR}/index.json RENAME sim${PLUGIN_SHORT_NAME}.json DESTINATION ${COPPELIASIM_HELPFILES_DIR}/index)
