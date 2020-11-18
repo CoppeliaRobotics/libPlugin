@@ -101,10 +101,15 @@ if args.gen_reference_xml:
         runtool('merge_xml', args.xml_file, output('lua.xml'), output('reference.xml'))
 
 if args.gen_reference_html:
+    xsltproc_in = input_xml
+    xsltproc_out = output('reference.html')
+    xsltproc_xsl = rel('xsl/reference.xsl')
     if os.name == 'nt':
-        print('skipping xsltproc because a known bug on Windows')
-    else:
-        runprogram('xsltproc', '-o', output('reference.html'), rel('xsl/reference.xsl'), input_xml)
+        # on windows xsltproc will raise a I/O error if path contain backslashes
+        xsltproc_in = xsltproc_in.replace('\\', '/')
+        xsltproc_out = xsltproc_out.replace('\\', '/')
+        xsltproc_xsl = xsltproc_xsl.replace('\\', '/')
+    runprogram('xsltproc', '-o', xsltproc_out, xsltproc_xsl, xsltproc_in)
 
 if args.gen_lua_calltips:
     if not plugin.short_name:
