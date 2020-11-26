@@ -465,44 +465,59 @@ bool registerScriptStuff()
 
         try
         {
+#py legacy_cmd_prefix = f'simExt{plugin.name}'
+#py legacy_var_prefix = f'sim_{plugin.name.lower()}'
 #py if plugin.short_name:
-            sim::registerScriptVariable("sim`plugin.short_name`", "require('simExt`plugin.name`')", 0);
+#py plugin_var = f'sim{plugin.short_name}'
+#py endif
+#py lua_module = f'simExt{plugin.name}'
+#py #
+#py if plugin.version > 1:
+#py legacy_cmd_prefix += f'_{plugin.version}'
+#py legacy_var_prefix += f'_{plugin.version}'
+#py plugin_var += f'_{plugin.version}'
+#py lua_module += f'_{plugin.version}'
+            sim::registerScriptVariable("_`legacy_var_prefix`_latest_n", "math.max(_`legacy_var_prefix`_latest_n or 1, `plugin.version`)", 0);
+#py endif
+#py #
+#py if plugin.short_name:
+            sim::registerScriptVariable("`plugin_var`", "require('`lua_module`')", 0);
 #py endif
 
 #py if plugin.short_name:
             // register new-style short-version varables
 #py for enum in plugin.enums:
-            sim::registerScriptVariable("sim`plugin.short_name`.`enum.name`", "{}", 0);
+            sim::registerScriptVariable("`plugin_var`.`enum.name`", "{}", 0);
 #py for item in enum.items:
-            sim::registerScriptVariable("sim`plugin.short_name`.`enum.name`.`item.name`", boost::lexical_cast<std::string>(sim_`plugin.short_name.lower()`_`enum.item_prefix``item.name`), 0);
+            sim::registerScriptVariable("`plugin_var`.`enum.name`.`item.name`", boost::lexical_cast<std::string>(sim_`plugin.short_name.lower()`_`enum.item_prefix``item.name`), 0);
 #py endfor
 #py endfor
             // register new-style short-version commands
 #py for cmd in plugin.commands:
-            sim::registerScriptCallbackFunction("sim`plugin.short_name`.`cmd.name`@`plugin.name`", "`escape(cmd.help_out_args_text)`sim`plugin.short_name`.`cmd.name`(`escape(cmd.help_in_args_text)`)`escape(cmd.documentation)`", `cmd.c_name`_callback);
+            sim::registerScriptCallbackFunction("`plugin_var`.`cmd.name`@`plugin.name`", "`escape(cmd.help_out_args_text)`sim`plugin.short_name`.`cmd.name`(`escape(cmd.help_in_args_text)`)`escape(cmd.documentation)`", `cmd.c_name`_callback);
 #py endfor
 #py endif
 
 #py if plugin.short_name:
             // commands simExt<PLUGIN_NAME>_<COMMAND_NAME> (deprecated)
 #py for cmd in plugin.commands:
-            sim::registerScriptCallbackFunction("`plugin.command_prefix``cmd.name`@`plugin.name`", "`escape(cmd.help_text)`\n\n(DEPRECATED, please use sim`plugin.short_name`.`cmd.name`)", `cmd.c_name`_callback);
+            sim::registerScriptCallbackFunction("`legacy_cmd_prefix`_`cmd.name`@`plugin.name`", "`escape(cmd.help_text)`\n\n(DEPRECATED, please use sim`plugin.short_name`.`cmd.name`)", `cmd.c_name`_callback);
 #py endfor
             // register variables (deprecated)
 #py for enum in plugin.enums:
 #py for item in enum.items:
-            sim::registerScriptVariable("sim_`plugin.name.lower()`_`enum.item_prefix``item.name`", boost::lexical_cast<std::string>(sim_`plugin.name.lower()`_`enum.item_prefix``item.name`), -1);
+            sim::registerScriptVariable("`legacy_var_prefix`_`enum.item_prefix``item.name`", boost::lexical_cast<std::string>(sim_`plugin.name.lower()`_`enum.item_prefix``item.name`), -1);
 #py endfor
 #py endfor
 #py else:
             // commands simExt<PLUGIN_NAME>_<COMMAND_NAME>
 #py for cmd in plugin.commands:
-            sim::registerScriptCallbackFunction("`plugin.command_prefix``cmd.name`@`plugin.name`", "`escape(cmd.help_text)``escape(cmd.documentation)`", `cmd.c_name`_callback);
+            sim::registerScriptCallbackFunction("`legacy_cmd_prefix`_`cmd.name`@`plugin.name`", "`escape(cmd.help_text)``escape(cmd.documentation)`", `cmd.c_name`_callback);
 #py endfor
             // register variables
 #py for enum in plugin.enums:
 #py for item in enum.items:
-            sim::registerScriptVariable("sim_`plugin.name.lower()`_`enum.item_prefix``item.name`", boost::lexical_cast<std::string>(sim_`plugin.name.lower()`_`enum.item_prefix``item.name`), 0);
+            sim::registerScriptVariable("`legacy_var_prefix`_`enum.item_prefix``item.name`", boost::lexical_cast<std::string>(sim_`plugin.name.lower()`_`enum.item_prefix``item.name`), 0);
 #py endfor
 #py endfor
 #py endif
