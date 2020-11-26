@@ -9,13 +9,10 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
 find_package(CoppeliaSim 4.1.0.0 REQUIRED)
 find_package(Boost REQUIRED)
 
-include_directories(${COPPELIASIM_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/generated)
-include_directories(${Boost_INCLUDE_DIRS})
 
 coppeliasim_generate_stubs(${CMAKE_CURRENT_BINARY_DIR}/generated XML_FILE ${CMAKE_CURRENT_SOURCE_DIR}/callbacks.xml)
-add_library(simStubsGenTests SHARED simStubsGenTests.cpp ${COPPELIASIM_EXPORTED_SOURCES})
-target_link_libraries(simStubsGenTests ${Boost_LIBRARIES} ${COPPELIASIM_LIBRARIES})
+coppeliasim_add_plugin(simStubsGenTests SOURCES simStubsGenTests.cpp)
 
 enable_testing()
 list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
