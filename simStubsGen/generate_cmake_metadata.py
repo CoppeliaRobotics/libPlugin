@@ -12,11 +12,13 @@ if args is False:
 
 plugin = parse(args.xml_file)
 
-def output_cmake_var(f, cmake_name, value):
-    f.write(f'set({cmake_name} "{value}")\n')
+def output_cmake_var(f, cmake_name, value, cache=False, cmake_type='STRING', docstring=''):
+    if cmake_type == 'STRING': value = f'"{value}"'
+    sc = f' CACHE {cmake_type} "{docstring}" FORCE' if cache else ''
+    f.write(f'set({cmake_name} {value}{sc})\n')
 
 with open(args.out_file, 'wt') as f:
-    output_cmake_var(f, 'PLUGIN_NAME', plugin.name)
-    output_cmake_var(f, 'PLUGIN_VERSION', plugin.version)
+    output_cmake_var(f, 'PLUGIN_NAME', plugin.name, True)
+    output_cmake_var(f, 'PLUGIN_VERSION', plugin.version, True)
     if plugin.short_name:
-        output_cmake_var(f, 'PLUGIN_SHORT_NAME', plugin.short_name)
+        output_cmake_var(f, 'PLUGIN_SHORT_NAME', plugin.short_name, True)
