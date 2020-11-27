@@ -472,7 +472,7 @@ bool registerScriptStuff()
 #py endif
 #py lua_module = f'simExt{plugin.name}'
 #py #
-#py if plugin.version > 1:
+#py if plugin.version > 0:
 #py legacy_cmd_prefix += f'_{plugin.version}'
 #py legacy_var_prefix += f'_{plugin.version}'
 #py plugin_var += f'_{plugin.version}'
