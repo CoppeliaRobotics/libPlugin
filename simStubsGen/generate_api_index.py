@@ -18,7 +18,12 @@ if not plugin.short_name:
 
 mapping = {}
 
-htmFile = f'sim{plugin.short_name}.htm'
+if plugin.version > 1:
+    pluginKey = f'sim{plugin.short_name}_{plugin.version}'
+    htmFile = f'sim{plugin.short_name}-{plugin.version}.htm'
+else:
+    pluginKey = f'sim{plugin.short_name}'
+    htmFile = f'sim{plugin.short_name}.htm'
 
 for cmd in plugin.commands:
     mapping[f'{cmd.name}'] = f'{htmFile}#{cmd.name}'
@@ -32,4 +37,4 @@ for struct in plugin.structs:
     mapping[f'{struct.name}'] = f'{htmFile}#struct:{struct.name}'
 
 with open(args.out_file, 'w') as f:
-    json.dump({f'sim{plugin.short_name}': mapping}, f, indent=4)
+    json.dump({pluginKey: mapping}, f, indent=4)

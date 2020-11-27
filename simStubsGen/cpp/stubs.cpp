@@ -472,12 +472,13 @@ bool registerScriptStuff()
 #py endif
 #py lua_module = f'simExt{plugin.name}'
 #py #
+            sim::registerScriptVariable("_`legacy_var_prefix`_latest_version", "math.max(_`legacy_var_prefix`_latest_version or 0, `plugin.version`)", 0);
+#py #
 #py if plugin.version > 0:
 #py legacy_cmd_prefix += f'_{plugin.version}'
 #py legacy_var_prefix += f'_{plugin.version}'
 #py plugin_var += f'_{plugin.version}'
-#py lua_module += f'_{plugin.version}'
-            sim::registerScriptVariable("_`legacy_var_prefix`_latest_n", "math.max(_`legacy_var_prefix`_latest_n or 1, `plugin.version`)", 0);
+#py lua_module += f'-{plugin.version}'
 #py endif
 #py #
 #py if plugin.short_name:
