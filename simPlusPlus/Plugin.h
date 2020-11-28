@@ -37,6 +37,7 @@ namespace sim
 {
     extern std::string pluginName;
     extern int pluginVersion;
+    extern std::string pluginNameAndVersion;
 
     struct InstancePassFlags
     {
@@ -132,6 +133,7 @@ namespace sim { \
 LIBRARY lib; \
 ::className_ *plugin; \
 std::string pluginName; \
+std::string pluginNameAndVersion; \
 int pluginVersion; \
 } \
 SIM_DLLEXPORT unsigned char simStart(void *reservedPointer, int reservedInt) \
@@ -140,6 +142,12 @@ SIM_DLLEXPORT unsigned char simStart(void *reservedPointer, int reservedInt) \
     { \
         sim::pluginName = pluginName_; \
         sim::pluginVersion = pluginVersion_; \
+        sim::pluginNameAndVersion = pluginName_; \
+        if(pluginVersion_ > 0) \
+        { \
+            sim::pluginNameAndVersion += "-"; \
+            sim::pluginNameAndVersion += std::to_string(pluginVersion_); \
+        } \
         sim::plugin = new className_; \
         sim::plugin->setName(pluginName_); \
         sim::lib = sim::plugin->loadSimLibrary(); \

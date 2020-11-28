@@ -208,12 +208,12 @@ namespace sim
     simInt programVersion();
     std::string versionString(simInt v);
 
-    extern std::string pluginName;
+    extern std::string pluginNameAndVersion;
 
     template<typename... Arguments>
     void addLog(int verbosity, const std::string &fmt, Arguments&&... args)
     {
-        ::simAddLog(pluginName.c_str(), verbosity, util::sprintf(fmt, std::forward<Arguments>(args)...).c_str());
+        ::simAddLog(pluginNameAndVersion.c_str(), verbosity, util::sprintf(fmt, std::forward<Arguments>(args)...).c_str());
     }
 } // namespace sim
 
