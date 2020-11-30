@@ -91,7 +91,7 @@ if args.gen_lua_xml:
     if not args.lua_file:
         print('no lua file defined. skipping lua_to_xml')
     else:
-        runtool('lua_to_xml', args.lua_file, output('lua.xml'))
+        runtool('lua_to_xml', args.xml_file, args.lua_file, output('lua.xml'))
 
 if args.gen_reference_xml:
     if not args.lua_file:

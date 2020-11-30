@@ -1,12 +1,16 @@
 from sys import argv, exit
 import re
+from parse import parse
 
-if len(argv) != 3:
-    print('usage: {} <input-lua-file> <output-xml-file>'.format(argv[0]))
+if len(argv) != 4:
+    print('usage: {} <callbacks.xml> <input-lua-file> <output-xml-file>'.format(argv[0]))
     exit(1)
 
-luafile = argv[1]
-outfile = argv[2]
+xmlfile = argv[1]
+luafile = argv[2]
+outfile = argv[3]
+
+plugin = parse(xmlfile)
 
 fun = None
 args, rets = [], []
@@ -14,7 +18,12 @@ cats = []
 
 with open(outfile, 'w') as fout:
     fout.write('<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n')
-    fout.write('<plugin>\n')
+    fout.write(f'<plugin name="{plugin.name}"')
+    if plugin.short_name:
+        fout.write(f' short-name="{plugin.short_name}"')
+    if plugin.version:
+        fout.write(f' version="{plugin.version}"')
+    fout.write('>\n')
 
     def processTableType(t):
         if '.' in t:
