@@ -470,7 +470,11 @@ bool registerScriptStuff()
 #py if plugin.short_name:
 #py plugin_var = f'sim{plugin.short_name}'
 #py endif
+#py if pycpp.params['have_lua_typechecker'] == 'True':
+#py lua_module = f'simExt{plugin.name}-typecheck'
+#py else:
 #py lua_module = f'simExt{plugin.name}'
+#py endif
 #py #
             sim::registerScriptVariable("_`legacy_var_prefix`_latest_version", "math.max(_`legacy_var_prefix`_latest_version or 0, `plugin.version`)", 0);
 #py #

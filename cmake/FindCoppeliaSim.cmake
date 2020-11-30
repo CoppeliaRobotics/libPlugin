@@ -232,6 +232,7 @@ function(COPPELIASIM_GENERATE_STUBS GENERATED_OUTPUT_DIR)
         ${LIBPLUGIN_DIR}/simStubsGen/generate_cmake_metadata.py
         ${LIBPLUGIN_DIR}/simStubsGen/generate_deprecated_txt.py
         ${LIBPLUGIN_DIR}/simStubsGen/generate_lua_calltips.py
+        ${LIBPLUGIN_DIR}/simStubsGen/generate_lua_typechecker.py
         ${LIBPLUGIN_DIR}/simStubsGen/parse.py
         ${LIBPLUGIN_DIR}/simStubsGen/model/__init__.py
         ${LIBPLUGIN_DIR}/simStubsGen/model/command.py
@@ -255,8 +256,12 @@ function(COPPELIASIM_GENERATE_STUBS GENERATED_OUTPUT_DIR)
         get_filename_component(LUA_FILE_NAME_WLE ${COPPELIASIM_GENERATE_STUBS_LUA_FILE} NAME_WLE)
         if(PLUGIN_VERSION GREATER 0)
             set(LUA_FILE_NAME ${LUA_FILE_NAME_WLE}-${PLUGIN_VERSION}.lua)
+            list(APPEND OUTPUT_FILES ${GENERATED_OUTPUT_DIR}/simExt${PLUGIN_NAME}-typecheck-${PLUGIN_VERSION}.lua)
+            install(FILES ${GENERATED_OUTPUT_DIR}/simExt${PLUGIN_NAME}-typecheck-${PLUGIN_VERSION}.lua DESTINATION ${COPPELIASIM_LUA_DIR})
         else()
             set(LUA_FILE_NAME ${LUA_FILE_NAME_WLE}.lua)
+            list(APPEND OUTPUT_FILES ${GENERATED_OUTPUT_DIR}/simExt${PLUGIN_NAME}-typecheck.lua)
+            install(FILES ${GENERATED_OUTPUT_DIR}/simExt${PLUGIN_NAME}-typecheck.lua DESTINATION ${COPPELIASIM_LUA_DIR})
         endif()
         install(FILES ${COPPELIASIM_GENERATE_STUBS_LUA_FILE} RENAME ${LUA_FILE_NAME} DESTINATION ${COPPELIASIM_LUA_DIR})
     endif()

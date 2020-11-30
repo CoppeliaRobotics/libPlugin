@@ -18,6 +18,7 @@ parser.add_argument("--gen-lua-xml", help='generate XML translation of Lua docst
 parser.add_argument("--gen-reference-xml", help='generate merged XML (from callbacks.xml and lua.xml)', action='store_true')
 parser.add_argument("--gen-reference-html", help='generate HTML documentation (from reference.xml or callbacks.xml)', action='store_true')
 parser.add_argument("--gen-lua-calltips", help='generate C++ code for Lua calltips', action='store_true')
+parser.add_argument("--gen-lua-typechecker", help='generate Lua code for type-checking', action='store_true')
 parser.add_argument("--gen-deprecated-txt", help='generate deprecated functions mapping for CoppeliaSim', action='store_true')
 parser.add_argument("--gen-api-index", help='generate api index mapping for CodeEditor plugin', action='store_true')
 parser.add_argument("--gen-cmake-meta", help='generate cmake metadata', action='store_true')
@@ -63,12 +64,15 @@ if args.gen_all:
     args.gen_reference_xml = True
     args.gen_reference_html = True
     args.gen_lua_calltips = True
+    args.gen_lua_typechecker = True
     args.gen_deprecated_txt = True
     args.gen_api_index = True
 if args.gen_api_index:
     args.gen_reference_xml = True
 if args.gen_reference_xml:
     input_xml = output('reference.xml')
+    args.gen_lua_xml = True
+if args.gen_lua_typechecker:
     args.gen_lua_xml = True
 
 if args.verbose:
@@ -121,6 +125,16 @@ if args.gen_lua_calltips:
     else:
         runtool('generate_lua_calltips', plugin.name, plugin.short_name, args.lua_file, output('lua_calltips.cpp'))
 
+if args.gen_lua_typechecker:
+    if not plugin.short_name:
+        print('plugin short-name not defined. skipping generate_lua_typechecker')
+        args.gen_lua_typechecker = False
+    elif not args.lua_file:
+        print('no lua file defined. skipping gen_lua_typechecker')
+        args.gen_lua_typechecker = False
+    else:
+        runtool('generate_lua_typechecker', output('lua.xml'), output(f'simExt{plugin.name}-typecheck.lua'))
+
 if args.gen_deprecated_txt:
     runtool('generate_deprecated_txt', args.xml_file, output('deprecated_mapping.txt'))
 
@@ -129,5 +143,5 @@ if args.gen_api_index:
 
 if args.gen_stubs:
     for fn in ('stubs.cpp', 'stubs.h', 'plugin.h', 'stubsPlusPlus.cpp'):
-        runtool('external/pycpp/pycpp', '-p', 'xml_file=' + args.xml_file, '-p', f'have_lua_calltips={args.gen_lua_calltips}', '-i', rel('cpp/' + fn), '-o', output(fn), '-P', self_dir)
+        runtool('external/pycpp/pycpp', '-p', 'xml_file=' + args.xml_file, '-p', f'have_lua_calltips={args.gen_lua_calltips}', '-p', f'have_lua_typechecker={args.gen_lua_typechecker}', '-i', rel('cpp/' + fn), '-o', output(fn), '-P', self_dir)
 
