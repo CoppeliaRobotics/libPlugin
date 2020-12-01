@@ -23,9 +23,10 @@ sim{plugin.short_name}._=require('simExt{plugin.short_name}')
 
 """)
     for cmd in plugin.commands:
+        paramList = ','.join(p.name for p in cmd.params)
         f.write(f"""
 function sim{plugin.short_name}.{cmd.name}(...)
-    sim.checkargsEx(
+    {paramList}=sim.checkargsEx(
         {{level=1}},
         {{
 """)
@@ -38,7 +39,7 @@ function sim{plugin.short_name}.{cmd.name}(...)
         f.write(f"""        }},
         ...
     )
-    return sim{plugin.short_name}._.{cmd.name}(...)
+    return sim{plugin.short_name}._.{cmd.name}({paramList})
 end
 """)
     f.write(f"""
