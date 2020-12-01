@@ -13,7 +13,8 @@ if args is False:
 plugin = parse(args.xml_file)
 
 def output_cmake_var(f, cmake_name, value, cache=False, cmake_type='STRING', docstring=''):
-    if cmake_type == 'STRING': value = f'"{value}"'
+    if cmake_type == 'STRING' and not isinstance(value, (int, float)):
+        value = f'"{value}"'
     sc = f' CACHE {cmake_type} "{docstring}" FORCE' if cache else ''
     f.write(f'set({cmake_name} {value}{sc})\n')
 
