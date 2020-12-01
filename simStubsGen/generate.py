@@ -69,6 +69,8 @@ if args.gen_all:
     args.gen_api_index = True
 if args.gen_api_index:
     args.gen_reference_xml = True
+if args.gen_lua_calltips:
+    args.gen_lua_xml = True
 if args.gen_reference_xml:
     input_xml = output('reference.xml')
     args.gen_lua_xml = True
@@ -124,7 +126,7 @@ if args.gen_lua_calltips:
         print('no lua file defined. skipping gen_lua_calltips')
         args.gen_lua_calltips = False
     else:
-        runtool('generate_lua_calltips', plugin.name, plugin.short_name, args.lua_file, output('lua_calltips.cpp'))
+        runtool('generate_lua_calltips', output('lua.xml'), output('lua_calltips.cpp'))
 
 if args.gen_lua_typechecker:
     if not plugin.short_name:
