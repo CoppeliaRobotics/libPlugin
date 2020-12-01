@@ -1,5 +1,6 @@
 import argparse
 import re
+import sys
 from parse import parse
 
 parser = argparse.ArgumentParser(description='Generate xml from lua functions annotated with doc-strings.')
@@ -26,12 +27,23 @@ with open(args.out_xml, 'w') as fout:
         fout.write(f' version="{plugin.version}"')
     fout.write('>\n')
 
-    def processTableType(t):
-        if '.' in t:
-            table, itemtype = t.split('.')
-            if table == 'table':
-                return 'table" item-type="%s' % itemtype
-        return t
+    def outputParam(t, n, d):
+        fout.write(f'            <param name="{n}" type="{t["type"]}"')
+        if 'item_type' in t:
+            fout.write(f' item-type="{t["item_type"]}"')
+        if 'min_size' in t:
+            fout.write(f' min-size="{t["min_size"]}"')
+        if 'max_size' in t:
+            fout.write(f' max-size="{t["max_size"]}"')
+        if 'size' in t:
+            fout.write(f' size="{t["size"]}"')
+        if 'nullable' in t:
+            fout.write(f' nullable="{t["item_type"]}"')
+        if 'default' in t:
+            fout.write(f' default="{t["default"]}"')
+        fout.write(f'>\n')
+        fout.write(f'                <description>{d}</description>\n')
+        fout.write(f'            </param>\n')
 
     def output():
         if fun:
@@ -44,41 +56,66 @@ with open(args.out_xml, 'w') as fout:
                     fout.write('            <category name="{}" />\n'.format(cat))
                 fout.write('        </categories>\n')
             fout.write('        <params>\n')
-            for (t, n, d) in ins:
-                t = processTableType(t)
-                fout.write('            <param name="{}" type="{}">\n'.format(n, t))
-                fout.write('                <description>{}</description>\n'.format(d))
-                fout.write('            </param>\n')
+            for (t, n, d) in ins: outputParam(t, n, d)
             fout.write('        </params>\n')
             fout.write('        <return>\n')
-            for (t, n, d) in outs:
-                t = processTableType(t)
-                fout.write('            <param name="{}" type="{}">'.format(n, t))
-                fout.write('                <description>{}</description>\n'.format(d))
-                fout.write('            </param>\n')
+            for (t, n, d) in outs: outputParam(t, n, d)
             fout.write('        </return>\n')
             fout.write('    </command>\n')
 
+    def error(msg):
+        global args, lineno
+        print(f'{args.lua_file}:{lineno}: {msg}')
+        sys.exit(2)
+
     with open(args.lua_file, 'r') as f:
-        for line in f:
-            m = re.match(r'\s*--\s*@([^\s]+)\s+(.*)$', line)
-            if m:
-                tag, line = map(lambda s: s.strip(), m.groups())
-                if tag == 'fun':
-                    m = re.match(r'([^\s]+)\s*(.*)$', line)
-                    if m:
-                        name, description = map(lambda s: s.strip(), m.groups())
+        for lineno, line in enumerate(f):
+            lineno += 1
+            if m := re.match(r'\s*--\s*@(\w+)\b\s*(.*?)\s*$', line):
+                tag, line = m.groups()
+                if tag in ('func', 'fun'):
+                    if m := re.match(r'(\w+)\s*(.*?)\s*$', line):
+                        name, description = m.groups()
                         fun = (name, description)
+                    else:
+                        error(f'bad arguments: must be: @func <funcName> [description]')
                 elif tag in ('arg', 'ret'):
-                    m = re.match(r'([^\s]+)\s+([^\s]+)\s*(.*)$', line)
-                    if m:
-                        dtype, name, description = map(lambda s: s.strip(), m.groups())
-                        if tag == 'arg':
-                            ins.append((dtype, name, description))
-                        elif tag == 'ret':
-                            outs.append((dtype, name, description))
+                    if m := re.match(r'(\w+)\s+(\w+)\s*(.*?)$', line):
+                        dtype, name, description = m.groups()
+                        typeSpec = {'type': dtype}
+                    elif m := re.match(r'table\.(\w+)\s+(\w+)\s*(.*?)$', line):
+                        itype, name, description = m.groups()
+                        typeSpec = {'type': 'table', 'item_type': itype}
+                    elif m := re.match(r'\{([^\s]*)\}\s+(\w+)\s*(.*?)$', line):
+                        spec, name, description = m.groups()
+                        typeSpec = {}
+                        for s in spec.spit(','):
+                            s = s.strip()
+                            k, v = s.split('=')
+                            if k in ('type', 'item_type', 'default'):
+                                typeSpec[k] = v
+                            elif k in ('min_size', 'max_size', 'size'):
+                                try:
+                                    typeSpec[k] = int(v)
+                                except ValueError as e:
+                                    error(f'bad value for {k}: {v} ({e})')
+                            elif k in ('nullable'):
+                                try:
+                                    typeSpec[k] = {'true': True, 'false': False}[v]
+                                except KeyError as e:
+                                    error(f'bad value for {k}: must be true or false')
+                            else:
+                                error(f'bad key in typeSpec: {k}')
+                    else:
+                        error(f'bad arguments: must be: @{tag} <typeSpec> <name> [description]')
+                    if tag == 'arg':
+                        ins.append((typeSpec, name, description))
+                    elif tag == 'ret':
+                        outs.append((typeSpec, name, description))
                 elif tag == 'cats':
                     cats = [x.strip() for x in line.split(',')]
+                else:
+                    error(f'unknown tag: @{tag}')
             else:
                 output()
                 fun = None
