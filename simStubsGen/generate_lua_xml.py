@@ -40,11 +40,11 @@ def output():
                 if 'item_type' in t:
                     p.attrib['item-type'] = t['item_type']
                 if 'min_size' in t:
-                    p.attrib['min-size'] = t["min_size"]
+                    p.attrib['min-size'] = str(t["min_size"])
                 if 'max_size' in t:
-                    p.attrib['max-size'] = t["max_size"]
+                    p.attrib['max-size'] = str(t["max_size"])
                 if 'size' in t:
-                    p.attrib['size'] = t["size"]
+                    p.attrib['size'] = str(t["size"])
                 if 'nullable' in t:
                     p.attrib['nullable'] = str(t["item_type"]).lower()
                 if 'default' in t:
@@ -85,7 +85,7 @@ with open(args.lua_file, 'r') as f:
                 elif m := re.match(r'\{([^\s]*)\}\s+(\w+)\s*(.*?)$', line):
                     spec, name, description = m.groups()
                     typeSpec = {}
-                    for s in spec.spit(','):
+                    for s in spec.split(','):
                         s = s.strip()
                         k, v = s.split('=')
                         if k in ('type', 'item_type', 'default'):
