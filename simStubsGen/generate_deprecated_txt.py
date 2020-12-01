@@ -1,17 +1,21 @@
-from sys import argv, exit
+import argparse
 import re
 from parse import parse
 
-if len(argv) != 3:
-    print('usage: {} <callbacks.xml> <out-txt-file>'.format(argv[0]))
-    exit(1)
+parser = argparse.ArgumentParser(description='Generate the deprecated.txt for CoppeliaSim.')
+parser.add_argument('xml_file', type=str, default=None, help='the callbacks.xml file')
+parser.add_argument('out_file', type=str, default=None, help='the output deprecated.txt file')
+args = parser.parse_args()
 
-plugin = parse(argv[1])
+if args is False:
+    SystemExit
+
+plugin = parse(args.xml_file)
 
 functions = []
 variables = []
 
-with open(argv[2], 'w') as ftxt:
+with open(args.out_file, 'w') as ftxt:
     for cmd in plugin.commands:
         if plugin.short_name:
             fold = '{}{}'.format(plugin.command_prefix, cmd.name)

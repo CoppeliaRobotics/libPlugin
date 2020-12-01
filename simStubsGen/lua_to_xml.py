@@ -1,22 +1,23 @@
-from sys import argv, exit
+import argparse
 import re
 from parse import parse
 
-if len(argv) != 4:
-    print('usage: {} <callbacks.xml> <input-lua-file> <output-xml-file>'.format(argv[0]))
-    exit(1)
+parser = argparse.ArgumentParser(description='Generate xml from lua functions annotated with doc-strings.')
+parser.add_argument('xml_file', type=str, default=None, help='the callbacks.xml file')
+parser.add_argument('lua_file', type=str, default=None, help='the input lua file')
+parser.add_argument('out_xml', type=str, default=None, help='the output lua.xml file')
+args = parser.parse_args()
 
-xmlfile = argv[1]
-luafile = argv[2]
-outfile = argv[3]
+if args is False:
+    SystemExit
 
-plugin = parse(xmlfile)
+plugin = parse(args.xml_file)
 
 fun = None
-args, rets = [], []
+ins, outs = [], []
 cats = []
 
-with open(outfile, 'w') as fout:
+with open(args.out_xml, 'w') as fout:
     fout.write('<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n')
     fout.write(f'<plugin name="{plugin.name}"')
     if plugin.short_name:
@@ -43,14 +44,14 @@ with open(outfile, 'w') as fout:
                     fout.write('            <category name="{}" />\n'.format(cat))
                 fout.write('        </categories>\n')
             fout.write('        <params>\n')
-            for (t, n, d) in args:
+            for (t, n, d) in ins:
                 t = processTableType(t)
                 fout.write('            <param name="{}" type="{}">\n'.format(n, t))
                 fout.write('                <description>{}</description>\n'.format(d))
                 fout.write('            </param>\n')
             fout.write('        </params>\n')
             fout.write('        <return>\n')
-            for (t, n, d) in rets:
+            for (t, n, d) in outs:
                 t = processTableType(t)
                 fout.write('            <param name="{}" type="{}">'.format(n, t))
                 fout.write('                <description>{}</description>\n'.format(d))
@@ -58,7 +59,7 @@ with open(outfile, 'w') as fout:
             fout.write('        </return>\n')
             fout.write('    </command>\n')
 
-    with open(luafile, 'r') as f:
+    with open(args.lua_file, 'r') as f:
         for line in f:
             m = re.match(r'\s*--\s*@([^\s]+)\s+(.*)$', line)
             if m:
@@ -73,15 +74,15 @@ with open(outfile, 'w') as fout:
                     if m:
                         dtype, name, description = map(lambda s: s.strip(), m.groups())
                         if tag == 'arg':
-                            args.append((dtype, name, description))
+                            ins.append((dtype, name, description))
                         elif tag == 'ret':
-                            rets.append((dtype, name, description))
+                            outs.append((dtype, name, description))
                 elif tag == 'cats':
                     cats = [x.strip() for x in line.split(',')]
             else:
                 output()
                 fun = None
-                args, rets = [], []
+                ins, outs = [], []
                 cats = []
         output()
 
