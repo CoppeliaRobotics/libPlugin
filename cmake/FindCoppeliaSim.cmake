@@ -240,6 +240,7 @@ function(COPPELIASIM_GENERATE_STUBS GENERATED_OUTPUT_DIR)
         ${LIBPLUGIN_DIR}/simStubsGen/generate_deprecated_txt.py
         ${LIBPLUGIN_DIR}/simStubsGen/generate_lua_calltips.py
         ${LIBPLUGIN_DIR}/simStubsGen/generate_lua_typechecker.py
+        ${LIBPLUGIN_DIR}/simStubsGen/generate_lua_xml.py
         ${LIBPLUGIN_DIR}/simStubsGen/parse.py
         ${LIBPLUGIN_DIR}/simStubsGen/model/__init__.py
         ${LIBPLUGIN_DIR}/simStubsGen/model/command.py
