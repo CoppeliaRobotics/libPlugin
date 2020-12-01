@@ -110,7 +110,7 @@ if args.gen_reference_html:
     xsltproc_out = output('reference.html')
     xsltproc_xsl = rel('xsl/reference.xsl')
     if os.name == 'nt':
-        # on windows xsltproc will raise a I/O error if path contain backslashes
+        # on windows xsltproc will raise a I/O error if path contains backslashes
         xsltproc_in = xsltproc_in.replace('\\', '/')
         xsltproc_out = xsltproc_out.replace('\\', '/')
         xsltproc_xsl = xsltproc_xsl.replace('\\', '/')
