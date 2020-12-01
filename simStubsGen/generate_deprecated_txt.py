@@ -25,7 +25,7 @@ with open(args.out_file, 'w') as ftxt:
     for enum in plugin.enums:
         for item in enum.items:
             if plugin.short_name:
-                vold = 'sim_{}_{}{}'.format(plugin.name.lower(), enum.item_prefix, item)
-                vnew = 'sim{}.{}.{}'.format(plugin.short_name, enum.name, item)
-                ftxt.write('{},{},\n'.format(vold,vnew))
+                vold = 'sim_{}_{}{}'.format(plugin.name.lower(), enum.item_prefix, item.name)
+                vnew = 'sim{}.{}.{}'.format(plugin.short_name, enum.name, item.name)
+                ftxt.write('{},{},\n'.format(vold, vnew))
 
