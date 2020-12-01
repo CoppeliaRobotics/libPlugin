@@ -62,7 +62,7 @@ root.attrib['name'] = plugin.name
 if plugin.short_name:
     root.attrib['short-name'] = plugin.short_name
 if plugin.version:
-    root.attrib['version'] = plugin.version
+    root.attrib['version'] = str(plugin.version)
 
 with open(args.lua_file, 'r') as f:
     for lineno, line in enumerate(f):
