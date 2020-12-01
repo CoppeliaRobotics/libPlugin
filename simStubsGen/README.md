@@ -272,18 +272,34 @@ Example:
 
 As plugins can provide additional functions via lua files, special comments can be added to lua files to generate a similar documentation (html reference, calltips, etc...).
 
-Comments must start at the very beginning of a line, and are in the form:
+Comments should start at the very beginning of a line, and are in the form:
 
 ```lua
---@key value
+--@key value...
 ```
 
-Where `key` is an identifier. Valid values for `key` are:
+**Function name and description:** (must be the first line of a block)
 
-- `fun`: must be the first one of a block. `value` must contain the name of the function and a description;
-- `arg`: describe an input argument. `value` must contain the type (`int`, `float`, `string`, `table`, whereas the latter can be specialized with the item type, e.g.: `table.int`, `table.string`, etc...);
-- `ret`: similar to `arg` but describe a return value;
-- `cats`: a list of [categories](#automatic-cross-references), separated by comma (spaces are ignored).
+```lua
+--@fun <function-name> [description]
+```
+
+**Function arguments and return values:**
+
+```lua
+--@arg <type-specification> <parameter-name> [description]
+--@ret <type-specification> <parameter-name> [description]
+```
+
+where `<type-specification>` can be a string with the type (`int`, `float`, `bool`, `string`, `table`, `table.int`, `table.string`, etc...) or an extended type specification in the form `{key1=value1,key2=value2}` where the key names are the same as the XML attributes of `<param>` (described [above](#parameter-specification)) where the `-` character is replaced by `_`.
+
+**Categories:**
+
+A list of [categories](#automatic-cross-references), separated by comma (spaces are ignored)
+
+```lua
+--@cats <category> [, <category>] ...
+```
 
 Example:
 
@@ -294,10 +310,26 @@ Example:
 --@ret int count the number of states in the path
 --@cats path, state
 function simOMPL.getPathStateCount(taskHandle,path)
-    local n=simOMPL.getStateSpaceDimension(taskHandle)
-    return #path/n
+    ...
 end
 ```
+
+Another example, using extended type specification:
+
+```lua
+--@fun drawPath draw a solution path for the specified motion planning task (as lines)
+--@arg int taskHandle the handle of the task
+--@arg table.float path the path, as returned by simOMPL.getPath
+--@arg float lineSize size of the line (in pixels)
+--@arg {type=table,item_type=float,size=3} color color of the lines
+--@arg int extraAttributes extra attributes to pass to sim.addDrawingObject
+--@ret table.int dwos a table of handles of new drawing objects
+--@cats path, drawing
+function simOMPL.drawPath(taskHandle,path,lineSize,color,extraAttributes)
+    ...
+end
+```
+
 
 ## Complete example
 
