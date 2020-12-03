@@ -5,6 +5,7 @@
     #error simPlusPlus needs at least a C++11 compliant compiler
 #endif
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -152,7 +153,7 @@ SIM_DLLEXPORT unsigned char simStart(void *reservedPointer, int reservedInt) \
         sim::plugin->setName(pluginName_); \
         sim::lib = sim::plugin->loadSimLibrary(); \
         sim::plugin->onStart(); \
-        return sim::pluginVersion; \
+        return std::min(1, sim::pluginVersion); \
     } \
     catch(std::exception &ex) \
     { \
