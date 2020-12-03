@@ -153,7 +153,7 @@ SIM_DLLEXPORT unsigned char simStart(void *reservedPointer, int reservedInt) \
         sim::plugin->setName(pluginName_); \
         sim::lib = sim::plugin->loadSimLibrary(); \
         sim::plugin->onStart(); \
-        return std::min(1, sim::pluginVersion); \
+        return std::max(1, sim::pluginVersion); \
     } \
     catch(std::exception &ex) \
     { \
