@@ -2,20 +2,15 @@ import os
 import sys
 import xml.etree.ElementTree as ET
 
-try:
-    import xmlschema
-except ModuleNotFoundError:
-    print('\n\n{}\n\n'.format('\n'.join('   ' + x for x in [
-        'error: Python package "xmlschema" not found.',
-        '       Please install it, e.g.: python3 -m pip install xmlschema'
-    ])))
-    sys.exit(1)
-
 import model
 
 def parse(xml_file):
-    schema = xmlschema.XMLSchema11(os.path.dirname(os.path.realpath(__file__)) + '/xsd/callbacks.xsd')
-    schema.validate(xml_file)
+    try:
+        import xmlschema
+        schema = xmlschema.XMLSchema11(os.path.dirname(os.path.realpath(__file__)) + '/xsd/callbacks.xsd')
+        schema.validate(xml_file)
+    except ModuleNotFoundError:
+        print(f'warning: missing python package "xmlschema"; input file {os.path.basename(xml_file)} will not be validated.', file=sys.stderr)
     tree = ET.parse(xml_file)
     root = tree.getroot()
     return model.Plugin(root)
