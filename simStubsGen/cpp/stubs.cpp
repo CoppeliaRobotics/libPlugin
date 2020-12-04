@@ -541,7 +541,7 @@ const char* `enum.name.lower()`_string(`enum.name` x)
 
 void `cmd.c_name`(SScriptCallBack *p, `cmd.c_in_name` *in_args, `cmd.c_out_name` *out_args)
 {
-    `cmd.c_name`(p, "`plugin.command_prefix``cmd.c_name`", in_args, out_args);
+    `cmd.c_name`(p, "sim`plugin.name`.`cmd.name`", in_args, out_args);
 }
 
 #py if len(cmd.returns) == 1:
@@ -598,7 +598,7 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
     addStubsDebugLog("`cmd.c_name`_callback: reading input arguments...");
     addStubsDebugStackDump(p->stackID);
 
-    const char *cmd = "`plugin.command_prefix``cmd.c_name`";
+    const char *cmd = "sim`plugin.name`.`cmd.name`";
 
     `cmd.c_in_name` in_args;
     if(p)
