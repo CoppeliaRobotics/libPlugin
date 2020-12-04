@@ -68,7 +68,7 @@ optional arguments:
 The `callbacks.xml` files has this structure:
 
 ```xml
-<plugin name="PluginName" short-name="PLG" author="you@example.com">
+<plugin name="PluginName" author="you@example.com">
     <description>An example plugin</description>
 
     <!--
@@ -179,7 +179,7 @@ Example:
 
 It will generate an enum named `myenum` with items `sim_plugname_foo_alpha`, `sim_plugname_foo_beta`, `sim_plugname_foo_gamma`.
 
-The enum items will be available also in Lua as `simPLG.myenum.alpha`, `simPLG.myenum.beta`, `simPLG.myenum.gamma`.
+The enum items will be available also in Lua as `simPluginName.myenum.alpha`, `simPluginName.myenum.beta`, `simPluginName.myenum.gamma`.
 
 ### Parameter specification
 

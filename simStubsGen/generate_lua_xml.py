@@ -59,8 +59,6 @@ def error(msg):
 
 root = ET.Element('plugin')
 root.attrib['name'] = plugin.name
-if plugin.short_name:
-    root.attrib['short-name'] = plugin.short_name
 if plugin.version:
     root.attrib['version'] = str(plugin.version)
 

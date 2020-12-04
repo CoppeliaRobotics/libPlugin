@@ -165,7 +165,6 @@
             </xsd:choice>
         </xsd:sequence>
         <xsd:attribute name="name" type="identifier" use="required" />
-        <xsd:attribute name="short-name" type="identifier" />
         <xsd:attribute name="author" type="xsd:string" />
         <xsd:attribute name="version" type="xsd:integer" />
     </xsd:complexType>

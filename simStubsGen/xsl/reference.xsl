@@ -80,37 +80,15 @@
 
     <!-- template routines: -->
 
-    <xsl:template name="functionPrefixOldStyle">
-        <!-- if plugin node defined a prefix attribute, we use it for
-             functions prefix, otherwise we use the plugin's name attribute -->
-        <xsl:text>simExt</xsl:text>
-        <xsl:choose>
-            <xsl:when test="/plugin/@prefix">
-                <xsl:value-of select="/plugin/@prefix"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:value-of select="/plugin/@name"/>
-            </xsl:otherwise>
-        </xsl:choose>
-        <xsl:text>_</xsl:text>
-    </xsl:template>
-
-    <xsl:template name="functionPrefixNewStyle">
+    <xsl:template name="symbolPrefix">
         <xsl:text>sim</xsl:text>
-        <xsl:value-of select="/plugin/@short-name"/>
+        <xsl:value-of select="/plugin/@name"/>
         <xsl:text>.</xsl:text>
     </xsl:template>
 
     <xsl:template name="renderCmdName">
         <xsl:param name="name"/>
-        <xsl:choose>
-            <xsl:when test="/plugin/@short-name">
-                <xsl:call-template name="functionPrefixNewStyle"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:call-template name="functionPrefixOldStyle"/>
-            </xsl:otherwise>
-        </xsl:choose>
+        <xsl:call-template name="symbolPrefix"/>
         <xsl:value-of select="$name"/>
     </xsl:template>
 
@@ -159,13 +137,7 @@
 
     <xsl:template name="renderEnumName">
         <xsl:param name="name"/>
-        <xsl:choose>
-            <xsl:when test="/plugin/@short-name">
-                <xsl:call-template name="functionPrefixNewStyle"/>
-            </xsl:when>
-            <xsl:otherwise>
-            </xsl:otherwise>
-        </xsl:choose>
+        <xsl:call-template name="symbolPrefix"/>
         <xsl:value-of select="$name"/>
     </xsl:template>
 
@@ -393,7 +365,7 @@ td.section { margin: 0; padding: 0; }
                                     <br/>
                                     <br/>
                                     <h1>Constants</h1>
-                                    <p>Constants used in the various functions.<xsl:if test="plugin/@short-name"> Refer to each constant using <i>enumName.constantName</i>, i.e. <b>simUI.curve_type.xy</b> for <b>xy</b> constant in <b>simUI.curve_type</b> enum.</xsl:if></p>
+                                    <p>Constants used in the various functions. Refer to each constant using <i>enumName.constantName</i>, i.e. <b>simUI.curve_type.xy</b> for <b>xy</b> constant in <b>simUI.curve_type</b> enum.</p>
                                     <xsl:for-each select="plugin/enum">
                                         <h3 class="subsectionBar"><a name="enum:{@name}" id="enum:{@name}"></a><xsl:call-template name="renderEnumName"><xsl:with-param name="name" select="@name"/></xsl:call-template></h3>
                                     <table class="apiConstantsTable">
@@ -403,9 +375,6 @@ td.section { margin: 0; padding: 0; }
                                                     <xsl:for-each select="item">
                                                         <div>
                                                             <strong>
-                                                                <xsl:if test="not /plugin/@short-name">
-                                                                <xsl:value-of select="../@item-prefix"/>
-                                                                </xsl:if>
                                                                 <xsl:value-of select="@name"/>
                                                             </strong>
                                                             <xsl:if test="description">

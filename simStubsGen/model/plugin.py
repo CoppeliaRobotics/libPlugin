@@ -8,7 +8,6 @@ class Plugin(object):
         if node.tag != 'plugin':
             raise ValueError('expected <plugin>, got <%s>' % node.tag)
         self.name = node.attrib['name']
-        self.short_name = node.attrib.get('short-name', None)
         self.version = int(node.attrib.get('version', 0))
         self.command_prefix = 'simExt{}_'.format(self.name)
         self.enums = [Enum(self, n) for n in node.findall('enum')]

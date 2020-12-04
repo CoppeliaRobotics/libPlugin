@@ -21,5 +21,3 @@ def output_cmake_var(f, cmake_name, value, cache=False, cmake_type='STRING', doc
 with open(args.out_file, 'wt') as f:
     output_cmake_var(f, 'PLUGIN_NAME', plugin.name, True)
     output_cmake_var(f, 'PLUGIN_VERSION', plugin.version, True)
-    if plugin.short_name:
-        output_cmake_var(f, 'PLUGIN_SHORT_NAME', plugin.short_name, True)

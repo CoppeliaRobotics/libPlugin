@@ -13,17 +13,14 @@ if args is False:
 
 plugin = parse(args.xml_file)
 
-if not plugin.short_name:
-    raise AttributeError('plugin short-name not defined')
-
 mapping = {}
 
 if plugin.version > 1:
-    pluginKey = f'sim{plugin.short_name}_{plugin.version}'
-    htmFile = f'sim{plugin.short_name}-{plugin.version}.htm'
+    pluginKey = f'sim{plugin.name}_{plugin.version}'
+    htmFile = f'sim{plugin.name}-{plugin.version}.htm'
 else:
-    pluginKey = f'sim{plugin.short_name}'
-    htmFile = f'sim{plugin.short_name}.htm'
+    pluginKey = f'sim{plugin.name}'
+    htmFile = f'sim{plugin.name}.htm'
 
 for cmd in plugin.commands:
     mapping[f'{cmd.name}'] = f'{htmFile}#{cmd.name}'
