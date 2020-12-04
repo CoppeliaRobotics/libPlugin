@@ -27,7 +27,7 @@ For CMake, use the `coppeliasim_generate_stubs` CMake macro, e.g.:
 coppeliasim_generate_stubs(
     ${CMAKE_CURRENT_BINARY_DIR}/generated
     XML_FILE ${CMAKE_CURRENT_SOURCE_DIR}/callbacks.xml
-    LUA_FILE ${CMAKE_CURRENT_SOURCE_DIR}/simExtOMPL.lua)
+    LUA_FILE ${CMAKE_CURRENT_SOURCE_DIR}/simOMPL.lua)
 ```
 
 The `XML_FILE` parameter is mandatory.

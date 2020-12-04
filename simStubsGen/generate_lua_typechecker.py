@@ -1,9 +1,11 @@
 import argparse
+import os
 import sys
 from parse import parse
 from model import ParamTable
 
 parser = argparse.ArgumentParser(description='Generate Lua typechecker.')
+parser.add_argument('lua_file', type=str, default=None, help='the input lua file')
 parser.add_argument('xml_file', type=str, default=None, help='the (lua) XML file')
 parser.add_argument('out_file', type=str, default=None, help='the output lua file')
 args = parser.parse_args()
@@ -19,7 +21,7 @@ with open(args.out_file, 'wt') as f:
 
 local sim{plugin.short_name}={{}}
 
-sim{plugin.short_name}._=require('simExt{plugin.short_name}')
+sim{plugin.short_name}._=require('{os.path.splitext(os.path.basename(args.lua_file))[0]}')
 
 """)
     for cmd in plugin.commands:

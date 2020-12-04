@@ -77,6 +77,9 @@ if args.gen_reference_xml:
 if args.gen_lua_typechecker:
     args.gen_lua_xml = True
 
+if args.lua_file:
+    lua_require = os.path.splitext(os.path.basename(args.lua_file))[0]
+
 if args.verbose:
     print(' '.join(['"%s"' % arg if ' ' in arg else arg for arg in sys.argv]))
 
@@ -136,7 +139,8 @@ if args.gen_lua_typechecker:
         print('no lua file defined. skipping gen_lua_typechecker')
         args.gen_lua_typechecker = False
     else:
-        runtool('generate_lua_typechecker', output('lua.xml'), output(f'simExt{plugin.name}-typecheck.lua'))
+        lua_require += '-typecheck'
+        runtool('generate_lua_typechecker', args.lua_file, output('lua.xml'), output(f'{lua_require}.lua'))
 
 if args.gen_deprecated_txt:
     runtool('generate_deprecated_txt', args.xml_file, output('deprecated_mapping.txt'))
@@ -146,5 +150,5 @@ if args.gen_api_index:
 
 if args.gen_stubs:
     for fn in ('stubs.cpp', 'stubs.h', 'plugin.h', 'stubsPlusPlus.cpp'):
-        runtool('external/pycpp/pycpp', '-p', 'xml_file=' + args.xml_file, '-p', f'have_lua_calltips={args.gen_lua_calltips}', '-p', f'have_lua_typechecker={args.gen_lua_typechecker}', '-i', rel('cpp/' + fn), '-o', output(fn), '-P', self_dir)
+        runtool('external/pycpp/pycpp', '-p', 'xml_file=' + args.xml_file, '-p', f'have_lua_calltips={args.gen_lua_calltips}', '-p', f'lua_require={lua_require}', '-i', rel('cpp/' + fn), '-o', output(fn), '-P', self_dir)
 
