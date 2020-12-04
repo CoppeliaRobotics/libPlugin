@@ -485,7 +485,7 @@ bool registerScriptStuff()
 #py endfor
             // register commands:
 #py for cmd in plugin.commands:
-            sim::registerScriptCallbackFunction("`plugin_var`.`cmd.name`@`plugin.name`", "`escape(cmd.help_out_args_text)`sim`plugin.name`.`cmd.name`(`escape(cmd.help_in_args_text)`)`escape(cmd.documentation)`", `cmd.c_name`_callback);
+            sim::registerScriptCallbackFunction("`plugin_var`.`cmd.name`@`plugin.name`", "`escape(cmd.calltip)``escape(cmd.documentation)`", `cmd.c_name`_callback);
 #py endfor
 
 #py if pycpp.params['have_lua_calltips'] == 'True':

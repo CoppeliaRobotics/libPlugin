@@ -15,4 +15,4 @@ ver_suffix = f'_{plugin.version}' if plugin.version > 0 else ''
 
 with open(args.out_file, 'w') as fout:
     for cmd in plugin.commands:
-        fout.write(f'sim::registerScriptCallbackFunction("sim{plugin.name}{ver_suffix}.{cmd.name}@{plugin.name}", "{escape(cmd.help_out_args_text)}sim{plugin.name}.{cmd.name}({escape(cmd.help_in_args_text)}){escape(cmd.documentation)}", NULL);\n')
+        fout.write(f'sim::registerScriptCallbackFunction("sim{plugin.name}{ver_suffix}.{cmd.name}@{plugin.name}", "{escape(cmd.calltip)}{escape(cmd.documentation)}", NULL);\n')
