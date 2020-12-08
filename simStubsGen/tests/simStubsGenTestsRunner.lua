@@ -306,6 +306,34 @@ function main()
         assertEq('z',z,{i=10,["in"]=20,id=30,idn=40})
     end)
 
+    assertOk('lua.nullable.nil', function()
+        simStubsGenTests.testLuaNullable(nil,'x')
+    end)
+
+    assertOk('lua.nullable.typeOk', function()
+        simStubsGenTests.testLuaNullable(123,'x')
+    end)
+
+    assertFail('lua.nullable.typeFail', function()
+        simStubsGenTests.testLuaNullable('bad','x')
+    end)
+
+    assertFail('lua.default.badtype', function()
+        simStubsGenTests.testLuaDefault(123,456)
+    end)
+
+    assertFail('lua.default.nil', function()
+        simStubsGenTests.testLuaDefault(123,nil) -- b is not nullable
+    end)
+
+    assertOk('lua.default.def', function()
+        assertEq('ret',simStubsGenTests.testLuaDefault(123),'x')
+    end)
+
+    assertOk('lua.default.typeok', function()
+        assertEq('ret',simStubsGenTests.testLuaDefault(123,'y'),'y')
+    end)
+
     local totalTests=numPassed+numFailed
     logInfo('%d/%d tests passed successfully',numPassed,totalTests)
 
@@ -435,8 +463,14 @@ end
 function loadModule()
     local p=sim.getStringNamedParam('simStubsGenTests.module')
     local h=sim.loadModule(p,'StubsGenTests')
+    if h==-1 then
+        error('the module could not initialize (-1)')
+    elseif h==-2 then
+        error('the module is missing entrypoints (-2)')
+    elseif h==-3 then
+        error('the module could not be loaded (-3)')
+    end
     logInfo('loaded module %s with handle %d',p,h)
-    assert(h~=-1,'failed loading StubsGenTests module')
     local funcs={}
     for k,v in pairs(simStubsGenTests) do if type(v)=='function' then table.insert(funcs,k) end end
     logInfo('module functions: %s',table.concat(funcs,', '))
