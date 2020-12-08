@@ -43,10 +43,10 @@ function sim{plugin.name}.{cmd.name}(...)
                         f.write(f""",min_size={p.minsize}""")
                     if p.maxsize > -1:
                         f.write(f""",max_size={p.maxsize}""")
-                if p.nullable:
-                    f.write(f""",nullable=true""")
-                if p.default:
-                    f.write(f""",default={p.default}""")
+            if p.nullable:
+                f.write(f""",nullable=true""")
+            if p.default:
+                f.write(f""",default={p.default}""")
             f.write(f"""}},
 """)
         f.write(f"""        }},
