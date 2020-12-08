@@ -33,24 +33,24 @@ def output():
         pars = ET.SubElement(cmd, 'params')
         rets = ET.SubElement(cmd, 'return')
         for (src, parent) in ((ins, pars), (outs, rets)):
-            for (t, n, d) in src:
+            for (typeSpec, name, description) in src:
                 p = ET.SubElement(parent, 'param')
-                p.attrib['name'] = n
-                p.attrib['type'] = t['type']
-                if 'item_type' in t:
-                    p.attrib['item-type'] = t['item_type']
-                if 'min_size' in t:
-                    p.attrib['min-size'] = str(t["min_size"])
-                if 'max_size' in t:
-                    p.attrib['max-size'] = str(t["max_size"])
-                if 'size' in t:
-                    p.attrib['size'] = str(t["size"])
-                if 'nullable' in t:
-                    p.attrib['nullable'] = str(t["nullable"]).lower()
-                if 'default' in t:
-                    p.attrib['default'] = t["default"]
+                p.attrib['name'] = name
+                p.attrib['type'] = typeSpec['type']
+                if 'item_type' in typeSpec:
+                    p.attrib['item-type'] = typeSpec['item_type']
+                if 'min_size' in typeSpec:
+                    p.attrib['min-size'] = str(typeSpec["min_size"])
+                if 'max_size' in typeSpec:
+                    p.attrib['max-size'] = str(typeSpec["max_size"])
+                if 'size' in typeSpec:
+                    p.attrib['size'] = str(typeSpec["size"])
+                if 'nullable' in typeSpec:
+                    p.attrib['nullable'] = str(typeSpec["nullable"]).lower()
+                if 'default' in typeSpec:
+                    p.attrib['default'] = typeSpec["default"]
                 d = ET.SubElement(p, 'description')
-                d.text = d
+                d.text = description
 
 def error(msg):
     global args, lineno
