@@ -24,8 +24,9 @@ def output():
         f, fdesc = fun
         cmd = ET.SubElement(root, 'command')
         cmd.attrib['name'] = f
-        d = ET.SubElement(cmd, 'description')
-        d.text = fdesc
+        if fdesc:
+            d = ET.SubElement(cmd, 'description')
+            d.text = fdesc
         if cats:
             cs = ET.SubElement(cmd, 'categories')
             for cat in cats:
@@ -49,8 +50,9 @@ def output():
                     p.attrib['nullable'] = str(typeSpec["nullable"]).lower()
                 if 'default' in typeSpec:
                     p.attrib['default'] = typeSpec["default"]
-                d = ET.SubElement(p, 'description')
-                d.text = description
+                if description:
+                    d = ET.SubElement(p, 'description')
+                    d.text = description
 
 def error(msg):
     global args, lineno
