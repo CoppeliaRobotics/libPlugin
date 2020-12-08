@@ -77,6 +77,8 @@ if args.gen_lua_typechecker:
 
 if args.lua_file:
     lua_require = os.path.splitext(os.path.basename(args.lua_file))[0]
+else:
+    lua_require = ''
 
 if args.verbose:
     print(' '.join(['"%s"' % arg if ' ' in arg else arg for arg in sys.argv]))
@@ -138,6 +140,16 @@ if args.gen_api_index:
     runtool('generate_api_index', input_xml, output('index.json'))
 
 if args.gen_stubs:
+    tool = [
+        'external/pycpp/pycpp',
+        '-p', 'xml_file=' + args.xml_file,
+        '-p', f'have_lua_calltips={args.gen_lua_calltips}',
+        '-P', self_dir
+    ]
+    if lua_require:
+        tool.extend([
+            '-p', f'lua_require={lua_require}',
+        ])
     for fn in ('stubs.cpp', 'stubs.h', 'plugin.h', 'stubsPlusPlus.cpp'):
-        runtool('external/pycpp/pycpp', '-p', 'xml_file=' + args.xml_file, '-p', f'have_lua_calltips={args.gen_lua_calltips}', '-p', f'lua_require={lua_require}', '-i', rel('cpp/' + fn), '-o', output(fn), '-P', self_dir)
+        runtool(*tool, '-i', rel('cpp/' + fn), '-o', output(fn))
 

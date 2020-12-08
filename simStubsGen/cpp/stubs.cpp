@@ -466,14 +466,20 @@ bool registerScriptStuff()
         try
         {
 #py plugin_var = f'sim{plugin.name}'
-#py lua_require = pycpp.params['lua_require']
+#py lua_require = pycpp.params.get('lua_require')
 #py #
 #py if plugin.version > 0:
 #py plugin_var += f'_{plugin.version}'
+#py if lua_require:
 #py lua_require += f'-{plugin.version}'
 #py endif
+#py endif
 #py #
+#py if lua_require:
             sim::registerScriptVariable("`plugin_var`", "require('`lua_require`')", 0);
+#py else:
+            sim::registerScriptVariable("`plugin_var`", "{}", 0);
+#py endif
             sim::registerScriptVariable("_`plugin.name`_latest_version", "math.max(_`plugin.name`_latest_version or 0, `plugin.version`)", 0);
 
             // register varables from enums:
