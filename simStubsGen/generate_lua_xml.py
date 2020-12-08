@@ -46,7 +46,7 @@ def output():
                 if 'size' in t:
                     p.attrib['size'] = str(t["size"])
                 if 'nullable' in t:
-                    p.attrib['nullable'] = str(t["item_type"]).lower()
+                    p.attrib['nullable'] = str(t["nullable"]).lower()
                 if 'default' in t:
                     p.attrib['default'] = t["default"]
                 d = ET.SubElement(p, 'description')
