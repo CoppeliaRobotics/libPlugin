@@ -29,7 +29,7 @@ add_test(
         "${COPPELIASIM_EXECUTABLE}"
         -h # run in headless mode
         -vnone # will be raised after add-on is loaded
-        "-a${CMAKE_CURRENT_SOURCE_DIR}/simStubsGenTests.lua" # load add-on script
+        "-a${CMAKE_CURRENT_SOURCE_DIR}/simStubsGenTestsRunner.lua" # load add-on script
         "-GsimStubsGenTests.module=$<TARGET_FILE:simStubsGenTests>"
         -GsimStubsGen.debug=0
         -GsimStubsGenTests.verbosity=infos
