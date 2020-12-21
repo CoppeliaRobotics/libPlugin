@@ -76,6 +76,13 @@ class ParamInt(Param):
     def htype(self):
         return 'number'
 
+class ParamLong(Param):
+    def __init__(self, node):
+        super(ParamLong, self).__init__(node)
+
+    def htype(self):
+        return 'number'
+
 class ParamFloat(Param):
     def __init__(self, node):
         super(ParamFloat, self).__init__(node)
@@ -138,6 +145,7 @@ class ParamStruct(Param):
 
 Param.register_type('anything', Param)
 Param.register_type('int', ParamInt)
+Param.register_type('long', ParamLong)
 Param.register_type('float', ParamFloat)
 Param.register_type('double', ParamDouble)
 Param.register_type('string', ParamString)
