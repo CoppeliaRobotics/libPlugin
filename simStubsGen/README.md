@@ -13,7 +13,7 @@ similar documentation for pure Lua functions. See [below](#lua-comments).
 
 ## Dependencies
 
-- Python interpreter (3.7 or greater)
+- Python interpreter (3.8 or greater)
 - xsltproc (available via `apt`/`brew`/`choco`)
 - (optional) Python package 'xmlschema' (`pip install xmlschema`)
 
