@@ -334,6 +334,19 @@ function main()
         assertEq('ret',simStubsGenTests.testLuaDefault(123,'y'),'y')
     end)
 
+    assertOk('grid.1', function()
+        local a=simStubsGenTests.test_grid({dims={2,3},data={11,12,13,21,22,23}})
+        assertEq('a',{dims={2,3},data={22,24,26,42,44,46}},a)
+    end)
+
+    assertFail('grid.2', function()
+        simStubsGenTests.test_grid({dims={2,3},data={11,12,13,21,22}})
+    end)
+
+    assertFail('grid.3', function()
+        simStubsGenTests.test_grid({dims={},data={}})
+    end)
+
     local totalTests=numPassed+numFailed
     logInfo('%d/%d tests passed successfully',numPassed,totalTests)
 

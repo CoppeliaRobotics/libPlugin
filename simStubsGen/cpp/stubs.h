@@ -58,6 +58,13 @@ void simThread();
     }
 #endif // QT_COMPIL
 
+template<typename T>
+struct Grid
+{
+    std::vector<int> dims;
+    std::vector<T> data;
+};
+
 struct ReadOptions
 {
     size_t minSize{0};

@@ -122,6 +122,14 @@ public:
     {
         out->z = in->z;
     }
+
+    void test_grid(test_grid_in *in, test_grid_out *out)
+    {
+        for(const auto &x : in->a.dims)
+            out->a.dims.push_back(x);
+        for(const auto &x : in->a.data)
+            out->a.data.push_back(2 * x);
+    }
 };
 
 SIM_PLUGIN("StubsGenTests", 1, Plugin)

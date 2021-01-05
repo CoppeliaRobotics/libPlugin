@@ -143,6 +143,16 @@ class ParamStruct(Param):
         super(ParamStruct, self).__init__(node)
         self.structname = name
 
+class ParamGrid(Param):
+    def __init__(self, node):
+        super(ParamGrid, self).__init__(node)
+        self.dims = node.attrib.get('dims', None)
+        self.itype = node.attrib.get('item-type', None)
+        valid_itypes = ('int', 'float', 'double', 'long')
+        if self.itype is None or self.itype not in valid_itypes:
+            raise ValueError('Attribute "item-type" must be one of: {", ".join(\'"{}"\'.format(t) for t in valid_itypes)}')
+        self.ctype_base = 'Grid< %s >' % self.itype
+
 Param.register_type('anything', Param)
 Param.register_type('int', ParamInt)
 Param.register_type('long', ParamLong)
@@ -151,3 +161,4 @@ Param.register_type('double', ParamDouble)
 Param.register_type('string', ParamString)
 Param.register_type('bool', ParamBool)
 Param.register_type('table', ParamTable)
+Param.register_type('grid', ParamGrid)

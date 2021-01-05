@@ -272,6 +272,72 @@ void readFromStack(int stack, std::vector<int> *vec, const ReadOptions &rdopt)
     readFromStack(stack, vec, sim::getStackInt32Table, rdopt);
 }
 
+template<typename T>
+void readFromStack(int stack, Grid<T> *grid, const ReadOptions &rdopt = {})
+{
+    try
+    {
+        simInt info = sim::getStackTableInfo(stack, 0);
+        if(info != sim_stack_table_map && info != sim_stack_table_empty)
+        {
+            throw sim::exception("expected a map");
+        }
+
+        int oldsz = sim::getStackSize(stack);
+        sim::unfoldStackTable(stack);
+        int numItems = (sim::getStackSize(stack) - oldsz + 1) / 2;
+
+        std::set<std::string> requiredFields{"dims", "data"};
+
+        while(numItems >= 1)
+        {
+            sim::moveStackItemToTop(stack, oldsz - 1); // move key to top
+            std::string key;
+            readFromStack(stack, &key);
+
+            sim::moveStackItemToTop(stack, oldsz - 1); // move value to top
+            try
+            {
+                if(0) {}
+                else if(key == "dims")
+                {
+                    readFromStack(stack, &grid->dims, ReadOptions().setTableBounds(1, -1));
+                }
+                else if(key == "data")
+                {
+                    readFromStack(stack, &grid->data, ReadOptions());
+                }
+                else
+                {
+                    throw sim::exception("unexpected key");
+                }
+            }
+            catch(std::exception &ex)
+            {
+                throw sim::exception("field '%s': %s", key, ex.what());
+            }
+
+            requiredFields.erase(key);
+            numItems = (sim::getStackSize(stack) - oldsz + 1) / 2;
+        }
+
+        for(const auto &field : requiredFields)
+            throw sim::exception("missing required field '%s'", field);
+
+        if(grid->dims.size() < 1)
+            throw sim::exception("must have at least one dimension");
+
+        size_t elemCount = 1;
+        for(const int &i : grid->dims) elemCount *= i;
+        if(grid->data.size() != elemCount)
+            throw sim::exception("incorrect data length (expected %d elements)", elemCount);
+    }
+    catch(std::exception &ex)
+    {
+        throw sim::exception("readFromStack(Grid): %s", ex.what());
+    }
+}
+
 #py for struct in plugin.structs:
 void readFromStack(int stack, `struct.name` *value, const ReadOptions &rdopt)
 {
@@ -411,6 +477,32 @@ template<>
 void writeToStack(const std::vector<int> &vec, int stack, const WriteOptions &wropt)
 {
     sim::pushInt32TableOntoStack(stack, vec);
+}
+
+template<typename T>
+void writeToStack(const Grid<T> &grid, int stack, const WriteOptions &wropt = {})
+{
+    try
+    {
+        sim::pushTableOntoStack(stack);
+
+#py for field_name in ['dims', 'data']:
+        try
+        {
+            writeToStack(std::string{"`field_name`"}, stack);
+            writeToStack(grid.`field_name`, stack);
+            sim::insertDataIntoStackTable(stack);
+        }
+        catch(std::exception &ex)
+        {
+            throw sim::exception("field '`field_name`': %s", ex.what());
+        }
+#py endfor
+    }
+    catch(std::exception &ex)
+    {
+        throw sim::exception("writeToStack(Grid): %s", ex.what());
+    }
 }
 
 #py for struct in plugin.structs:

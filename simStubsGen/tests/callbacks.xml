@@ -82,6 +82,15 @@
         </return>
     </command>
 
+    <command name="test_grid">
+        <params>
+            <param name="a" type="grid" item-type="float" />
+        </params>
+        <return>
+            <param name="a" type="grid" item-type="float" />
+        </return>
+    </command>
+
     <enum name="enum1" item-prefix="e1_" base="40">
         <item name="a" />
         <item name="b" />
