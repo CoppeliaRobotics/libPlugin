@@ -342,8 +342,17 @@ function main()
     end
 end
 
+function level2string(level)
+    if level==sim.verbosity_errors then return 'error' end
+    if level==sim.verbosity_warnings then return 'warning' end
+    if level==sim.verbosity_infos then return 'info' end
+    if level==sim.verbosity_debug then return 'debug' end
+    return '???'
+end
+
 function log(level,fmt,...)
-    sim.addLog(level,string.format('StubsGenTests: '..fmt,...))
+    --sim.addLog(level,string.format('StubsGenTests: '..fmt,...))
+    printToConsole(level2string(level),string.format('StubsGenTests: '..fmt,...))
 end
 
 function logError(fmt,...)
