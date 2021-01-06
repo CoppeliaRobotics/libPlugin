@@ -180,22 +180,6 @@ void readFromStack(int stack, boost::optional<T> *value, const ReadOptions &rdop
     }
 }
 
-void checkTableSize(size_t sz, const ReadOptions &rdopt)
-{
-    if(rdopt.minSize == rdopt.maxSize)
-    {
-        if(sz != rdopt.minSize)
-            throw sim::exception("must have exactly %d elements", rdopt.minSize);
-    }
-    else
-    {
-        if(sz < rdopt.minSize)
-            throw sim::exception("must have at least %d elements", rdopt.minSize);
-        if(sz > rdopt.maxSize)
-            throw sim::exception("must have at most %d elements", rdopt.maxSize);
-    }
-}
-
 template<typename T>
 void readFromStack(int stack, std::vector<T> *vec, const ReadOptions &rdopt = {})
 {
@@ -203,7 +187,7 @@ void readFromStack(int stack, std::vector<T> *vec, const ReadOptions &rdopt = {}
     if(sz < 0)
         throw sim::exception("expected array (simGetStackTableInfo(stack, 0) returned %d)", sz);
 
-    checkTableSize(sz, rdopt);
+    rdopt.validateTableSize(sz);
 
     int oldsz = sim::getStackSize(stack);
     sim::unfoldStackTable(stack);
@@ -239,7 +223,7 @@ void readFromStack(int stack, std::vector<T> *vec, simInt (*f)(simInt, std::vect
     if(sz < 0)
         throw sim::exception("expected array (simGetStackTableInfo(stack, 0) returned %d)", sz);
 
-    checkTableSize(sz, rdopt);
+    rdopt.validateTableSize(sz);
 
     int chk = sim::getStackTableInfo(stack, 2);
     if(chk != 1)
@@ -301,7 +285,7 @@ void readFromStack(int stack, Grid<T> *grid, const ReadOptions &rdopt = {})
                 if(0) {}
                 else if(key == "dims")
                 {
-                    readFromStack(stack, &grid->dims, ReadOptions().setTableBounds(1, -1));
+                    readFromStack(stack, &grid->dims, ReadOptions().setBounds(0, 1, -1));
                 }
                 else if(key == "data")
                 {
@@ -331,6 +315,8 @@ void readFromStack(int stack, Grid<T> *grid, const ReadOptions &rdopt = {})
         for(const int &i : grid->dims) elemCount *= i;
         if(grid->data.size() != elemCount)
             throw sim::exception("incorrect data length (expected %d elements)", elemCount);
+
+        rdopt.validateSize(grid->dims);
     }
     catch(std::exception &ex)
     {
@@ -372,8 +358,8 @@ void readFromStack(int stack, `struct.name` *value, const ReadOptions &rdopt)
                 addStubsDebugLog("readFromStack(`struct.name`): reading field \"`field.name`\" (`field.ctype()`)...");
                 try
                 {
-#py if isinstance(field, model.ParamTable):
-                    readFromStack(stack, &(value->`field.name`), ReadOptions().setTableBounds(`field.minsize`, `field.maxsize`));
+#py if isinstance(field, (model.ParamTable, model.ParamGrid)):
+                    readFromStack(stack, &(value->`field.name`), ReadOptions().setBounds("`field.size`"));
 #py else:
                     readFromStack(stack, &(value->`field.name`));
 #py endif
@@ -746,8 +732,8 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
             try
             {
                 sim::moveStackItemToTop(p->stackID, 0);
-#py if isinstance(p, model.ParamTable):
-                readFromStack(p->stackID, &(in_args.`p.name`), ReadOptions().setTableBounds(`p.minsize`, `p.maxsize`));
+#py if isinstance(p, (model.ParamTable, model.ParamGrid)):
+                readFromStack(p->stackID, &(in_args.`p.name`), ReadOptions().setBounds("`p.size`"));
 #py else:
                 readFromStack(p->stackID, &(in_args.`p.name`));
 #py endif
@@ -875,8 +861,8 @@ bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn
         try
         {
             sim::moveStackItemToTop(stackID, 0);
-#py if isinstance(p, model.ParamTable):
-            readFromStack(stackID, &(out_args->`p.name`), ReadOptions().setTableBounds(`p.minsize`, `p.maxsize`));
+#py if isinstance(p, (model.ParamTable, model.ParamGrid)):
+            readFromStack(stackID, &(out_args->`p.name`), ReadOptions().setBounds("`p.size`"));
 #py else:
             readFromStack(stackID, &(out_args->`p.name`));
 #py endif

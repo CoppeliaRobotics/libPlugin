@@ -130,6 +130,10 @@ public:
         for(const auto &x : in->a.data)
             out->a.data.push_back(2 * x);
     }
+
+    void test_grid2(test_grid2_in *in, test_grid2_out *out)
+    {
+    }
 };
 
 SIM_PLUGIN("StubsGenTests", 1, Plugin)

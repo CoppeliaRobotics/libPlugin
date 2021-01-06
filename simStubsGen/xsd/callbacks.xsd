@@ -9,6 +9,12 @@
         </xsd:restriction>
     </xsd:simpleType>
 
+    <xsd:simpleType name="sizeconstraints">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="(\d+\.\.)?(\*|\d+)(,(\d+\.\.)?(\*|\d+))*" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
     <xsd:complexType name="commandRef">
         <xsd:attribute name="name" type="identifier" use="required" />
     </xsd:complexType>
@@ -53,9 +59,7 @@
         <xsd:attribute name="name" type="identifier" use="required" />
         <xsd:attribute name="type" type="identifier" use="required" />
         <xsd:attribute name="item-type" type="identifier" />
-        <xsd:attribute name="min-size" type="xsd:integer" />
-        <xsd:attribute name="max-size" type="xsd:integer" />
-        <xsd:attribute name="size" type="xsd:integer" />
+        <xsd:attribute name="size" type="sizeconstraints" />
         <xsd:attribute name="default" type="xsd:string" />
         <xsd:attribute name="nullable" type="xsd:boolean" />
     </xsd:complexType>

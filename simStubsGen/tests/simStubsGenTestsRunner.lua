@@ -306,6 +306,7 @@ function main()
         assertEq('z',z,{i=10,["in"]=20,id=30,idn=40})
     end)
 
+    --[[
     assertOk('lua.nullable.nil', function()
         simStubsGenTests.testLuaNullable(nil,'x')
     end)
@@ -333,6 +334,7 @@ function main()
     assertOk('lua.default.typeok', function()
         assertEq('ret',simStubsGenTests.testLuaDefault(123,'y'),'y')
     end)
+    ]]
 
     assertOk('grid.1', function()
         local a=simStubsGenTests.test_grid({dims={2,3},data={11,12,13,21,22,23}})
@@ -345,6 +347,69 @@ function main()
 
     assertFail('grid.3', function()
         simStubsGenTests.test_grid({dims={},data={}})
+    end)
+
+    assertOk('grid.2.1', function()
+        simStubsGenTests.test_grid2(
+            {dims={2,3},data={11,12,13,21,22,23}},
+            {dims={3,3},data={1,0,0,0,1,0,0,0,1}},
+            {dims={4,2,1},data={1,0,0,0,1,0,0,0}},
+            {dims={2,3},data={11,12,13,21,22,23}}
+        )
+    end)
+
+    assertFail('grid.2.2', function()
+        simStubsGenTests.test_grid2(
+            {dims={6},data={11,12,13,21,22,23}},
+            {dims={3,3},data={1,0,0,0,1,0,0,0,1}},
+            {dims={4,2,1},data={1,0,0,0,1,0,0,0}},
+            {dims={2,3},data={11,12,13,21,22,23}}
+        )
+    end)
+
+    assertFail('grid.2.3', function()
+        simStubsGenTests.test_grid2(
+            {dims={2,2,4},data={4,4,4,4,5,5,5,5,4,4,4,4,8,8,8,8}},
+            {dims={3,3},data={1,0,0,0,1,0,0,0,1}},
+            {dims={4,2,1},data={1,0,0,0,1,0,0,0}},
+            {dims={2,3},data={11,12,13,21,22,23}}
+        )
+    end)
+
+    assertFail('grid.2.4', function()
+        simStubsGenTests.test_grid2(
+            {dims={2,3},data={11,12,13,21,22,23}},
+            {dims={3,2},data={1,1,1,2,2,2}},
+            {dims={4,2,1},data={1,0,0,0,1,0,0,0}},
+            {dims={2,3},data={11,12,13,21,22,23}}
+        )
+    end)
+
+    assertFail('grid.2.5', function()
+        simStubsGenTests.test_grid2(
+            {dims={2,3},data={11,12,13,21,22,23}},
+            {dims={3,3},data={1,0,0,0,1,0,0,0,1}},
+            {dims={4,2},data={1,0,0,0,1,0,0,0}},
+            {dims={2,3},data={11,12,13,21,22,23}}
+        )
+    end)
+
+    assertFail('grid.2.6', function()
+        simStubsGenTests.test_grid2(
+            {dims={2,3},data={11,12,13,21,22,23}},
+            {dims={3,3},data={1,0,0,0,1,0,0,0,1}},
+            {dims={3,2,1},data={1,0,0,1,0,0}},
+            {dims={2,3},data={11,12,13,21,22,23}}
+        )
+    end)
+
+    assertFail('grid.2.7', function()
+        simStubsGenTests.test_grid2(
+            {dims={2,3},data={11,12,13,21,22,23}},
+            {dims={3,3},data={1,0,0,0,1,0,0,0,1}},
+            {dims={4,2,1},data={1,0,0,0,1,0,0,0}},
+            {dims={2,1},data={11,12}}
+        )
     end)
 
     local totalTests=numPassed+numFailed

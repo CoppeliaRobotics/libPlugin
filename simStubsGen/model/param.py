@@ -115,16 +115,19 @@ class ParamTable(Param):
         else:
             self.ctype_base = 'void *'
 
-        for (old, new) in (('minsize', 'min-size'), ('maxsize', 'max-size')):
-            if old in node.attrib:
-                raise AttributeError('Attribute "{}" should be changed to "{}"'.format(old, new))
-        self.minsize = int(node.attrib.get('min-size', 0))
-        self.maxsize = int(node.attrib.get('max-size', -1))
-        if 'size' in node.attrib:
-            self.minsize = int(node.attrib['size'])
-            self.maxsize = int(node.attrib['size'])
+        self.minsize = 0
+        self.maxsize = -1
+        self.size = node.attrib.get('size', '')
+        if self.size:
+            sizecomp = self.size.split('..')
+            if len(sizecomp) == 2:
+                self.minsize = int(sizecomp[0])
+                self.maxsize = -1 if sizecomp[1] == '*' else int(sizecomp[1])
+            elif len(sizecomp) == 1 and sizecomp[0] != '*':
+                self.minsize = self.maxsize = int(sizecomp[0])
         if self.minsize < 0:
             raise ValueError('Invalid min-size: cannot be negative')
+
         if self.itype is None:
             self.write_in = False
             self.write_out = False
@@ -146,7 +149,7 @@ class ParamStruct(Param):
 class ParamGrid(Param):
     def __init__(self, node):
         super(ParamGrid, self).__init__(node)
-        self.dims = node.attrib.get('dims', None)
+        self.size = node.attrib.get('size', '')
         self.itype = node.attrib.get('item-type', None)
         valid_itypes = ('int', 'float', 'double', 'long')
         if self.itype is None or self.itype not in valid_itypes:

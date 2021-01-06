@@ -37,13 +37,8 @@ function sim{plugin.name}.{cmd.name}(...)
             f.write(f"""            {{type='{p.dtype}'""")
             if isinstance(p,ParamTable):
                 f.write(f""",item_type='{p.itype}'""")
-                if p.minsize > 0 and p.minsize == p.maxsize:
-                    f.write(f""",size={p.minsize}""")
-                else:
-                    if p.minsize > 0:
-                        f.write(f""",min_size={p.minsize}""")
-                    if p.maxsize > -1:
-                        f.write(f""",max_size={p.maxsize}""")
+                if p.size:
+                    f.write(f""",size='{p.size}'""")
             if p.nullable:
                 f.write(f""",nullable=true""")
             if p.default:

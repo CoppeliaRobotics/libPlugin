@@ -194,9 +194,7 @@ The `<param>` element can have the following attributes:
 If `type` is `table` the following attributes are valid:
 
 - `item-type`: indicates the tape of an item in the table (`int`, `float`, `bool`, `string`).
-- `min-size`: minimum size of the table.
-- `max-size`: minimum size of the table.
-- `size`: shorthand for setting `min-size` and `max-size` to the same value.
+- `size`: size of the table; can be either a fixed size (e.g.: `3`), or a range (e.g.: `0..1`), where the upper bound can be `*` to indicate unbounded, e.g. `1..*`.
 
 ### Allowed markup
 

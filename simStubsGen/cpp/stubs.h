@@ -7,6 +7,7 @@
 #include <simPlusPlus/Lib.h>
 #include <string>
 #include <vector>
+#include <boost/algorithm/string.hpp>
 #include <boost/assign/list_of.hpp>
 #include <boost/format.hpp>
 #include <boost/optional.hpp>
@@ -67,14 +68,91 @@ struct Grid
 
 struct ReadOptions
 {
-    size_t minSize{0};
-    size_t maxSize{std::numeric_limits<size_t>::max()};
+    std::vector<size_t> minSize;
+    std::vector<size_t> maxSize;
 
-    ReadOptions& setTableBounds(size_t minSize_, size_t maxSize_)
+    ReadOptions& setBounds(size_t dim, size_t minSize_, size_t maxSize_)
     {
-        minSize = minSize_;
-        maxSize = maxSize_;
+        while(minSize.size() <= dim) minSize.push_back(0);
+        while(maxSize.size() <= dim) maxSize.push_back(std::numeric_limits<size_t>::max());
+        minSize[dim] = minSize_;
+        maxSize[dim] = maxSize_;
         return *this;
+    }
+
+    ReadOptions& setBounds(size_t dim, const std::string &s)
+    {
+        if(s == "*") return setBounds(dim, 0, -1);
+        auto n = s.find("..");
+        if(n == std::string::npos)
+        {
+            int f = std::stoi(s);
+            return setBounds(dim, f, f);
+        }
+        else
+        {
+            std::string smin = s.substr(0, n);
+            std::string smax = s.substr(n + 2);
+            int min = std::stoi(smin);
+            int max = smax == "*" ? -1 : std::stoi(smax);
+            return setBounds(dim, min, max);
+        }
+    }
+
+    ReadOptions& setBounds(const std::string &s)
+    {
+        if(s != "")
+        {
+            std::vector<std::string> ss;
+            boost::split(ss, s, boost::is_any_of(", "));
+            for(size_t dim = 0; dim < ss.size(); dim++)
+                setBounds(dim, ss.at(dim));
+        }
+        return *this;
+    }
+
+    void validateTableSize(size_t sz) const
+    {
+        if(minSize.empty() || maxSize.empty()) return;
+        if(minSize[0] == maxSize[0])
+        {
+            if(sz != minSize[0])
+                throw sim::exception("must have exactly %d elements", minSize[0]);
+        }
+        else
+        {
+            if(sz < minSize[0])
+                throw sim::exception("must have at least %d elements", minSize[0]);
+            if(sz > maxSize[0])
+                throw sim::exception("must have at most %d elements", maxSize[0]);
+        }
+    }
+
+    void validateSize(size_t dim, size_t sz) const
+    {
+        if(dim >= minSize.size() || dim >= maxSize.size()) return;
+        if(minSize[dim] == maxSize[dim])
+        {
+            if(sz != minSize[dim])
+                throw sim::exception("dimension %d must have exactly %d elements", dim, minSize[dim]);
+        }
+        else
+        {
+            if(sz < minSize[dim])
+                throw sim::exception("dimension %d must have at least %d elements", dim, minSize[dim]);
+            if(sz > maxSize[dim])
+                throw sim::exception("dimension %d must have at most %d elements", dim, maxSize[dim]);
+        }
+    }
+
+    template<typename T>
+    void validateSize(const std::vector<T> &szs) const
+    {
+        size_t n = std::min(minSize.size(), maxSize.size());
+        if(n && szs.size() != n)
+            throw sim::exception("incorrect dimension count: %d (should be %d)", szs.size(), n);
+        for(size_t dim = 0; dim < n; dim++)
+            validateSize(dim, szs.at(dim));
     }
 };
 

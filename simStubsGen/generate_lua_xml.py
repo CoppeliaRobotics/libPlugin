@@ -40,10 +40,6 @@ def output():
                 p.attrib['type'] = typeSpec['type']
                 if 'item_type' in typeSpec:
                     p.attrib['item-type'] = typeSpec['item_type']
-                if 'min_size' in typeSpec:
-                    p.attrib['min-size'] = str(typeSpec["min_size"])
-                if 'max_size' in typeSpec:
-                    p.attrib['max-size'] = str(typeSpec["max_size"])
                 if 'size' in typeSpec:
                     p.attrib['size'] = str(typeSpec["size"])
                 if 'nullable' in typeSpec:
@@ -88,14 +84,9 @@ with open(args.lua_file, 'r') as f:
                     for s in spec.split(','):
                         s = s.strip()
                         k, v = s.split('=')
-                        if k in ('type', 'item_type', 'default'):
+                        if k in ('type', 'item_type', 'default', 'size'):
                             typeSpec[k] = v
-                        elif k in ('min_size', 'max_size', 'size'):
-                            try:
-                                typeSpec[k] = int(v)
-                            except ValueError as e:
-                                error(f'bad value for {k}: {v} ({e})')
-                        elif k in ('nullable'):
+                        elif k in ('nullable',):
                             try:
                                 typeSpec[k] = {'true': True, 'false': False}[v]
                             except KeyError as e:

@@ -101,7 +101,7 @@
         <xsl:param name="cmd"/>
         <xsl:text>(</xsl:text>
         <xsl:for-each select="$cmd/params/param">
-            <xsl:value-of select="@type"/><xsl:if test="@type = 'table' and @minsize &gt; 0 and @minsize = @maxsize">_<xsl:value-of select="@minsize"/></xsl:if>
+            <xsl:value-of select="@type"/><xsl:if test="@type = 'table' and not(@size = '') and not(@size = '*')">[<xsl:value-of select="@size"/>]</xsl:if>
             <xsl:text> </xsl:text>
             <xsl:value-of select="@name"/>
             <xsl:if test="@default">=<xsl:value-of select="@default"/></xsl:if>
@@ -113,7 +113,7 @@
     <xsl:template name="renderReturnsSynopsis">
         <xsl:param name="cmd"/>
         <xsl:for-each select="$cmd/return/param">
-            <xsl:value-of select="@type"/><xsl:if test="@type = 'table' and @minsize &gt; 0 and @minsize = @maxsize">_<xsl:value-of select="@minsize"/></xsl:if>
+            <xsl:value-of select="@type"/><xsl:if test="@type = 'table' and not(@size = '') and not(@size = '*')">[<xsl:value-of select="@size"/>]</xsl:if>
             <xsl:text> </xsl:text>
             <xsl:value-of select="@name"/>
             <xsl:if test="not(position() = last())">, </xsl:if>
@@ -180,25 +180,9 @@
                                 <xsl:text> of </xsl:text>
                                 <xsl:value-of select="@item-type"/>
                             </xsl:if>
-                            <xsl:if test="@minsize and @maxsize">
-                                <xsl:if test="@minsize = @maxsize">
-                                    <xsl:text>, size </xsl:text>
-                                    <xsl:value-of select="@minsize"/>
-                                </xsl:if>
-                                <xsl:if test="@minsize &lt; @maxsize">
-                                    <xsl:text>, size </xsl:text>
-                                    <xsl:value-of select="@minsize"/>
-                                    <xsl:text>...</xsl:text>
-                                    <xsl:value-of select="@maxsize"/>
-                                </xsl:if>
-                            </xsl:if>
-                            <xsl:if test="@minsize and not(@maxsize)">
-                                <xsl:text>, minimum size </xsl:text>
-                                <xsl:value-of select="@minsize"/>
-                            </xsl:if>
-                            <xsl:if test="not(@minsize) and @maxsize">
-                                <xsl:text>, maximum size </xsl:text>
-                                <xsl:value-of select="@maxsize"/>
+                            <xsl:if test="not(@size = '') and not(@size = '*')">
+                                <xsl:text>, size </xsl:text>
+                                <xsl:value-of select="@size"/>
                             </xsl:if>
                         </xsl:if>
                         <xsl:if test="@default and $showDefault='true'">
