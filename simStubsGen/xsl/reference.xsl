@@ -180,7 +180,7 @@
                                 <xsl:text> of </xsl:text>
                                 <xsl:value-of select="@item-type"/>
                             </xsl:if>
-                            <xsl:if test="not(@size = '') and not(@size = '*')">
+                            <xsl:if test="@size and not(@size = '') and not(@size = '*')">
                                 <xsl:text>, size </xsl:text>
                                 <xsl:value-of select="@size"/>
                             </xsl:if>
