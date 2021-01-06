@@ -101,7 +101,7 @@
         <xsl:param name="cmd"/>
         <xsl:text>(</xsl:text>
         <xsl:for-each select="$cmd/params/param">
-            <xsl:value-of select="@type"/><xsl:if test="@type = 'table' and not(@size = '') and not(@size = '*')">[<xsl:value-of select="@size"/>]</xsl:if>
+            <xsl:value-of select="@type"/><xsl:if test="@type = 'table'">[<xsl:value-of select="@size"/>]</xsl:if>
             <xsl:text> </xsl:text>
             <xsl:value-of select="@name"/>
             <xsl:if test="@default">=<xsl:value-of select="@default"/></xsl:if>
@@ -113,7 +113,7 @@
     <xsl:template name="renderReturnsSynopsis">
         <xsl:param name="cmd"/>
         <xsl:for-each select="$cmd/return/param">
-            <xsl:value-of select="@type"/><xsl:if test="@type = 'table' and not(@size = '') and not(@size = '*')">[<xsl:value-of select="@size"/>]</xsl:if>
+            <xsl:value-of select="@type"/><xsl:if test="@type = 'table'">[<xsl:value-of select="@size"/>]</xsl:if>
             <xsl:text> </xsl:text>
             <xsl:value-of select="@name"/>
             <xsl:if test="not(position() = last())">, </xsl:if>
