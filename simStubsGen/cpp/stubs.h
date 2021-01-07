@@ -134,14 +134,14 @@ struct ReadOptions
         if(minSize[dim] == maxSize[dim])
         {
             if(sz != minSize[dim])
-                throw sim::exception("dimension %d must have exactly %d elements", dim, minSize[dim]);
+                throw sim::exception("dimension %d must have exactly %d elements", dim + 1, minSize[dim]);
         }
         else
         {
             if(sz < minSize[dim])
-                throw sim::exception("dimension %d must have at least %d elements", dim, minSize[dim]);
+                throw sim::exception("dimension %d must have at least %d elements", dim + 1, minSize[dim]);
             if(sz > maxSize[dim])
-                throw sim::exception("dimension %d must have at most %d elements", dim, maxSize[dim]);
+                throw sim::exception("dimension %d must have at most %d elements", dim + 1, maxSize[dim]);
         }
     }
 
