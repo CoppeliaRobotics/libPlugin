@@ -137,9 +137,7 @@ class ParamTable(Param):
         return Param.factory(n)
 
     def htype(self):
-        if self.minsize == self.maxsize:
-            return 'table_{}'.format(self.minsize)
-        return 'table'
+        return f'table[{self.size}]'
 
 class ParamStruct(Param):
     def __init__(self, node, name):
