@@ -74,14 +74,14 @@ class ParamInt(Param):
         super(ParamInt, self).__init__(node)
 
     def htype(self):
-        return 'number'
+        return 'int'
 
 class ParamLong(Param):
     def __init__(self, node):
         super(ParamLong, self).__init__(node)
 
     def htype(self):
-        return 'number'
+        return 'int'
 
 class ParamFloat(Param):
     def __init__(self, node):
