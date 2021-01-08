@@ -151,7 +151,7 @@ class ParamGrid(Param):
         self.itype = node.attrib.get('item-type', None)
         valid_itypes = ('int', 'float', 'double', 'long')
         if self.itype is None or self.itype not in valid_itypes:
-            raise ValueError(f'Attribute "item-type" must be one of: {", ".join(\'"\' + t + \'"\' for t in valid_itypes)}')
+            raise ValueError(f'Attribute "item-type" must be one of: {", ".join(valid_itypes)}')
         self.ctype_base = 'Grid< %s >' % self.itype
 
 Param.register_type('anything', Param)
