@@ -39,6 +39,8 @@ class Command(object):
                 self.clear_stack_after_reading_input = False
             elif param.write_in:
                 if param.mandatory():
+                    if self.optional_params:
+                        raise ValueError('cannot have mandatory params after optional params')
                     self.params_min += 1
                     self.mandatory_params.append(param)
                 elif param.optional():
