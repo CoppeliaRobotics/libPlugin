@@ -45,6 +45,7 @@ class Param(object):
         return self.dtype
 
     def cdefault(self):
+        if self.nullable and self.default == 'nil': return 'boost::none'
         return self.default
 
     def hdefault(self):
