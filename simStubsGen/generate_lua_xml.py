@@ -8,6 +8,8 @@ parser = argparse.ArgumentParser(description='Generate xml from lua functions an
 parser.add_argument('xml_file', type=str, default=None, help='the callbacks.xml file')
 parser.add_argument('lua_file', type=str, default=None, help='the input lua file')
 parser.add_argument('out_xml', type=str, default=None, help='the output lua.xml file')
+parser.add_argument("--verbose", help='print verbose messages', action='store_true')
+parser.add_argument("--dry-run", help='don\'t write any output file', action='store_true')
 args = parser.parse_args()
 
 if args is False:
@@ -21,6 +23,8 @@ cats = []
 
 def output():
     if fun:
+        if args.verbose:
+            print('.')
         f, fdesc = fun
         cmd = ET.SubElement(root, 'command')
         cmd.attrib['name'] = f
@@ -55,6 +59,7 @@ def error(msg):
     print(f'{args.lua_file}:{lineno}: {msg}')
     sys.exit(2)
 
+
 root = ET.Element('plugin')
 root.attrib['name'] = plugin.name
 if plugin.version:
@@ -69,8 +74,10 @@ with open(args.lua_file, 'r') as f:
                 if m := re.match(r'(\w+)\s*(.*?)\s*$', line):
                     name, description = m.groups()
                     fun = (name, description)
+                    if args.verbose:
+                        print(f'fun={name}, {description}')
                 else:
-                    error(f'bad arguments: must be: @func <funcName> [description]')
+                    error('bad arguments: must be: @func <funcName> [description]')
             elif tag in ('arg', 'ret'):
                 if m := re.match(r'(\w+)\s+(\w+)\s*(.*?)$', line):
                     dtype, name, description = m.groups()
@@ -89,7 +96,7 @@ with open(args.lua_file, 'r') as f:
                         elif k in ('nullable',):
                             try:
                                 typeSpec[k] = {'true': True, 'false': False}[v]
-                            except KeyError as e:
+                            except KeyError:
                                 error(f'bad value for {k}: must be true or false')
                         else:
                             error(f'bad key in typeSpec: {k}')
@@ -97,10 +104,16 @@ with open(args.lua_file, 'r') as f:
                     error(f'bad arguments: must be: @{tag} <typeSpec> <name> [description]')
                 if tag == 'arg':
                     ins.append((typeSpec, name, description))
+                    if args.verbose:
+                        print(f'arg={typeSpec}, {name}, {description}')
                 elif tag == 'ret':
                     outs.append((typeSpec, name, description))
+                    if args.verbose:
+                        print(f'ret={typeSpec}, {name}, {description}')
             elif tag == 'cats':
                 cats = [x.strip() for x in line.split(',')]
+                if args.verbose:
+                    print(f'cats={cats}')
             else:
                 error(f'unknown tag: @{tag}')
         else:
@@ -111,4 +124,8 @@ with open(args.lua_file, 'r') as f:
     output()
 
 tree = ET.ElementTree(root)
-tree.write(args.out_xml, encoding='utf-8', xml_declaration=True)
+if not args.dry_run:
+    tree.write(args.out_xml, encoding='utf-8', xml_declaration=True)
+if args.dry_run:
+    from xml.dom.minidom import parseString
+    print(parseString(ET.tostring(root,'utf-8')).toprettyxml(indent="  "))
