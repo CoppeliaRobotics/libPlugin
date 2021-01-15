@@ -29,7 +29,7 @@ sim{plugin.name}._=require('{os.path.splitext(os.path.basename(args.lua_file))[0
         paramList = ','.join(p.name for p in cmd.params)
         f.write(f"""
 function sim{plugin.name}.{cmd.name}(...)
-    {paramList}=checkargsEx(
+    {paramList}{paramList and '=' or ''}checkargsEx(
         {{level=1}},
         {{
 """)
