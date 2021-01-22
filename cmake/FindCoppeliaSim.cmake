@@ -88,9 +88,7 @@ endforeach()
 
 set(COPPELIASIM_EXPORTED_SOURCES
     "${COPPELIASIM_EXPORTED_SOURCES}"
-    "${COPPELIASIM_COMMON_DIR}/simLib.cpp"
-    "${LIBPLUGIN_DIR}/simPlusPlus/Lib.cpp"
-    "${LIBPLUGIN_DIR}/simPlusPlus/Plugin.cpp")
+    "${COPPELIASIM_COMMON_DIR}/simLib.cpp")
 
 if(NOT CoppeliaSim_FIND_QUIETLY)
     message(STATUS "Found CoppeliaSim installation at ${COPPELIASIM_ROOT_DIR}.")
@@ -290,11 +288,15 @@ endfunction(COPPELIASIM_GENERATE_STUBS)
 find_package(Boost REQUIRED COMPONENTS regex)
 
 function(COPPELIASIM_ADD_PLUGIN PLUGIN_TARGET_NAME)
-    cmake_parse_arguments(COPPELIASIM_ADD_PLUGIN "" "" "SOURCES" ${ARGN})
+    cmake_parse_arguments(COPPELIASIM_ADD_PLUGIN "LEGACY" "" "SOURCES" ${ARGN})
     if(PLUGIN_VERSION GREATER 0)
         set(PLUGIN_TARGET_NAME_V "${PLUGIN_TARGET_NAME}-${PLUGIN_VERSION}")
     else()
         set(PLUGIN_TARGET_NAME_V "${PLUGIN_TARGET_NAME}")
+    endif()
+    if(NOT COPPELIASIM_ADD_PLUGIN_LEGACY)
+        set(COPPELIASIM_EXPORTED_SOURCES "${COPPELIASIM_EXPORTED_SOURCES}" "${LIBPLUGIN_DIR}/simPlusPlus/Lib.cpp" "${LIBPLUGIN_DIR}/simPlusPlus/Plugin.cpp" PARENT_SCOPE)
+        set(COPPELIASIM_EXPORTED_SOURCES "${COPPELIASIM_EXPORTED_SOURCES}" "${LIBPLUGIN_DIR}/simPlusPlus/Lib.cpp" "${LIBPLUGIN_DIR}/simPlusPlus/Plugin.cpp")
     endif()
     add_library(${PLUGIN_TARGET_NAME_V} SHARED ${COPPELIASIM_EXPORTED_SOURCES} ${COPPELIASIM_ADD_PLUGIN_SOURCES})
     target_include_directories(${PLUGIN_TARGET_NAME_V} PRIVATE ${COPPELIASIM_INCLUDE_DIR})
