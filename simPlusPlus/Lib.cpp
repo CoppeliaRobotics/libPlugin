@@ -56,9 +56,9 @@ simInt registerScriptCallbackFunction(const std::string &funcNameAtPluginName, c
     return ret;
 }
 
-simInt registerScriptVariable(const std::string &varName, const std::string &varValue, simInt stackID)
+simInt registerScriptVariable(const std::string &varName, const char *varValue, simInt stackID)
 {
-    simInt ret = simRegisterScriptVariable(varName.c_str(), varValue.c_str(), stackID);
+    simInt ret = simRegisterScriptVariable(varName.c_str(), varValue, stackID);
     if(ret == 0)
     {
         addLog(sim_verbosity_warnings, "replaced variable '%s'", varName);
@@ -66,6 +66,11 @@ simInt registerScriptVariable(const std::string &varName, const std::string &var
     if(ret == -1)
         throw api_error("simRegisterScriptVariable");
     return ret;
+}
+
+simInt registerScriptVariable(const std::string &varName, const std::string &varValue, simInt stackID)
+{
+    return registerScriptVariable(varName, varValue.c_str(), stackID);
 }
 
 simVoid callScriptFunctionEx(simInt scriptHandleOrType, const std::string &functionNameAtScriptName, simInt stackId)

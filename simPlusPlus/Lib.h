@@ -92,6 +92,7 @@ namespace sim
     bool isStackDebugEnabled();
 
     simInt registerScriptCallbackFunction(const std::string &funcNameAtPluginName, const std::string &callTips, simVoid (*callBack)(struct SScriptCallBack *cb));
+    simInt registerScriptVariable(const std::string &varName, const char *varValue, simInt stackID);
     simInt registerScriptVariable(const std::string &varName, const std::string &varValue, simInt stackID);
     template<typename T>
     simInt registerScriptVariable(const std::string &varName, const T &varValue, simInt stackID)
