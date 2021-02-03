@@ -287,9 +287,9 @@ td.section { margin: 0; padding: 0; }
                                 <!-- Commands reference list -->
                                 <xsl:for-each select="plugin/command">
                                     <xsl:sort select="@name"/>
-                                    <xsl:if test="description != ''">
-                                        <h3 class="subsectionBar"><a name="{@name}" id="{@name}"></a><xsl:call-template name="renderCmdName"><xsl:with-param name="name" select="@name"/></xsl:call-template></h3>
-                                        <table class="apiTable">
+                                    <h3 class="subsectionBar"><a name="{@name}" id="{@name}"></a><xsl:call-template name="renderCmdName"><xsl:with-param name="name" select="@name"/></xsl:call-template></h3>
+                                    <table class="apiTable">
+                                        <xsl:if test="description != ''">
                                             <tr class="apiTableTr">
                                                 <td class="apiTableLeftDescr">
                                                     Description
@@ -298,47 +298,47 @@ td.section { margin: 0; padding: 0; }
                                                     <xsl:apply-templates select="description/node()"/>
                                                 </td>
                                             </tr>
-                                            <tr class="apiTableTr">
-                                                <td class="apiTableLeftLSyn">Lua synopsis</td>
-                                                <td class="apiTableRightLSyn">
-                                                    <xsl:call-template name="renderCmdSynopsis">
-                                                        <xsl:with-param name="cmd" select="."/>
-                                                        <xsl:with-param name="nameTemplate" select="renderCmdName"/>
+                                        </xsl:if>
+                                        <tr class="apiTableTr">
+                                            <td class="apiTableLeftLSyn">Lua synopsis</td>
+                                            <td class="apiTableRightLSyn">
+                                                <xsl:call-template name="renderCmdSynopsis">
+                                                    <xsl:with-param name="cmd" select="."/>
+                                                    <xsl:with-param name="nameTemplate" select="renderCmdName"/>
+                                                </xsl:call-template>
+                                                <br/>
+                                            </td>
+                                        </tr>
+                                        <tr class="apiTableTr">
+                                            <td class="apiTableLeftLParam">Lua parameters</td>
+                                            <td class="apiTableRightLParam">
+                                                <xsl:for-each select="params">
+                                                    <xsl:call-template name="renderParamsBlock">
+                                                        <xsl:with-param name="showDefault" select="'true'"/>
                                                     </xsl:call-template>
-                                                    <br/>
-                                                </td>
-                                            </tr>
-                                            <tr class="apiTableTr">
-                                                <td class="apiTableLeftLParam">Lua parameters</td>
-                                                <td class="apiTableRightLParam">
-                                                    <xsl:for-each select="params">
-                                                        <xsl:call-template name="renderParamsBlock">
-                                                            <xsl:with-param name="showDefault" select="'true'"/>
-                                                        </xsl:call-template>
-                                                    </xsl:for-each>
-                                                </td>
-                                            </tr>
-                                            <tr class="apiTableTr">
-                                                <td class="apiTableLeftLRet">Lua return values</td>
-                                                <td class="apiTableRightLRet">
-                                                    <xsl:for-each select="return">
-                                                        <xsl:call-template name="renderParamsBlock">
-                                                            <xsl:with-param name="showDefault" select="'false'"/>
-                                                        </xsl:call-template>
-                                                    </xsl:for-each>
-                                                </td>
-                                            </tr>
-                                            <tr class="apiTableTr">
-                                                <td class="apiTableLeftDescr">
-                                                    See also
-                                                </td>
-                                                <td class="apiTableRightDescr">
-                                                    <xsl:call-template name="renderRelated"/>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                        <br/>
-                                    </xsl:if>
+                                                </xsl:for-each>
+                                            </td>
+                                        </tr>
+                                        <tr class="apiTableTr">
+                                            <td class="apiTableLeftLRet">Lua return values</td>
+                                            <td class="apiTableRightLRet">
+                                                <xsl:for-each select="return">
+                                                    <xsl:call-template name="renderParamsBlock">
+                                                        <xsl:with-param name="showDefault" select="'false'"/>
+                                                    </xsl:call-template>
+                                                </xsl:for-each>
+                                            </td>
+                                        </tr>
+                                        <tr class="apiTableTr">
+                                            <td class="apiTableLeftDescr">
+                                                See also
+                                            </td>
+                                            <td class="apiTableRightDescr">
+                                                <xsl:call-template name="renderRelated"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <br/>
                                 </xsl:for-each>
                             </td>
                         </tr>
