@@ -93,7 +93,7 @@ namespace sim
 
     simInt registerScriptCallbackFunction(const std::string &funcNameAtPluginName, const std::string &callTips, simVoid (*callBack)(struct SScriptCallBack *cb));
     simInt registerScriptVariable(const std::string &varName, const std::string &varValue, simInt stackID);
-    tempate<typename T>
+    template<typename T>
     simInt registerScriptVariable(const std::string &varName, const T &varValue, simInt stackID)
     {
         return registerScriptVariable(varName, std::to_string(varValue), stackID);
