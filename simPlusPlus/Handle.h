@@ -62,7 +62,7 @@ namespace sim
             {
                 int sceneID = m.first;
                 int scriptID = m.second;
-                handles.at(sceneID).at(scriptID).remove(t);
+                handles.at(sceneID).at(scriptID).erase(t);
             }
             handlesr.erase(t);
             return t;
