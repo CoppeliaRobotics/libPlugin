@@ -56,7 +56,7 @@ namespace sim
             return str(t);
         }
 
-        static void remove(const T *t)
+        static T * remove(const T *t)
         {
             for(const auto &m : handlesr.at(t))
             {
@@ -65,6 +65,7 @@ namespace sim
                 handles.at(sceneID).at(scriptID).remove(t);
             }
             handlesr.erase(t);
+            return t;
         }
 
         static std::set<T*> find(int scriptID)
