@@ -80,13 +80,19 @@ namespace sim
 
         const T * remove(const T *t)
         {
-            for(const auto &m : handlesr.at(t))
+            auto it = handlesr.find(t);
+            if(it == handlesr.end()) return t;
+            for(const auto &m : it->second)
             {
                 int sceneID = m.first;
                 int scriptID = m.second;
-                handlesf.at(sceneID).at(scriptID).erase(t);
+                auto it1 = handlesf.find(sceneID);
+                if(it1 == handlesf.end()) continue;
+                auto it2 = it1->second.find(scriptID);
+                if(it2 == it1->second.end()) continue;
+                it2->second.erase(t);
             }
-            handlesr.erase(t);
+            handlesr.erase(it);
             return t;
         }
 
@@ -103,7 +109,11 @@ namespace sim
         std::set<const T*> find(int scriptID)
         {
             int sceneID = getSceneID(scriptID);
-            return handlesf.at(sceneID).at(scriptID);
+            auto it = handlesf.find(sceneID);
+            if(it == handlesf.end()) return {};
+            auto it2 = it->second.find(scriptID);
+            if(it2 == it->second.end()) return {};
+            return it2->second;
         }
 
         std::set<std::string> handles()
