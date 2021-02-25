@@ -65,7 +65,7 @@ namespace sim
         std::string add(const T *t, int scriptID)
         {
             int sceneID = getSceneID(scriptID);
-            handles[sceneID][scriptID].insert(t);
+            handlesf[sceneID][scriptID].insert(t);
             handlesr[t][sceneID] = scriptID;
             return Handle<T>::str(t);
         }
@@ -76,7 +76,7 @@ namespace sim
             {
                 int sceneID = m.first;
                 int scriptID = m.second;
-                handles.at(sceneID).at(scriptID).erase(t);
+                handlesf.at(sceneID).at(scriptID).erase(t);
             }
             handlesr.erase(t);
             return t;
@@ -95,7 +95,15 @@ namespace sim
         std::set<const T*> find(int scriptID)
         {
             int sceneID = getSceneID(scriptID);
-            return handles.at(sceneID).at(scriptID);
+            return handlesf.at(sceneID).at(scriptID);
+        }
+
+        std::set<std::string> handles()
+        {
+            std::set<std::string> r;
+            for(const auto &x : handlesr)
+                r.insert(x.first);
+            return r;
         }
 
     private:
@@ -116,7 +124,7 @@ namespace sim
         // Tables of created objects (for methods: add, remove, find)
 
         // sceneID -> (scriptID -> [objects])
-        std::map<int, std::map<int, std::set<const T*>>> handles;
+        std::map<int, std::map<int, std::set<const T*>>> handlesf;
 
         // object -> (sceneID -> scriptID)
         std::map<const T*, std::map<int, int>> handlesr;
