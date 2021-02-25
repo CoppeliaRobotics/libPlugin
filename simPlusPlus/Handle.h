@@ -10,6 +10,59 @@
 
 namespace sim
 {
+    struct HandleStorage
+    {
+    private:
+        static void add(const void *t, int scriptID)
+        {
+            int sceneID = getSceneID(scriptID);
+            handles[sceneID][scriptID].insert(t);
+            handlesr[t][sceneID] = scriptID;
+        }
+
+        static void remove(const void *t)
+        {
+            for(const auto &m : handlesr.at(t))
+            {
+                int sceneID = m.first;
+                int scriptID = m.second;
+                handles.at(sceneID).at(scriptID).erase(t);
+            }
+            handlesr.erase(t);
+        }
+
+        static std::set<const void*> find(int scriptID)
+        {
+            int sceneID = getSceneID(scriptID);
+            return handles.at(sceneID).at(scriptID);
+        }
+
+        static int getSceneID(int scriptID)
+        {
+            int scriptType, objectHandle;
+            sim::getScriptProperty(scriptID, &scriptType, &objectHandle);
+            if(0
+                    || scriptType == sim_scripttype_mainscript
+                    || scriptType == sim_scripttype_childscript
+                    || scriptType == sim_scripttype_customizationscript
+            )
+                return sim::getInt32Parameter(sim_intparam_scene_unique_id);
+            else
+                return -1;
+        }
+
+        // Tables of created objects (for methods: add, remove, find)
+
+        // sceneID -> (scriptID -> [objects])
+        static std::map<int, std::map<int, std::set<const void*>>> handles;
+
+        // object -> (sceneID -> scriptID)
+        static std::map<const void*, std::map<int, int>> handlesr;
+
+        template<typename T>
+        friend struct Handle;
+    };
+
     /*! \brief A tool for converting pointers to strings and vice versa.
      *
      * Usage: specialize the Handle<T>::tag() method for your class, e.g.:
@@ -50,45 +103,25 @@ namespace sim
 
         static std::string add(const T *t, int scriptID)
         {
-            int sceneID = getSceneID(scriptID);
-            handles[sceneID][scriptID].insert(t);
-            handlesr[t][sceneID] = scriptID;
+            HandleStorage::add(t, scriptID);
             return str(t);
         }
 
         static const T * remove(const T *t)
         {
-            for(const auto &m : handlesr.at(t))
-            {
-                int sceneID = m.first;
-                int scriptID = m.second;
-                handles.at(sceneID).at(scriptID).erase(t);
-            }
-            handlesr.erase(t);
+            HandleStorage::remove(t);
             return t;
         }
 
         static std::set<const T*> find(int scriptID)
         {
-            int sceneID = getSceneID(scriptID);
-            return handles.at(sceneID).at(scriptID);
+            std::set<const T*> r;
+            for(const auto &x : HandleStorage::find(scriptID))
+                r.insert(reinterpret_cast<const T*>(x));
+            return r;
         }
 
     private:
-        static int getSceneID(int scriptID)
-        {
-            int scriptType, objectHandle;
-            sim::getScriptProperty(scriptID, &scriptType, &objectHandle);
-            if(0
-                    || scriptType == sim_scripttype_mainscript
-                    || scriptType == sim_scripttype_childscript
-                    || scriptType == sim_scripttype_customizationscript
-            )
-                return sim::getInt32Parameter(sim_intparam_scene_unique_id);
-            else
-                return -1;
-        }
-
         static std::string tag()
         {
             return "ptr";
@@ -105,14 +138,6 @@ namespace sim
             x = x ^ 0x0000000000000008;
             return int(x);
         }
-
-        // Tables of created objects (for methods: add, remove, find)
-
-        // sceneID -> (scriptID -> [objects])
-        static std::map<int, std::map<int, std::set<const T*>>> handles;
-
-        // object -> (sceneID -> scriptID)
-        static std::map<const T*, std::map<int, int>> handlesr;
     };
 }
 
