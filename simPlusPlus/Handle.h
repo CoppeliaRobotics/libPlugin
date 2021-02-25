@@ -102,7 +102,7 @@ namespace sim
         {
             std::set<std::string> r;
             for(const auto &x : handlesr)
-                r.insert(x.first);
+                r.insert(Handle<T>::str(x.first));
             return r;
         }
 
