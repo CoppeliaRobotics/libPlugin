@@ -588,6 +588,11 @@ namespace sim
                 onPickSelectDown(auxiliaryData[0]);
             }
             break;
+        case sim_message_eventcallback_scriptstatedestroyed:
+            {
+                onScriptStateDestroyed(auxiliaryData[0]);
+            }
+            break;
         }
 
         // Keep following unchanged:
@@ -817,6 +822,10 @@ namespace sim
     }
 
     void Plugin::onPickSelectDown(int objectID)
+    {
+    }
+
+    void Plugin::onScriptStateDestroyed(int scriptID)
     {
     }
 }

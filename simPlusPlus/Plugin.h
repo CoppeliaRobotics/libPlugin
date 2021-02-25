@@ -126,6 +126,7 @@ namespace sim
         virtual void onProxSensorSelectDown(int objectID, simFloat *clickedPoint, simFloat *normalVector);
         virtual void onProxSensorSelectUp(int objectID, simFloat *clickedPoint, simFloat *normalVector);
         virtual void onPickSelectDown(int objectID);
+        virtual void onScriptStateDestroyed(int scriptID);
 
     private:
         bool firstInstancePass = true;
