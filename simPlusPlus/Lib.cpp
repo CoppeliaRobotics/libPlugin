@@ -686,6 +686,12 @@ simVoid setObjectStringParameter(simInt objectHandle, simInt parameterID, const 
         throw api_error("simSetObjectStringParameter");
 }
 
+simVoid getScriptProperty(simInt scriptHandle, simInt *scriptProperty, simInt *associatedObjectHandle)
+{
+    if(simGetScriptProperty(scriptHandle, scriptProperty, associatedObjectHandle) == -1)
+        throw api_error("simGetScriptProperty");
+}
+
 boost::optional<std::string> getStringNamedParam(const std::string &parameter)
 {
     simChar *ret;

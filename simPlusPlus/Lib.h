@@ -166,6 +166,8 @@ namespace sim
     simVoid setObjectInt32Parameter(simInt objectHandle, simInt parameterID, simInt parameter);
     simVoid setObjectStringParameter(simInt objectHandle, simInt parameterID, const std::string &parameter);
 
+    simVoid getScriptProperty(simInt scriptHandle, simInt *scriptProperty, simInt *associatedObjectHandle);
+
     boost::optional<std::string> getStringNamedParam(const std::string &parameter);
     simVoid setStringNamedParam(const std::string &parameter, const std::string &value);
 
