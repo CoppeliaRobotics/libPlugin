@@ -56,7 +56,7 @@ namespace sim
             return str(t);
         }
 
-        static T * remove(const T *t)
+        static const T * remove(const T *t)
         {
             for(const auto &m : handlesr.at(t))
             {
@@ -68,7 +68,7 @@ namespace sim
             return t;
         }
 
-        static std::set<T*> find(int scriptID)
+        static std::set<const T*> find(int scriptID)
         {
             int sceneID = getSceneID(scriptID);
             return handles.at(sceneID).at(scriptID);
@@ -109,10 +109,10 @@ namespace sim
         // Tables of created objects (for methods: add, remove, find)
 
         // sceneID -> (scriptID -> [objects])
-        static std::map<int, std::map<int, std::set<T*>>> handles;
+        static std::map<int, std::map<int, std::set<const T*>>> handles;
 
         // object -> (sceneID -> scriptID)
-        static std::map<T*, std::map<int, int>> handlesr;
+        static std::map<const T*, std::map<int, int>> handlesr;
     };
 }
 
