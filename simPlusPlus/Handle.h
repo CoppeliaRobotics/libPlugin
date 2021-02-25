@@ -40,6 +40,14 @@ namespace sim
             return nullptr;
         }
 
+        static T * get(std::string h)
+        {
+            T *ret = obj(h);
+            if(!ret)
+                throw std::runtime_error("invalid object handle");
+            return ret;
+        }
+
         static std::string add(const T *t, int scriptID)
         {
             int sceneID = getSceneID(scriptID);
