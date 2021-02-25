@@ -24,18 +24,18 @@ namespace sim
         static std::string str(const T *t)
         {
             static boost::format fmt("%s:%lld:%d");
-            return (fmt % tag() % reinterpret_cast<long long int>(t) % crc_ptr(t)).str();
+            return (fmt % validatedTag() % reinterpret_cast<long long int>(t) % crcPtr(t)).str();
         }
 
         static T * obj(std::string h)
         {
             boost::cmatch m;
             static boost::regex re("([^:]+):([^:]+):([^:]+)");
-            if(boost::regex_match(h.c_str(), m, re) && m[1] == tag())
+            if(boost::regex_match(h.c_str(), m, re) && m[1] == validatedTag())
             {
                 T *t = reinterpret_cast<T*>(boost::lexical_cast<long long int>(m[2]));
                 int crc = boost::lexical_cast<int>(m[3]);
-                if(crc == crc_ptr(t)) return t;
+                if(crc == crcPtr(t)) return t;
             }
             return nullptr;
         }
@@ -46,7 +46,15 @@ namespace sim
             return "ptr";
         }
 
-        static int crc_ptr(const T *t)
+        static std::string validatedTag()
+        {
+            auto t = tag();
+            if(t.find(':') != std::string::npos)
+                throw std::runtime_error("Handle's tag cannot contain the ':' character (this error is for developers)");
+            return t;
+        }
+
+        static int crcPtr(const T *t)
         {
             auto x = reinterpret_cast<long long int>(t);
             x = x ^ (x >> 32);
