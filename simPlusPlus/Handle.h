@@ -116,6 +116,14 @@ namespace sim
             return it2->second;
         }
 
+        std::set<const T*> all()
+        {
+            std::set<const T*> r;
+            for(const auto &x : handlesr)
+                r.insert(x.first);
+            return r;
+        }
+
         std::set<std::string> handles()
         {
             std::set<std::string> r;
