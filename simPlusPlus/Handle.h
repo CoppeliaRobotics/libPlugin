@@ -96,7 +96,7 @@ namespace sim
             return t;
         }
 
-        T * get(std::string h)
+        T * get(std::string h) const
         {
             T *ret = Handle<T>::obj(h);
             if(!ret)
@@ -106,7 +106,7 @@ namespace sim
             return ret;
         }
 
-        std::set<const T*> find(int scriptID)
+        std::set<const T*> find(int scriptID) const
         {
             int sceneID = getSceneID(scriptID);
             auto it = handlesf.find(sceneID);
@@ -116,7 +116,7 @@ namespace sim
             return it2->second;
         }
 
-        std::set<const T*> all()
+        std::set<const T*> all() const
         {
             std::set<const T*> r;
             for(const auto &x : handlesr)
@@ -124,7 +124,7 @@ namespace sim
             return r;
         }
 
-        std::set<std::string> handles()
+        std::set<std::string> handles() const
         {
             std::set<std::string> r;
             for(const auto &x : handlesr)
