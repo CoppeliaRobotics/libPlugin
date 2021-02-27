@@ -21,7 +21,7 @@ namespace sim
     template<typename T>
     struct Handle
     {
-        static std::string str(const T *t)
+        static std::string str(T *t)
         {
             static boost::format fmt("%s:%lld:%d");
             return (fmt % validatedTag() % reinterpret_cast<long long int>(t) % crcPtr(t)).str();
@@ -54,7 +54,7 @@ namespace sim
             return t;
         }
 
-        static int crcPtr(const T *t)
+        static int crcPtr(T *t)
         {
             auto x = reinterpret_cast<long long int>(t);
             x = x ^ (x >> 32);
@@ -70,7 +70,7 @@ namespace sim
     template<typename T>
     struct Handles
     {
-        std::string add(const T *t, int scriptID)
+        std::string add(T *t, int scriptID)
         {
             int sceneID = getSceneID(scriptID);
             handlesf[sceneID][scriptID].insert(t);
@@ -78,7 +78,7 @@ namespace sim
             return Handle<T>::str(t);
         }
 
-        const T * remove(const T *t)
+        T * remove(T *t)
         {
             auto it = handlesr.find(t);
             if(it == handlesr.end()) return t;
@@ -106,7 +106,7 @@ namespace sim
             return ret;
         }
 
-        std::set<const T*> find(int scriptID) const
+        std::set<T*> find(int scriptID) const
         {
             int sceneID = getSceneID(scriptID);
             auto it = handlesf.find(sceneID);
@@ -116,9 +116,9 @@ namespace sim
             return it2->second;
         }
 
-        std::set<const T*> all() const
+        std::set<T*> all() const
         {
-            std::set<const T*> r;
+            std::set<T*> r;
             for(const auto &x : handlesr)
                 r.insert(x.first);
             return r;
@@ -150,10 +150,10 @@ namespace sim
         // Tables of created objects (for methods: add, remove, find)
 
         // sceneID -> (scriptID -> [objects])
-        std::map<int, std::map<int, std::set<const T*>>> handlesf;
+        std::map<int, std::map<int, std::set<T*>>> handlesf;
 
         // object -> (sceneID -> scriptID)
-        std::map<const T*, std::map<int, int>> handlesr;
+        std::map<T*, std::map<int, int>> handlesr;
     };
 }
 
