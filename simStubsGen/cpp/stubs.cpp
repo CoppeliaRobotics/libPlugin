@@ -4,6 +4,7 @@
 #include "stubs.h"
 #include <simPlusPlus/Lib.h>
 
+#include <cstring>
 #include <string>
 #include <vector>
 #include <set>
@@ -626,8 +627,6 @@ const char* `enum.name.lower()`_string(`enum.name` x)
 #py for cmd in plugin.commands:
 `cmd.c_in_name`::`cmd.c_in_name`()
 {
-    _scriptID = -1;
-    _stackID = -1;
 #py for p in cmd.params:
 #py if p.cdefault() is not None:
     `p.name` = `p.cdefault()`;
@@ -655,8 +654,7 @@ void `cmd.c_name`(SScriptCallBack *p, `cmd.c_in_name` *in_args, `cmd.c_out_name`
     `cmd.c_in_name` in_args;
     if(p)
     {
-        in_args._scriptID = p->scriptID;
-        in_args._stackID = p->stackID;
+        std::memcpy(&in_args._, p, sizeof(SScriptCallBack));
     }
 #py for p in cmd.params:
     in_args.`p.name` = `p.name`;
@@ -673,8 +671,7 @@ void `cmd.c_name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p'])`)
     `cmd.c_in_name` in_args;
     if(p)
     {
-        in_args._scriptID = p->scriptID;
-        in_args._stackID = p->stackID;
+        std::memcpy(&in_args._, p, sizeof(SScriptCallBack));
     }
 #py for p in cmd.params:
     in_args.`p.name` = `p.name`;
@@ -689,8 +686,7 @@ void `cmd.c_name`(`cmd.c_arg_list(pre_args=['SScriptCallBack *p', '%s *out_args'
     `cmd.c_in_name` in_args;
     if(p)
     {
-        in_args._scriptID = p->scriptID;
-        in_args._stackID = p->stackID;
+        std::memcpy(&in_args._, p, sizeof(SScriptCallBack));
     }
 #py for p in cmd.params:
     in_args.`p.name` = `p.name`;
@@ -708,8 +704,7 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
     `cmd.c_in_name` in_args;
     if(p)
     {
-        in_args._scriptID = p->scriptID;
-        in_args._stackID = p->stackID;
+        std::memcpy(&in_args._, p, sizeof(SScriptCallBack));
     }
     `cmd.c_out_name` out_args;
 
