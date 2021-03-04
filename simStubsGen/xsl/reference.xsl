@@ -75,7 +75,14 @@
 
     <xsl:preserve-space elements="code" />
     <xsl:template match="code">
-        <code><pre><xsl:apply-templates select="node()"/></pre></code>
+        <xsl:choose>
+            <xsl:when test="@display = 'inline'">
+                <code><xsl:apply-templates select="node()"/></code>
+            </xsl:when>
+            <xsl:otherwise>
+                <code><pre><xsl:apply-templates select="node()"/></pre></code>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 
     <!-- template routines: -->
