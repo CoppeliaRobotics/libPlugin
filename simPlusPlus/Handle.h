@@ -116,6 +116,17 @@ namespace sim
             return it2->second;
         }
 
+        std::set<T*> findByScene(int sceneID) const
+        {
+            auto it = handlesf.find(sceneID);
+            if(it == handlesf.end()) return {};
+            std::set<T*> r;
+            for(const auto &x : it->second)
+                for(auto t : x.second)
+                    r.insert(t);
+            return r;
+        }
+
         std::set<T*> all() const
         {
             std::set<T*> r;
