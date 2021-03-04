@@ -75,14 +75,20 @@
 
     <xsl:preserve-space elements="code" />
     <xsl:template match="code">
-        <xsl:choose>
-            <xsl:when test="@display = 'inline'">
-                <code><xsl:apply-templates select="node()"/></code>
-            </xsl:when>
-            <xsl:otherwise>
-                <code><pre><xsl:apply-templates select="node()"/></pre></code>
-            </xsl:otherwise>
-        </xsl:choose>
+        <xsl:element name="code">
+            <xsl:attribute name="class">
+                <xsl:choose>
+                    <xsl:when test="@display = 'inline'">code-inline</xsl:when>
+                    <xsl:otherwise>code-block</xsl:otherwise>
+                </xsl:choose>
+                <xsl:text> hljs </xsl:text>
+                <xsl:choose>
+                    <xsl:when test="@language"><xsl:value-of select="@language"/></xsl:when>
+                    <xsl:otherwise>lua</xsl:otherwise>
+                </xsl:choose>
+            </xsl:attribute>
+            <xsl:apply-templates select="node()" />
+        </xsl:element>
     </xsl:template>
 
     <!-- template routines: -->
