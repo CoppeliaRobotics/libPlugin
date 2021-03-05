@@ -505,6 +505,17 @@ document.getElementById('structs').style.display = view == null ? 'table-cell' :
 document.getElementById('scriptFunctions').style.display = view == null ? 'table-cell' : 'none'
 //]]>
                 </script>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.6.0/styles/default.min.css" />
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.6.0/highlight.min.js"></script>
+                <script type="text/javascript">
+//<![CDATA[
+document.addEventListener('DOMContentLoaded', (event) => {
+    document.querySelectorAll('code.hljs').forEach((block) => {
+        hljs.highlightBlock(block);
+    });
+});
+//]]>
+                </script>
             </body>
         </html>
     </xsl:template>
