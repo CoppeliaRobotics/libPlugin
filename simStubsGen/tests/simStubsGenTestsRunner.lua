@@ -581,7 +581,9 @@ function sysCall_init()
 
     logInfo('add-on initialized')
     local r,e=pcall(loadModule)
-    if not r then
+    if r then
+        runMain=true
+    else
         logError('aborted: %s',e)
         sim.setInt32Parameter(sim.intparam_exitcode,2)
         sim.quitSimulator()
@@ -589,7 +591,9 @@ function sysCall_init()
 end
 
 function sysCall_nonSimulation()
+    if not runMain then return end
     local r,e=pcall(main)
+    runMain=false
     if not r then
         logError('aborted: %s',e)
         sim.setInt32Parameter(sim.intparam_exitcode,3)
