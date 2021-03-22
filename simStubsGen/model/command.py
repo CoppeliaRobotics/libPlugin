@@ -31,10 +31,15 @@ class Command(object):
         self.optional_params = []
         self.params_min = 0
         self.params_max = 0
+
+        # store all params here, otherwise lua type checking of generic table fails
+        self.all_params = []
+
         for paramNode in node.findall('params/param'):
             param = Param.factory(paramNode)
             help_in_args.append(param)
             self.params_max += 1
+            self.all_params.append(param)
             if param.skip:
                 self.clear_stack_after_reading_input = False
             elif param.write_in:

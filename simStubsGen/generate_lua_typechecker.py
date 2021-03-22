@@ -29,7 +29,7 @@ table.insert(__initFunctions, function()
     end
 """)
     for cmd in plugin.commands:
-        paramList = ','.join(p.name for p in cmd.params)
+        paramList = ','.join(p.name for p in cmd.all_params)
         f.write(f"""
     wrapFunc('{cmd.name}',function(origFunc)
         return function(...)
@@ -37,10 +37,11 @@ table.insert(__initFunctions, function()
                 {{level=1}},
                 {{
 """)
-        for p in cmd.params:
+        for p in cmd.all_params:
             f.write(f"""                    {{type='{p.dtype}'""")
             if isinstance(p,ParamTable):
-                f.write(f""",item_type='{p.itype}'""")
+                if p.itype:
+                    f.write(f""",item_type='{p.itype}'""")
                 if p.size:
                     f.write(f""",size='{p.size}'""")
             if p.nullable:
