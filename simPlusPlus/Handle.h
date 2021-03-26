@@ -23,14 +23,14 @@ namespace sim
     {
         static std::string str(T *t)
         {
-            static boost::format fmt("%s:%lld:%d");
+            boost::format fmt("%s:%lld:%d");
             return (fmt % validatedTag() % reinterpret_cast<long long int>(t) % crcPtr(t)).str();
         }
 
         static T * obj(std::string h)
         {
             boost::cmatch m;
-            static boost::regex re("([^:]+):([^:]+):([^:]+)");
+            boost::regex re("([^:]+):([^:]+):([^:]+)");
             if(boost::regex_match(h.c_str(), m, re) && m[1] == validatedTag())
             {
                 T *t = reinterpret_cast<T*>(boost::lexical_cast<long long int>(m[2]));
