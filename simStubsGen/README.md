@@ -34,34 +34,7 @@ The `XML_FILE` parameter is mandatory.
 
 The `LUA_FILE` is optional; passing a `LUA_FILE` parameter will also parse the [lua comments](#lua-comments) for generating documentation and calltips.
 
-The tool can also be invoked standalone:
-
-```text
-$ python3 generate.py --help
-usage: generate.py [-h] [--xml-file XML_FILE] [--lua-file LUA_FILE]
-                   [--gen-stubs] [--gen-lua-xml] [--gen-reference-xml]
-                   [--gen-reference-html] [--gen-lua-calltips]
-                   [--gen-deprecated-txt] [--gen-all] [--verbose]
-                   output_dir
-
-Generate various things for CoppeliaSim plugin.
-
-positional arguments:
-  output_dir            the output directory
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --xml-file XML_FILE   the XML file with the callback definitions
-  --lua-file LUA_FILE   an optional LUA file containing docstrings
-  --gen-stubs           generate C++ stubs
-  --gen-lua-xml         generate XML translation of Lua docstrings
-  --gen-reference-xml   generate merged XML (from callbacks.xml and lua.xml)
-  --gen-reference-html  generate HTML documentation (from reference.xml or callbacks.xml)
-  --gen-lua-calltips    generate C++ code for Lua calltips
-  --gen-deprecated-txt  generate deprecated functions mapping for CoppeliaSim
-  --gen-all             generate everything
-  --verbose             print commands being executed
-```
+The tool can also be invoked standalone (invoke `generate.py --help` for a description of command line options).
 
 ## Example
 
