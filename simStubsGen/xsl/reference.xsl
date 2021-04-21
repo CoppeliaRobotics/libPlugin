@@ -247,7 +247,7 @@
         <html>
             <head>
                 <meta http-equiv="Content-Language" content="en-us"/>
-                <title>API Functions</title>
+                <title><xsl:value-of select="/plugin/@name"/> Plugin API reference</title>
                 <link rel="stylesheet" type="text/css" href="../../helpFiles/style.css"/>
                 <script type="text/javascript">
 //<![CDATA[
