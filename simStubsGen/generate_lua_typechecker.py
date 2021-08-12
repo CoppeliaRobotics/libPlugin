@@ -22,8 +22,7 @@ require 'checkargs'
 
 local sim{plugin.name}=require('{os.path.splitext(os.path.basename(args.lua_file))[0]}')
 
-__initFunctions=__initFunctions or {{}}
-table.insert(__initFunctions, function()
+function sim{plugin.name}.__addTypeCheck()
     local function wrapFunc(funcName,wrapperGenerator)
         _G['sim{plugin.name}'][funcName]=wrapperGenerator(_G['sim{plugin.name}'][funcName])
     end
@@ -58,7 +57,9 @@ table.insert(__initFunctions, function()
     end)
 """)
     f.write(f"""
-end)
+end
+
+sim.registerScriptFuncHook('sysCall_init','sim{plugin.name}.__addTypeCheck',true)
 
 return sim{plugin.name}
 """)
