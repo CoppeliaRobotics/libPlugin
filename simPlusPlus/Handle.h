@@ -116,6 +116,11 @@ namespace sim
             return it2->second;
         }
 
+        std::set<T*> findBySceneOfScript(int scriptID) const
+        {
+            return findByScene(getSceneID(scriptID));
+        }
+
         std::set<T*> findByScene(int sceneID) const
         {
             auto it = handlesf.find(sceneID);
