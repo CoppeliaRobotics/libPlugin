@@ -110,7 +110,7 @@
         <a href="#{$name}"><xsl:call-template name="renderCmdName"><xsl:with-param name="name" select="$name"/></xsl:call-template></a>
     </xsl:template>
 
-    <xsl:template name="renderParamsSynopsis">
+    <xsl:template name="renderLuaParamsSynopsis">
         <xsl:param name="cmd"/>
         <xsl:text>(</xsl:text>
         <xsl:for-each select="$cmd/params/param">
@@ -123,7 +123,7 @@
         <xsl:text>)</xsl:text>
     </xsl:template>
 
-    <xsl:template name="renderReturnsSynopsis">
+    <xsl:template name="renderLuaReturnsSynopsis">
         <xsl:param name="cmd"/>
         <xsl:for-each select="$cmd/return/param">
             <xsl:value-of select="@type"/><xsl:if test="@type = 'table'">[<xsl:value-of select="@size"/>]</xsl:if>
@@ -134,16 +134,60 @@
         <xsl:if test="$cmd/return/param">=</xsl:if>
     </xsl:template>
 
-    <xsl:template name="renderCmdSynopsis">
+    <xsl:template name="renderLuaCmdSynopsis">
         <xsl:param name="cmd"/>
         <xsl:param name="nameTemplate"/>
-        <xsl:call-template name="renderReturnsSynopsis">
+        <xsl:call-template name="renderLuaReturnsSynopsis">
             <xsl:with-param name="cmd" select="$cmd"/>
         </xsl:call-template>
         <xsl:call-template name="renderCmdName">
             <xsl:with-param name="name" select="$cmd/@name"/>
         </xsl:call-template>
-        <xsl:call-template name="renderParamsSynopsis">
+        <xsl:call-template name="renderLuaParamsSynopsis">
+            <xsl:with-param name="cmd" select="$cmd"/>
+        </xsl:call-template>
+    </xsl:template>
+
+    <xsl:template name="renderPythonParamsSynopsis">
+        <xsl:param name="cmd"/>
+        <xsl:text>(</xsl:text>
+        <xsl:for-each select="$cmd/params/param">
+            <xsl:choose>
+                <xsl:when test="@type = 'table'">list<xsl:if test="@size != ''">[<xsl:value-of select="@size"/>]</xsl:if></xsl:when>
+                <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
+            </xsl:choose>
+            <xsl:text> </xsl:text>
+            <xsl:value-of select="@name"/>
+            <xsl:if test="@default">=<xsl:value-of select="@default"/></xsl:if>
+            <xsl:if test="not(position() = last())">, </xsl:if>
+        </xsl:for-each>
+        <xsl:text>)</xsl:text>
+    </xsl:template>
+
+    <xsl:template name="renderPythonReturnsSynopsis">
+        <xsl:param name="cmd"/>
+        <xsl:for-each select="$cmd/return/param">
+            <xsl:choose>
+                <xsl:when test="@type = 'table'">list<xsl:if test="@size != ''">[<xsl:value-of select="@size"/>]</xsl:if></xsl:when>
+                <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
+            </xsl:choose>
+            <xsl:text> </xsl:text>
+            <xsl:value-of select="@name"/>
+            <xsl:if test="not(position() = last())">, </xsl:if>
+        </xsl:for-each>
+        <xsl:if test="$cmd/return/param">=</xsl:if>
+    </xsl:template>
+
+    <xsl:template name="renderPythonCmdSynopsis">
+        <xsl:param name="cmd"/>
+        <xsl:param name="nameTemplate"/>
+        <xsl:call-template name="renderPythonReturnsSynopsis">
+            <xsl:with-param name="cmd" select="$cmd"/>
+        </xsl:call-template>
+        <xsl:call-template name="renderCmdName">
+            <xsl:with-param name="name" select="$cmd/@name"/>
+        </xsl:call-template>
+        <xsl:call-template name="renderPythonParamsSynopsis">
             <xsl:with-param name="cmd" select="$cmd"/>
         </xsl:call-template>
     </xsl:template>
@@ -315,7 +359,7 @@ td.section { margin: 0; padding: 0; }
                                         <tr class="apiTableTr">
                                             <td class="apiTableLeftLSyn">Lua synopsis</td>
                                             <td class="apiTableRightLSyn">
-                                                <xsl:call-template name="renderCmdSynopsis">
+                                                <xsl:call-template name="renderLuaCmdSynopsis">
                                                     <xsl:with-param name="cmd" select="."/>
                                                     <xsl:with-param name="nameTemplate" select="renderCmdName"/>
                                                 </xsl:call-template>
@@ -340,6 +384,16 @@ td.section { margin: 0; padding: 0; }
                                                         <xsl:with-param name="showDefault" select="'false'"/>
                                                     </xsl:call-template>
                                                 </xsl:for-each>
+                                            </td>
+                                        </tr>
+                                        <tr class="apiTableTr">
+                                            <td class="apiTableLeftLSyn">Python synopsis</td>
+                                            <td class="apiTableRightLSyn">
+                                                <xsl:call-template name="renderPythonCmdSynopsis">
+                                                    <xsl:with-param name="cmd" select="."/>
+                                                    <xsl:with-param name="nameTemplate" select="renderCmdName"/>
+                                                </xsl:call-template>
+                                                <br/>
                                             </td>
                                         </tr>
                                         <tr class="apiTableTr">
@@ -452,7 +506,7 @@ td.section { margin: 0; padding: 0; }
                                             <tr class="apiTableTr">
                                                 <td class="apiTableLeftLSyn">Lua synopsis</td>
                                                 <td class="apiTableRightLSyn">
-                                                    <xsl:call-template name="renderCmdSynopsis">
+                                                    <xsl:call-template name="renderLuaCmdSynopsis">
                                                         <xsl:with-param name="cmd" select="."/>
                                                         <xsl:with-param name="nameTemplate" select="renderScriptFunctionName"/>
                                                     </xsl:call-template>
@@ -477,6 +531,16 @@ td.section { margin: 0; padding: 0; }
                                                             <xsl:with-param name="showDefault" select="'false'"/>
                                                         </xsl:call-template>
                                                     </xsl:for-each>
+                                                </td>
+                                            </tr>
+                                            <tr class="apiTableTr">
+                                                <td class="apiTableLeftLSyn">Python synopsis</td>
+                                                <td class="apiTableRightLSyn">
+                                                    <xsl:call-template name="renderPythonCmdSynopsis">
+                                                        <xsl:with-param name="cmd" select="."/>
+                                                        <xsl:with-param name="nameTemplate" select="renderScriptFunctionName"/>
+                                                    </xsl:call-template>
+                                                    <br/>
                                                 </td>
                                             </tr>
                                             <tr class="apiTableTr">
