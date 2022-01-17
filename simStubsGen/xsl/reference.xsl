@@ -387,8 +387,8 @@ td.section { margin: 0; padding: 0; }
                                             </td>
                                         </tr>
                                         <tr class="apiTableTr">
-                                            <td class="apiTableLeftLSyn">Python synopsis</td>
-                                            <td class="apiTableRightLSyn">
+                                            <td class="apiTableLeftPSyn">Python synopsis</td>
+                                            <td class="apiTableRightPSyn">
                                                 <xsl:call-template name="renderPythonCmdSynopsis">
                                                     <xsl:with-param name="cmd" select="."/>
                                                     <xsl:with-param name="nameTemplate" select="renderCmdName"/>
@@ -534,8 +534,8 @@ td.section { margin: 0; padding: 0; }
                                                 </td>
                                             </tr>
                                             <tr class="apiTableTr">
-                                                <td class="apiTableLeftLSyn">Python synopsis</td>
-                                                <td class="apiTableRightLSyn">
+                                                <td class="apiTableLeftPSyn">Python synopsis</td>
+                                                <td class="apiTableRightPSyn">
                                                     <xsl:call-template name="renderPythonCmdSynopsis">
                                                         <xsl:with-param name="cmd" select="."/>
                                                         <xsl:with-param name="nameTemplate" select="renderScriptFunctionName"/>
