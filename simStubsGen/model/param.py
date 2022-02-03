@@ -89,14 +89,14 @@ class ParamFloat(Param):
         super(ParamFloat, self).__init__(node)
 
     def htype(self):
-        return 'number'
+        return 'float'
 
 class ParamDouble(Param):
     def __init__(self, node):
         super(ParamDouble, self).__init__(node)
 
     def htype(self):
-        return 'number'
+        return 'float'
 
 class ParamString(Param):
     def __init__(self, node):
