@@ -110,11 +110,25 @@
         <a href="#{$name}"><xsl:call-template name="renderCmdName"><xsl:with-param name="name" select="$name"/></xsl:call-template></a>
     </xsl:template>
 
+    <xsl:template name="renderLuaParamType">
+        <xsl:choose>
+            <xsl:when test="@type = 'table' and @item-type">
+                <xsl:value-of select="@item-type"/>
+                <xsl:text>[</xsl:text>
+                <xsl:value-of select="@size"/>
+                <xsl:text>]</xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="@type"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
     <xsl:template name="renderLuaParamsSynopsis">
         <xsl:param name="cmd"/>
         <xsl:text>(</xsl:text>
         <xsl:for-each select="$cmd/params/param">
-            <xsl:value-of select="@type"/><xsl:if test="@type = 'table'">[<xsl:value-of select="@size"/>]</xsl:if>
+            <xsl:call-template name="renderLuaParamType" />
             <xsl:text> </xsl:text>
             <xsl:value-of select="@name"/>
             <xsl:if test="@default">=<xsl:value-of select="@default"/></xsl:if>
@@ -126,7 +140,7 @@
     <xsl:template name="renderLuaReturnsSynopsis">
         <xsl:param name="cmd"/>
         <xsl:for-each select="$cmd/return/param">
-            <xsl:value-of select="@type"/><xsl:if test="@type = 'table'">[<xsl:value-of select="@size"/>]</xsl:if>
+            <xsl:call-template name="renderLuaParamType" />
             <xsl:text> </xsl:text>
             <xsl:value-of select="@name"/>
             <xsl:if test="not(position() = last())">, </xsl:if>
@@ -148,14 +162,18 @@
         </xsl:call-template>
     </xsl:template>
 
+    <xsl:template name="renderPythonParamType">
+        <xsl:choose>
+            <xsl:when test="@type = 'table'">list</xsl:when>
+            <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
     <xsl:template name="renderPythonParamsSynopsis">
         <xsl:param name="cmd"/>
         <xsl:text>(</xsl:text>
         <xsl:for-each select="$cmd/params/param">
-            <xsl:choose>
-                <xsl:when test="@type = 'table'">list<xsl:if test="@size != ''">[<xsl:value-of select="@size"/>]</xsl:if></xsl:when>
-                <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
-            </xsl:choose>
+            <xsl:call-template name="renderPythonParamType" />
             <xsl:text> </xsl:text>
             <xsl:value-of select="@name"/>
             <xsl:if test="@default">=<xsl:value-of select="@default"/></xsl:if>
@@ -167,10 +185,7 @@
     <xsl:template name="renderPythonReturnsSynopsis">
         <xsl:param name="cmd"/>
         <xsl:for-each select="$cmd/return/param">
-            <xsl:choose>
-                <xsl:when test="@type = 'table'">list<xsl:if test="@size != ''">[<xsl:value-of select="@size"/>]</xsl:if></xsl:when>
-                <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
-            </xsl:choose>
+            <xsl:call-template name="renderPythonParamType" />
             <xsl:text> </xsl:text>
             <xsl:value-of select="@name"/>
             <xsl:if test="not(position() = last())">, </xsl:if>
