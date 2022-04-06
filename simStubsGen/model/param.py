@@ -141,9 +141,9 @@ class ParamTable(Param):
         if self.itype:
             return f'{self.item_dummy().htype()}[{self.size}]'
         elif self.size:
-            return f'table[{self.size}]'
+            return f'any[{self.size}]'
         else:
-            return f'table'
+            return f'map'
 
 class ParamStruct(Param):
     def __init__(self, node, name):
