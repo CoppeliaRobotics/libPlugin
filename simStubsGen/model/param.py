@@ -143,7 +143,7 @@ class ParamTable(Param):
         elif self.size:
             return f'any[{self.size}]'
         else:
-            return f'map'
+            return 'map'
 
 class ParamStruct(Param):
     def __init__(self, node, name):
