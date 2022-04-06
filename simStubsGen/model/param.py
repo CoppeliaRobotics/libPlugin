@@ -150,6 +150,9 @@ class ParamStruct(Param):
         super(ParamStruct, self).__init__(node)
         self.structname = name
 
+    def htype(self):
+        return 'map'
+
 class ParamGrid(Param):
     def __init__(self, node):
         super(ParamGrid, self).__init__(node)
