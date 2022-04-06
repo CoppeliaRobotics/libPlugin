@@ -163,7 +163,7 @@ class ParamGrid(Param):
             raise ValueError(f'Attribute "item-type" must be one of: {", ".join(valid_itypes)}')
         self.ctype_base = 'Grid< %s >' % self.itype
 
-Param.register_type('anything', Param)
+Param.register_type('any', Param)
 Param.register_type('int', ParamInt)
 Param.register_type('long', ParamLong)
 Param.register_type('float', ParamFloat)
