@@ -83,7 +83,7 @@ void simThread()
 
 void readFromStack(int stack, bool *value, const ReadOptions &rdopt)
 {
-    simBool v;
+    bool v;
     if(sim::getStackBoolValue(stack, &v) == 1)
     {
         *value = v;
@@ -125,7 +125,7 @@ void readFromStack(int stack, long *value, const ReadOptions &rdopt)
 
 void readFromStack(int stack, float *value, const ReadOptions &rdopt)
 {
-    simFloat v;
+    float v;
     if(sim::getStackFloatValue(stack, &v) == 1)
     {
         *value = v;
@@ -139,7 +139,7 @@ void readFromStack(int stack, float *value, const ReadOptions &rdopt)
 
 void readFromStack(int stack, double *value, const ReadOptions &rdopt)
 {
-    simDouble v;
+    double v;
     if(sim::getStackDoubleValue(stack, &v) == 1)
     {
         *value = v;
@@ -218,7 +218,7 @@ void readFromStack(int stack, std::vector<T> *vec, const ReadOptions &rdopt = {}
 }
 
 template<typename T>
-void readFromStack(int stack, std::vector<T> *vec, simInt (*f)(simInt, std::vector<T>*), const ReadOptions &rdopt = {})
+void readFromStack(int stack, std::vector<T> *vec, int (*f)(int, std::vector<T>*), const ReadOptions &rdopt = {})
 {
     int sz = sim::getStackTableInfo(stack, 0);
     if(sz < 0)
@@ -262,7 +262,7 @@ void readFromStack(int stack, Grid<T> *grid, const ReadOptions &rdopt = {})
 {
     try
     {
-        simInt info = sim::getStackTableInfo(stack, 0);
+        int info = sim::getStackTableInfo(stack, 0);
         if(info != sim_stack_table_map && info != sim_stack_table_empty)
         {
             throw sim::exception("expected a map");
@@ -333,7 +333,7 @@ void readFromStack(int stack, `struct.name` *value, const ReadOptions &rdopt)
 
     try
     {
-        simInt info = sim::getStackTableInfo(stack, 0);
+        int info = sim::getStackTableInfo(stack, 0);
         if(info != sim_stack_table_map && info != sim_stack_table_empty)
         {
             throw sim::exception("expected a map");
@@ -537,7 +537,7 @@ void writeToStack(const `struct.name` &value, int stack, const WriteOptions &wro
 #py endfor
 void checkRuntimeVersion()
 {
-    simInt simVer = sim::programVersion();
+    int simVer = sim::programVersion();
 
     // version required by simStubsGen:
     int minVer = 4010000; // 4.1.0rev0
@@ -818,7 +818,7 @@ void `cmd.c_name`_callback(SScriptCallBack *p)
 #py endfor
 }
 
-bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn.c_out_name` *out_args)
+bool `fn.c_name`(int scriptId, const char *func, `fn.c_in_name` *in_args, `fn.c_out_name` *out_args)
 {
     addStubsDebugLog("`fn.c_name`: writing input arguments...");
 

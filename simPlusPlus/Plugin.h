@@ -98,7 +98,7 @@ namespace sim
         virtual void onImageFilterEnumReset();
         virtual void onImageFilterEnumerate(int &headerID, int &filterID, std::string &name);
         virtual void onImageFilterAdjustParams(int headerID, int filterID, int bufferSize, void *buffer, int &editedBufferSize, void *&editedBuffer);
-        virtual std::vector<simFloat> onImageFilterProcess(int headerID, int filterID, int resX, int resY, int visionSensorHandle, simFloat *inputImage, simFloat *depthImage, simFloat *workImage, simFloat *bufferImage1, simFloat *bufferImage2, simFloat *outputImage, void *filterParamBuffer, int &triggerDetectionn);
+        virtual std::vector<float> onImageFilterProcess(int headerID, int filterID, int resX, int resY, int visionSensorHandle, float *inputImage, float *depthImage, float *workImage, float *bufferImage1, float *bufferImage2, float *outputImage, void *filterParamBuffer, int &triggerDetectionn);
         virtual void onAboutToUndo();
         virtual void onUndo();
         virtual void onAboutToRedo();
@@ -123,8 +123,8 @@ namespace sim
         virtual void onOpenGL(int programIndex, int renderingAttributes, int cameraHandle, int viewIndex);
         virtual void onOpenGLFrame(int sizeX, int sizeY, int &out);
         virtual void onOpenGLCameraView(int sizeX, int sizeY, int viewIndex, int &out);
-        virtual void onProxSensorSelectDown(int objectID, simFloat *clickedPoint, simFloat *normalVector);
-        virtual void onProxSensorSelectUp(int objectID, simFloat *clickedPoint, simFloat *normalVector);
+        virtual void onProxSensorSelectDown(int objectID, float *clickedPoint, float *normalVector);
+        virtual void onProxSensorSelectUp(int objectID, float *clickedPoint, float *normalVector);
         virtual void onPickSelectDown(int objectID);
         virtual void onScriptStateDestroyed(int scriptID);
 

@@ -245,7 +245,7 @@ namespace sim
                 onImageFilterEnumerate(replyData[0], replyData[1], name);
                 if(name.length())
                 {
-                    simChar *ret = simCreateBuffer((simInt)name.length() + 1);
+                    char *ret = simCreateBuffer((int)name.length() + 1);
                     std::strncpy(ret, name.c_str(), name.length());
                     retVal = ret;
                 }
@@ -296,13 +296,13 @@ namespace sim
                         simCreateBuffer
             */
             {
-                simFloat **b = (simFloat**)customData;
-                std::vector<simFloat> r = onImageFilterProcess(auxiliaryData[0], auxiliaryData[1], auxiliaryData[2], auxiliaryData[3], auxiliaryData[4], b[0], b[1], b[2], b[3], b[4], b[5], (void*)b[6], replyData[0]);
+                float **b = (float**)customData;
+                std::vector<float> r = onImageFilterProcess(auxiliaryData[0], auxiliaryData[1], auxiliaryData[2], auxiliaryData[3], auxiliaryData[4], b[0], b[1], b[2], b[3], b[4], b[5], (void*)b[6], replyData[0]);
                 if(r.size())
                 {
-                    simFloat *ret2 = (simFloat*)simCreateBuffer(sizeof(simFloat) * (simInt)r.size());
+                    float *ret2 = (float*)simCreateBuffer(sizeof(float) * (int)r.size());
                     for(size_t i = 0; i < r.size(); i++) ret2[i] = r[i];
-                    replyData[1] = (simInt)r.size();
+                    replyData[1] = (int)r.size();
                     retVal = ret2;
                 }
             }
@@ -555,7 +555,7 @@ namespace sim
             customData[3]-customData[5]=normal vector of clicked surface
             */
             {
-                simFloat *f = (simFloat*)customData;
+                float *f = (float*)customData;
                 onProxSensorSelectDown(auxiliaryData[0], f, f+3);
             }
             break;
@@ -570,7 +570,7 @@ namespace sim
             customData[3]-customData[5]=normal vector of clicked surface
             */
             {
-                simFloat *f = (simFloat*)customData;
+                float *f = (float*)customData;
                 onProxSensorSelectUp(auxiliaryData[0], f, f+3);
             }
             break;
@@ -712,9 +712,9 @@ namespace sim
     {
     }
 
-    std::vector<simFloat> Plugin::onImageFilterProcess(int headerID, int filterID, int resX, int resY, int visionSensorHandle, simFloat *inputImage, simFloat *depthImage, simFloat *workImage, simFloat *bufferImage1, simFloat *bufferImage2, simFloat *outputImage, void *filterParamBuffer, int &triggerDetectionn)
+    std::vector<float> Plugin::onImageFilterProcess(int headerID, int filterID, int resX, int resY, int visionSensorHandle, float *inputImage, float *depthImage, float *workImage, float *bufferImage1, float *bufferImage2, float *outputImage, void *filterParamBuffer, int &triggerDetectionn)
     {
-        return std::vector<simFloat>();
+        return std::vector<float>();
     }
 
     void Plugin::onAboutToUndo()
@@ -813,11 +813,11 @@ namespace sim
     {
     }
 
-    void Plugin::onProxSensorSelectDown(int objectID, simFloat *clickedPoint, simFloat *normalVector)
+    void Plugin::onProxSensorSelectDown(int objectID, float *clickedPoint, float *normalVector)
     {
     }
 
-    void Plugin::onProxSensorSelectUp(int objectID, simFloat *clickedPoint, simFloat *normalVector)
+    void Plugin::onProxSensorSelectUp(int objectID, float *clickedPoint, float *normalVector)
     {
     }
 

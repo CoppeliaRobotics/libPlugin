@@ -256,12 +256,12 @@ struct `fn.c_out_name`
 };
 
 #py if len(fn.returns) == 1:
-`fn.returns[0].ctype()` `fn.c_name`(`fn.c_arg_list(pre_args=['simInt scriptId', 'const char *func'], defaults=True)`);
+`fn.returns[0].ctype()` `fn.c_name`(`fn.c_arg_list(pre_args=['int scriptId', 'const char *func'], defaults=True)`);
 #py endif
 #py if len(fn.returns) == 0:
-void `fn.c_name`(`fn.c_arg_list(pre_args=['simInt scriptId', 'const char *func'], defaults=True)`);
+void `fn.c_name`(`fn.c_arg_list(pre_args=['int scriptId', 'const char *func'], defaults=True)`);
 #py endif
-bool `fn.c_name`(simInt scriptId, const char *func, `fn.c_in_name` *in_args, `fn.c_out_name` *out_args);
+bool `fn.c_name`(int scriptId, const char *func, `fn.c_in_name` *in_args, `fn.c_out_name` *out_args);
 
 #py endfor
 // following functions must be implemented in the plugin

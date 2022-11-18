@@ -44,9 +44,9 @@ static void addStackDebugDump(int stackHandle)
 #define addStackDebugDump(x)
 #endif
 
-simInt registerScriptCallbackFunction(const std::string &funcNameAtPluginName, const std::string &callTips, simVoid (*callBack)(struct SScriptCallBack *cb))
+int registerScriptCallbackFunction(const std::string &funcNameAtPluginName, const std::string &callTips, void (*callBack)(struct SScriptCallBack *cb))
 {
-    simInt ret = simRegisterScriptCallbackFunction(funcNameAtPluginName.c_str(), callTips.c_str(), callBack);
+    int ret = simRegisterScriptCallbackFunction(funcNameAtPluginName.c_str(), callTips.c_str(), callBack);
     if(ret == 0)
     {
         addLog(sim_verbosity_warnings, "replaced function '%s'", funcNameAtPluginName);
@@ -56,9 +56,9 @@ simInt registerScriptCallbackFunction(const std::string &funcNameAtPluginName, c
     return ret;
 }
 
-simInt registerScriptVariable(const std::string &varName, const char *varValue, simInt stackID)
+int registerScriptVariable(const std::string &varName, const char *varValue, int stackID)
 {
-    simInt ret = simRegisterScriptVariable(varName.c_str(), varValue, stackID);
+    int ret = simRegisterScriptVariable(varName.c_str(), varValue, stackID);
     if(ret == 0)
     {
         addLog(sim_verbosity_warnings, "replaced variable '%s'", varName);
@@ -68,22 +68,22 @@ simInt registerScriptVariable(const std::string &varName, const char *varValue, 
     return ret;
 }
 
-simInt registerScriptVariable(const std::string &varName, const std::string &varValue, simInt stackID)
+int registerScriptVariable(const std::string &varName, const std::string &varValue, int stackID)
 {
     return registerScriptVariable(varName, varValue.c_str(), stackID);
 }
 
-simVoid callScriptFunctionEx(simInt scriptHandleOrType, const std::string &functionNameAtScriptName, simInt stackId)
+void callScriptFunctionEx(int scriptHandleOrType, const std::string &functionNameAtScriptName, int stackId)
 {
     if(simCallScriptFunctionEx(scriptHandleOrType, functionNameAtScriptName.c_str(), stackId) == -1)
         throw api_error("simCallScriptFunctionEx");
 }
 
-simInt createStack()
+int createStack()
 {
     addStackDebugLog("simCreateStack");
 
-    simInt ret = simCreateStack();
+    int ret = simCreateStack();
     if(ret == -1)
         throw api_error("simCreateStack");
 
@@ -92,7 +92,7 @@ simInt createStack()
     return ret;
 }
 
-simVoid releaseStack(simInt stackHandle)
+void releaseStack(int stackHandle)
 {
     addStackDebugLog("simReleaseStack");
 
@@ -100,17 +100,17 @@ simVoid releaseStack(simInt stackHandle)
         throw api_error("simReleaseStack");
 }
 
-simInt copyStack(simInt stackHandle)
+int copyStack(int stackHandle)
 {
     addStackDebugLog("simCopyStack");
 
-    simInt ret = simCopyStack(stackHandle);
+    int ret = simCopyStack(stackHandle);
     if(ret == -1)
         throw api_error("simCopyStack");
     return ret;
 }
 
-simVoid pushNullOntoStack(simInt stackHandle)
+void pushNullOntoStack(int stackHandle)
 {
     addStackDebugLog("simPushNullOntoStack");
 
@@ -120,7 +120,7 @@ simVoid pushNullOntoStack(simInt stackHandle)
     addStackDebugDump(stackHandle);
 }
 
-simVoid pushBoolOntoStack(simInt stackHandle, simBool value)
+void pushBoolOntoStack(int stackHandle, bool value)
 {
     addStackDebugLog("simPushBoolOntoStack %d", value);
 
@@ -130,7 +130,7 @@ simVoid pushBoolOntoStack(simInt stackHandle, simBool value)
     addStackDebugDump(stackHandle);
 }
 
-simVoid pushInt32OntoStack(simInt stackHandle, simInt value)
+void pushInt32OntoStack(int stackHandle, int value)
 {
     addStackDebugLog("simPushInt32OntoStack %d", value);
 
@@ -140,7 +140,7 @@ simVoid pushInt32OntoStack(simInt stackHandle, simInt value)
     addStackDebugDump(stackHandle);
 }
 
-simVoid pushFloatOntoStack(simInt stackHandle, simFloat value)
+void pushFloatOntoStack(int stackHandle, float value)
 {
     addStackDebugLog("simPushFloatOntoStack %f", value);
 
@@ -150,7 +150,7 @@ simVoid pushFloatOntoStack(simInt stackHandle, simFloat value)
     addStackDebugDump(stackHandle);
 }
 
-simVoid pushDoubleOntoStack(simInt stackHandle, simDouble value)
+void pushDoubleOntoStack(int stackHandle, double value)
 {
     addStackDebugLog("simPushDoubleOntoStack %g", value);
 
@@ -160,7 +160,7 @@ simVoid pushDoubleOntoStack(simInt stackHandle, simDouble value)
     addStackDebugDump(stackHandle);
 }
 
-simVoid pushStringOntoStack(simInt stackHandle, const simChar *value, simInt stringSize)
+void pushStringOntoStack(int stackHandle, const char *value, int stringSize)
 {
     addStackDebugLog("simPushStringOntoStack \"%s\" [%d]", value, stringSize);
 
@@ -170,7 +170,7 @@ simVoid pushStringOntoStack(simInt stackHandle, const simChar *value, simInt str
     addStackDebugDump(stackHandle);
 }
 
-simVoid pushUInt8TableOntoStack(simInt stackHandle, const simUChar *values, simInt valueCnt)
+void pushUInt8TableOntoStack(int stackHandle, const unsigned char *values, int valueCnt)
 {
     addStackDebugLog("simPushUInt8TableOntoStack <%d values>", valueCnt);
 
@@ -180,7 +180,7 @@ simVoid pushUInt8TableOntoStack(simInt stackHandle, const simUChar *values, simI
     addStackDebugDump(stackHandle);
 }
 
-simVoid pushInt32TableOntoStack(simInt stackHandle, const simInt *values, simInt valueCnt)
+void pushInt32TableOntoStack(int stackHandle, const int *values, int valueCnt)
 {
     addStackDebugLog("simPushInt32TableOntoStack <%d values>", valueCnt);
 
@@ -190,7 +190,7 @@ simVoid pushInt32TableOntoStack(simInt stackHandle, const simInt *values, simInt
     addStackDebugDump(stackHandle);
 }
 
-simVoid pushFloatTableOntoStack(simInt stackHandle, const simFloat *values, simInt valueCnt)
+void pushFloatTableOntoStack(int stackHandle, const float *values, int valueCnt)
 {
     addStackDebugLog("simPushFloatTableOntoStack <%d values>", valueCnt);
 
@@ -200,7 +200,7 @@ simVoid pushFloatTableOntoStack(simInt stackHandle, const simFloat *values, simI
     addStackDebugDump(stackHandle);
 }
 
-simVoid pushDoubleTableOntoStack(simInt stackHandle, const simDouble *values, simInt valueCnt)
+void pushDoubleTableOntoStack(int stackHandle, const double *values, int valueCnt)
 {
     addStackDebugLog("simPushDoubleTableOntoStack <%d values>", valueCnt);
 
@@ -210,7 +210,7 @@ simVoid pushDoubleTableOntoStack(simInt stackHandle, const simDouble *values, si
     addStackDebugDump(stackHandle);
 }
 
-simVoid pushTableOntoStack(simInt stackHandle)
+void pushTableOntoStack(int stackHandle)
 {
     addStackDebugLog("simPushTableOntoStack");
 
@@ -220,7 +220,7 @@ simVoid pushTableOntoStack(simInt stackHandle)
     addStackDebugDump(stackHandle);
 }
 
-simVoid insertDataIntoStackTable(simInt stackHandle)
+void insertDataIntoStackTable(int stackHandle)
 {
     addStackDebugLog("simInsertDataIntoStackTable");
 
@@ -230,9 +230,9 @@ simVoid insertDataIntoStackTable(simInt stackHandle)
     addStackDebugDump(stackHandle);
 }
 
-simInt getStackSize(simInt stackHandle)
+int getStackSize(int stackHandle)
 {
-    simInt ret = simGetStackSize(stackHandle);
+    int ret = simGetStackSize(stackHandle);
 
     addStackDebugLog("simGetStackSize -> %d", ret);
 
@@ -241,9 +241,9 @@ simInt getStackSize(simInt stackHandle)
     return ret;
 }
 
-simInt popStackItem(simInt stackHandle, simInt count)
+int popStackItem(int stackHandle, int count)
 {
-    simInt ret = simPopStackItem(stackHandle, count);
+    int ret = simPopStackItem(stackHandle, count);
 
     addStackDebugLog("simPopStackItem %d -> %d", count, ret);
 
@@ -255,7 +255,7 @@ simInt popStackItem(simInt stackHandle, simInt count)
     return ret;
 }
 
-simVoid moveStackItemToTop(simInt stackHandle, simInt cIndex)
+void moveStackItemToTop(int stackHandle, int cIndex)
 {
     addStackDebugLog("simMoveStackItemToTop %d", cIndex);
 
@@ -265,9 +265,9 @@ simVoid moveStackItemToTop(simInt stackHandle, simInt cIndex)
     addStackDebugDump(stackHandle);
 }
 
-simInt isStackValueNull(simInt stackHandle)
+int isStackValueNull(int stackHandle)
 {
-    simInt ret = simIsStackValueNull(stackHandle);
+    int ret = simIsStackValueNull(stackHandle);
     if(ret == -1)
         throw api_error("simIsStackValueNull");
 
@@ -276,9 +276,9 @@ simInt isStackValueNull(simInt stackHandle)
     return ret;
 }
 
-simInt getStackBoolValue(simInt stackHandle, simBool *boolValue)
+int getStackBoolValue(int stackHandle, bool *boolValue)
 {
-    simInt ret = simGetStackBoolValue(stackHandle, boolValue);
+    int ret = simGetStackBoolValue(stackHandle, boolValue);
     if(ret == -1)
         throw api_error("simGetStackBoolValue");
 
@@ -295,9 +295,9 @@ simInt getStackBoolValue(simInt stackHandle, simBool *boolValue)
     return ret;
 }
 
-simInt getStackInt32Value(simInt stackHandle, simInt *numberValue)
+int getStackInt32Value(int stackHandle, int *numberValue)
 {
-    simInt ret = simGetStackInt32Value(stackHandle, numberValue);
+    int ret = simGetStackInt32Value(stackHandle, numberValue);
     if(ret == -1)
         throw api_error("simGetStackInt32Value");
 
@@ -314,9 +314,9 @@ simInt getStackInt32Value(simInt stackHandle, simInt *numberValue)
     return ret;
 }
 
-simInt getStackFloatValue(simInt stackHandle, simFloat *numberValue)
+int getStackFloatValue(int stackHandle, float *numberValue)
 {
-    simInt ret = simGetStackFloatValue(stackHandle, numberValue);
+    int ret = simGetStackFloatValue(stackHandle, numberValue);
     if(ret == -1)
         throw api_error("simGetStackFloatValue");
 
@@ -333,9 +333,9 @@ simInt getStackFloatValue(simInt stackHandle, simFloat *numberValue)
     return ret;
 }
 
-simInt getStackDoubleValue(simInt stackHandle, simDouble *numberValue)
+int getStackDoubleValue(int stackHandle, double *numberValue)
 {
-    simInt ret = simGetStackDoubleValue(stackHandle, numberValue);
+    int ret = simGetStackDoubleValue(stackHandle, numberValue);
     if(ret == -1)
         throw api_error("simGetStackDoubleValue");
 
@@ -352,9 +352,9 @@ simInt getStackDoubleValue(simInt stackHandle, simDouble *numberValue)
     return ret;
 }
 
-simChar* getStackStringValue(simInt stackHandle, simInt *stringSize)
+char* getStackStringValue(int stackHandle, int *stringSize)
 {
-    simChar *ret = simGetStackStringValue(stackHandle, stringSize);
+    char *ret = simGetStackStringValue(stackHandle, stringSize);
 
 #ifndef NDEBUG
     if(debugStackEnabled)
@@ -374,9 +374,9 @@ simChar* getStackStringValue(simInt stackHandle, simInt *stringSize)
     return ret;
 }
 
-simInt getStackTableInfo(simInt stackHandle, simInt infoType)
+int getStackTableInfo(int stackHandle, int infoType)
 {
-    simInt ret = simGetStackTableInfo(stackHandle, infoType);
+    int ret = simGetStackTableInfo(stackHandle, infoType);
 
 #ifndef NDEBUG
     if(debugStackEnabled)
@@ -415,9 +415,9 @@ simInt getStackTableInfo(simInt stackHandle, simInt infoType)
     return ret;
 }
 
-simInt getStackUInt8Table(simInt stackHandle, simUChar *array, simInt count)
+int getStackUInt8Table(int stackHandle, unsigned char *array, int count)
 {
-    simInt ret = simGetStackUInt8Table(stackHandle, array, count);
+    int ret = simGetStackUInt8Table(stackHandle, array, count);
 
     addStackDebugLog("simGetStackUInt8Table count = %d -> %d", count, ret);
 
@@ -426,9 +426,9 @@ simInt getStackUInt8Table(simInt stackHandle, simUChar *array, simInt count)
     return ret;
 }
 
-simInt getStackInt32Table(simInt stackHandle, simInt *array, simInt count)
+int getStackInt32Table(int stackHandle, int *array, int count)
 {
-    simInt ret = simGetStackInt32Table(stackHandle, array, count);
+    int ret = simGetStackInt32Table(stackHandle, array, count);
 
     addStackDebugLog("simGetStackInt32Table count = %d -> %d", count, ret);
 
@@ -437,9 +437,9 @@ simInt getStackInt32Table(simInt stackHandle, simInt *array, simInt count)
     return ret;
 }
 
-simInt getStackFloatTable(simInt stackHandle, simFloat *array, simInt count)
+int getStackFloatTable(int stackHandle, float *array, int count)
 {
-    simInt ret = simGetStackFloatTable(stackHandle, array, count);
+    int ret = simGetStackFloatTable(stackHandle, array, count);
 
     addStackDebugLog("simGetStackFloatTable count = %d -> %d", count, ret);
 
@@ -448,9 +448,9 @@ simInt getStackFloatTable(simInt stackHandle, simFloat *array, simInt count)
     return ret;
 }
 
-simInt getStackDoubleTable(simInt stackHandle, simDouble *array, simInt count)
+int getStackDoubleTable(int stackHandle, double *array, int count)
 {
-    simInt ret = simGetStackDoubleTable(stackHandle, array, count);
+    int ret = simGetStackDoubleTable(stackHandle, array, count);
 
     addStackDebugLog("simGetStackDoubleTable, count = %d -> %d", count, ret);
 
@@ -459,7 +459,7 @@ simInt getStackDoubleTable(simInt stackHandle, simDouble *array, simInt count)
     return ret;
 }
 
-simVoid unfoldStackTable(simInt stackHandle)
+void unfoldStackTable(int stackHandle)
 {
     addStackDebugLog("simUnfoldStackTable");
 
@@ -474,13 +474,13 @@ simVoid unfoldStackTable(simInt stackHandle)
 #endif // NDEBUG
 }
 
-simVoid debugStack(simInt stackHandle, simInt index)
+void debugStack(int stackHandle, int index)
 {
     if(simDebugStack(stackHandle, index) == -1)
         throw api_error("simDebugStack");
 }
 
-simVoid pushStringOntoStack(simInt stackHandle, const std::string &value)
+void pushStringOntoStack(int stackHandle, const std::string &value)
 {
     addStackDebugLog("simPushStringOntoStack \"%s\" [%d]", value.c_str(), value.size());
 
@@ -490,30 +490,30 @@ simVoid pushStringOntoStack(simInt stackHandle, const std::string &value)
     addStackDebugDump(stackHandle);
 }
 
-simVoid pushUInt8TableOntoStack(simInt stackHandle, const std::vector<simUChar> &values)
+void pushUInt8TableOntoStack(int stackHandle, const std::vector<unsigned char> &values)
 {
     pushUInt8TableOntoStack(stackHandle, values.data(), values.size());
 }
 
-simVoid pushInt32TableOntoStack(simInt stackHandle, const std::vector<simInt> &values)
+void pushInt32TableOntoStack(int stackHandle, const std::vector<int> &values)
 {
     pushInt32TableOntoStack(stackHandle, values.data(), values.size());
 }
 
-simVoid pushFloatTableOntoStack(simInt stackHandle, const std::vector<simFloat> &values)
+void pushFloatTableOntoStack(int stackHandle, const std::vector<float> &values)
 {
     pushFloatTableOntoStack(stackHandle, values.data(), values.size());
 }
 
-simVoid pushDoubleTableOntoStack(simInt stackHandle, const std::vector<simDouble> &values)
+void pushDoubleTableOntoStack(int stackHandle, const std::vector<double> &values)
 {
     pushDoubleTableOntoStack(stackHandle, values.data(), values.size());
 }
 
-simInt getStackStringValue(simInt stackHandle, std::string *stringValue)
+int getStackStringValue(int stackHandle, std::string *stringValue)
 {
-    simInt stringSize = -1;
-    simChar *ret = getStackStringValue(stackHandle, &stringSize);
+    int stringSize = -1;
+    char *ret = getStackStringValue(stackHandle, &stringSize);
     if(ret)
     {
         *stringValue = std::string(ret, stringSize);
@@ -526,77 +526,77 @@ simInt getStackStringValue(simInt stackHandle, std::string *stringValue)
     }
 }
 
-simInt getStackUInt8Table(simInt stackHandle, std::vector<simUChar> *v)
+int getStackUInt8Table(int stackHandle, std::vector<unsigned char> *v)
 {
-    simInt count = getStackTableInfo(stackHandle, 0);
+    int count = getStackTableInfo(stackHandle, 0);
     v->resize(count);
     return getStackUInt8Table(stackHandle, v->data(), count);
 }
 
-simInt getStackInt32Table(simInt stackHandle, std::vector<simInt> *v)
+int getStackInt32Table(int stackHandle, std::vector<int> *v)
 {
-    simInt count = getStackTableInfo(stackHandle, 0);
+    int count = getStackTableInfo(stackHandle, 0);
     v->resize(count);
     return getStackInt32Table(stackHandle, v->data(), count);
 }
 
-simInt getStackFloatTable(simInt stackHandle, std::vector<simFloat> *v)
+int getStackFloatTable(int stackHandle, std::vector<float> *v)
 {
-    simInt count = getStackTableInfo(stackHandle, 0);
+    int count = getStackTableInfo(stackHandle, 0);
     v->resize(count);
     return getStackFloatTable(stackHandle, v->data(), count);
 }
 
-simInt getStackDoubleTable(simInt stackHandle, std::vector<simDouble> *v)
+int getStackDoubleTable(int stackHandle, std::vector<double> *v)
 {
-    simInt count = getStackTableInfo(stackHandle, 0);
+    int count = getStackTableInfo(stackHandle, 0);
     v->resize(count);
     return getStackDoubleTable(stackHandle, v->data(), count);
 }
 
-simInt getBoolParameter(simInt parameter)
+int getBoolParameter(int parameter)
 {
-    simInt ret;
+    int ret;
     if((ret = simGetBoolParameter(parameter)) == -1)
         throw api_error("simGetBoolParameter");
     return ret;
 }
 
-simInt getInt32Parameter(simInt parameter)
+int getInt32Parameter(int parameter)
 {
-    simInt ret;
+    int ret;
     if(simGetInt32Parameter(parameter, &ret) == -1)
         throw api_error("simGetInt32Parameter");
     return ret;
 }
 
-simUInt64 getUInt64Parameter(simInt parameter)
+unsigned long long int getUInt64Parameter(int parameter)
 {
-    simUInt64 ret;
+    unsigned long long int ret;
     if(simGetUInt64Parameter(parameter, &ret) == -1)
         throw api_error("simGetUInt64Parameter");
     return ret;
 }
 
-simFloat getFloatParameter(simInt parameter)
+float getFloatParameter(int parameter)
 {
-    simFloat ret;
+    float ret;
     if(simGetFloatParameter(parameter, &ret) == -1)
         throw api_error("simGetFloatParameter");
     return ret;
 }
 
-std::array<simFloat, 3> getArrayParameter(simInt parameter)
+std::array<float, 3> getArrayParameter(int parameter)
 {
-    std::array<simFloat, 3> ret;
+    std::array<float, 3> ret;
     if(simGetArrayParameter(parameter, ret.data()) == -1)
         throw api_error("simGetArrayParameter");
     return ret;
 }
 
-std::string getStringParameter(simInt parameter)
+std::string getStringParameter(int parameter)
 {
-    simChar *ret;
+    char *ret;
     if((ret = simGetStringParameter(parameter)) == nullptr)
         throw api_error("simGetStringParameter");
     std::string s(ret);
@@ -604,62 +604,62 @@ std::string getStringParameter(simInt parameter)
     return s;
 }
 
-simVoid setBoolParameter(simInt parameter, simBool value)
+void setBoolParameter(int parameter, bool value)
 {
     if(simSetBoolParameter(parameter, value) == -1)
         throw api_error("simSetBoolParameter");
 }
 
-simVoid setInt32Parameter(simInt parameter, simInt value)
+void setInt32Parameter(int parameter, int value)
 {
     if(simSetInt32Parameter(parameter, value) == -1)
         throw api_error("simSetInt32Parameter");
 }
 
-simVoid setFloatParameter(simInt parameter, simFloat value)
+void setFloatParameter(int parameter, float value)
 {
     if(simSetFloatParameter(parameter, value) == -1)
         throw api_error("simSetFloatParameter");
 }
 
-simVoid setArrayParameter(simInt parameter, std::array<simFloat, 3> value)
+void setArrayParameter(int parameter, std::array<float, 3> value)
 {
     if(simSetArrayParameter(parameter, value.data()) == -1)
         throw api_error("simSetArrayParameter");
 }
 
-simVoid setStringParameter(simInt parameter, simChar *value)
+void setStringParameter(int parameter, char *value)
 {
     if(simSetStringParameter(parameter, value) == -1)
         throw api_error("simSetStringParameter");
 }
 
-simVoid setStringParameter(simInt parameter, const std::string &value)
+void setStringParameter(int parameter, const std::string &value)
 {
     if(simSetStringParameter(parameter, value.c_str()) == -1)
         throw api_error("simSetStringParameter");
 }
 
-simFloat getObjectFloatParameter(simInt objectHandle, simInt parameterID, simFloat *parameter)
+float getObjectFloatParameter(int objectHandle, int parameterID, float *parameter)
 {
-    simFloat ret;
+    float ret;
     if(simGetObjectFloatParameter(objectHandle, parameterID, &ret) == -1)
         throw api_error("simGetObjectFloatParameter");
     return ret;
 }
 
-simInt getObjectInt32Parameter(simInt objectHandle, simInt parameterID, simInt *parameter)
+int getObjectInt32Parameter(int objectHandle, int parameterID, int *parameter)
 {
-    simInt ret;
+    int ret;
     if(simGetObjectInt32Parameter(objectHandle, parameterID, &ret) == -1)
         throw api_error("simGetObjectInt32Parameter");
     return ret;
 }
 
-std::string getObjectStringParameter(simInt objectHandle, simInt parameterID)
+std::string getObjectStringParameter(int objectHandle, int parameterID)
 {
-    simChar *ret;
-    simInt len;
+    char *ret;
+    int len;
     if((ret = simGetObjectStringParameter(objectHandle, parameterID, &len)) == NULL)
         throw api_error("simGetObjectStringParameter");
     std::string s(ret, len);
@@ -667,26 +667,26 @@ std::string getObjectStringParameter(simInt objectHandle, simInt parameterID)
     return s;
 }
 
-simVoid setObjectFloatParameter(simInt objectHandle, simInt parameterID, simFloat parameter)
+void setObjectFloatParameter(int objectHandle, int parameterID, float parameter)
 {
     if(simSetObjectFloatParameter(objectHandle, parameterID, parameter) == -1)
         throw api_error("simSetObjectFloatParameter");
 }
 
-simVoid setObjectInt32Parameter(simInt objectHandle, simInt parameterID, simInt parameter)
+void setObjectInt32Parameter(int objectHandle, int parameterID, int parameter)
 {
     if(simSetObjectInt32Parameter(objectHandle, parameterID, parameter) == -1)
         throw api_error("simSetObjectInt32Parameter");
 }
 
-simVoid setObjectStringParameter(simInt objectHandle, simInt parameterID, const std::string &parameter)
+void setObjectStringParameter(int objectHandle, int parameterID, const std::string &parameter)
 {
     // XXX: fix const ptrs in the regular API
-    if(simSetObjectStringParameter(objectHandle, parameterID, const_cast<simChar*>(parameter.data()), parameter.size()) == -1)
+    if(simSetObjectStringParameter(objectHandle, parameterID, const_cast<char*>(parameter.data()), parameter.size()) == -1)
         throw api_error("simSetObjectStringParameter");
 }
 
-simVoid getScriptProperty(simInt scriptHandle, simInt *scriptProperty, simInt *associatedObjectHandle)
+void getScriptProperty(int scriptHandle, int *scriptProperty, int *associatedObjectHandle)
 {
     if(simGetScriptProperty(scriptHandle, scriptProperty, associatedObjectHandle) == -1)
         throw api_error("simGetScriptProperty");
@@ -694,8 +694,8 @@ simVoid getScriptProperty(simInt scriptHandle, simInt *scriptProperty, simInt *a
 
 boost::optional<std::string> getStringNamedParam(const std::string &parameter)
 {
-    simChar *ret;
-    simInt len;
+    char *ret;
+    int len;
     if((ret = simGetStringNamedParam(parameter.c_str(), &len)) == NULL)
         return {};
     std::string s(ret, len);
@@ -703,21 +703,21 @@ boost::optional<std::string> getStringNamedParam(const std::string &parameter)
     return s;
 }
 
-simVoid setStringNamedParam(const std::string &parameter, const std::string &value)
+void setStringNamedParam(const std::string &parameter, const std::string &value)
 {
     if(simSetStringNamedParam(parameter.c_str(), value.c_str(), value.size()) == -1)
         throw api_error("simSetStringNamedParam");
 }
 
-simChar* createBuffer(simInt size)
+char* createBuffer(int size)
 {
-    simChar *ret = simCreateBuffer(size);
+    char *ret = simCreateBuffer(size);
     if(ret == NULL)
         throw api_error("simCreateBuffer");
     return ret;
 }
 
-simVoid releaseBuffer(simChar *buffer)
+void releaseBuffer(char *buffer)
 {
     if(simReleaseBuffer(buffer) == -1)
         throw api_error("simReleaseBuffer");
@@ -725,7 +725,7 @@ simVoid releaseBuffer(simChar *buffer)
 
 std::string getLastError()
 {
-    simChar *ret = simGetLastError();
+    char *ret = simGetLastError();
     if(ret == NULL)
         throw api_error("simGetLastError");
     std::string s(ret);
@@ -733,45 +733,45 @@ std::string getLastError()
     return s;
 }
 
-simVoid setLastError(const std::string &func, const std::string &msg)
+void setLastError(const std::string &func, const std::string &msg)
 {
     if(simSetLastError(func.c_str(), msg.c_str()) == -1)
         throw api_error("simSetLastError");
 }
 
-simInt getObjectChild(simInt objectHandle, simInt index)
+int getObjectChild(int objectHandle, int index)
 {
-    simInt ret;
+    int ret;
     if((ret = simGetObjectChild(objectHandle, index)) == -1)
         throw api_error("simGetObjectChild");
     return ret;
 }
 
-simInt getObjectHandle(const std::string &objectName)
+int getObjectHandle(const std::string &objectName)
 {
-    simInt ret;
+    int ret;
     if((ret = simGetObjectHandle(objectName.c_str())) == -1)
         throw api_error("simGetObjectHandle");
     return ret;
 }
 
-std::array<simFloat, 12> getObjectMatrix(simInt objectHandle, simInt relativeToObjectHandle)
+std::array<float, 12> getObjectMatrix(int objectHandle, int relativeToObjectHandle)
 {
-    std::array<simFloat, 12> ret;
+    std::array<float, 12> ret;
     if(simGetObjectMatrix(objectHandle, relativeToObjectHandle, ret.data()) == -1)
         throw api_error("simGetObjectMatrix");
     return ret;
 }
 
-simVoid setObjectMatrix(simInt objectHandle, simInt relativeToObjectHandle, const std::array<simFloat, 12> &matrix)
+void setObjectMatrix(int objectHandle, int relativeToObjectHandle, const std::array<float, 12> &matrix)
 {
     if(simSetObjectMatrix(objectHandle, relativeToObjectHandle, matrix.data()) == -1)
         throw api_error("simSetObjectMatrix");
 }
 
-std::string getObjectName(simInt objectHandle)
+std::string getObjectName(int objectHandle)
 {
-    simChar *ret = simGetObjectName(objectHandle);
+    char *ret = simGetObjectName(objectHandle);
     if(ret == NULL)
         throw api_error("simGetObjectName");
     std::string s(ret);
@@ -779,116 +779,116 @@ std::string getObjectName(simInt objectHandle)
     return s;
 }
 
-simVoid setObjectName(simInt objectHandle, const std::string &objectName)
+void setObjectName(int objectHandle, const std::string &objectName)
 {
     if(simSetObjectName(objectHandle, objectName.c_str()) == -1)
         throw api_error("simSetObjectName");
 }
 
-std::array<simFloat, 3> getObjectOrientation(simInt objectHandle, simInt relativeToObjectHandle)
+std::array<float, 3> getObjectOrientation(int objectHandle, int relativeToObjectHandle)
 {
-    std::array<simFloat, 3> ret;
+    std::array<float, 3> ret;
     if(simGetObjectOrientation(objectHandle, relativeToObjectHandle, ret.data()) == -1)
         throw api_error("simGetObjectOrientation");
     return ret;
 }
 
-simVoid setObjectOrientation(simInt objectHandle, simInt relativeToObjectHandle, const std::array<simFloat, 3> &eulerAngles)
+void setObjectOrientation(int objectHandle, int relativeToObjectHandle, const std::array<float, 3> &eulerAngles)
 {
     if(simSetObjectOrientation(objectHandle, relativeToObjectHandle, eulerAngles.data()) == -1)
         throw api_error("simSetObjectOrientation");
 }
 
-simInt getObjectParent(simInt objectHandle)
+int getObjectParent(int objectHandle)
 {
-    simInt ret;
+    int ret;
     if((ret = simGetObjectParent(objectHandle)) == -1)
         throw api_error("simGetObjectParent");
     return ret;
 }
 
-simVoid setObjectParent(simInt objectHandle, simInt parentObjectHandle, simBool keepInPlace)
+void setObjectParent(int objectHandle, int parentObjectHandle, bool keepInPlace)
 {
     if(simSetObjectParent(objectHandle, parentObjectHandle, keepInPlace) == -1)
         throw api_error("simSetObjectParent");
 }
 
-std::array<simFloat, 3> getObjectPosition(simInt objectHandle, simInt relativeToObjectHandle)
+std::array<float, 3> getObjectPosition(int objectHandle, int relativeToObjectHandle)
 {
-    std::array<simFloat, 3> ret;
+    std::array<float, 3> ret;
     if(simGetObjectPosition(objectHandle, relativeToObjectHandle, ret.data()) == -1)
         throw api_error("simGetObjectPosition");
     return ret;
 }
 
-simVoid setObjectPosition(simInt objectHandle, simInt relativeToObjectHandle, const std::array<simFloat, 3> &position)
+void setObjectPosition(int objectHandle, int relativeToObjectHandle, const std::array<float, 3> &position)
 {
     if(simSetObjectPosition(objectHandle, relativeToObjectHandle, position.data()) == -1)
         throw api_error("simSetObjectPosition");
 }
 
-std::array<simFloat, 4> getObjectQuaternion(simInt objectHandle, simInt relativeToObjectHandle)
+std::array<float, 4> getObjectQuaternion(int objectHandle, int relativeToObjectHandle)
 {
-    std::array<simFloat, 4> ret;
+    std::array<float, 4> ret;
     if(simGetObjectQuaternion(objectHandle, relativeToObjectHandle, ret.data()) == -1)
         throw api_error("simGetObjectQuaternion");
     return ret;
 }
 
-simVoid setObjectQuaternion(simInt objectHandle, simInt relativeToObjectHandle, const std::array<simFloat, 4> &quaternion)
+void setObjectQuaternion(int objectHandle, int relativeToObjectHandle, const std::array<float, 4> &quaternion)
 {
     if(simSetObjectQuaternion(objectHandle, relativeToObjectHandle, quaternion.data()) == -1)
         throw api_error("simSetObjectQuaternion");
 }
 
-simInt getObjectType(simInt objectHandle)
+int getObjectType(int objectHandle)
 {
-    simInt ret;
+    int ret;
     if((ret = simGetObjectType(objectHandle)) == -1)
         throw api_error("simGetObjectType");
     return ret;
 }
 
-simInt getObjectUniqueIdentifier(simInt objectHandle)
+int getObjectUniqueIdentifier(int objectHandle)
 {
-    simInt ret;
+    int ret;
     if(simGetObjectUniqueIdentifier(objectHandle, &ret) == -1)
         throw api_error("simGetObjectUniqueIdentifier");
     return ret;
 }
 
-std::pair<std::array<simFloat, 3>, std::array<simFloat, 3>> getObjectVelocity(simInt objectHandle)
+std::pair<std::array<float, 3>, std::array<float, 3>> getObjectVelocity(int objectHandle)
 {
-    std::array<simFloat, 3> lin, ang;
+    std::array<float, 3> lin, ang;
     if(simGetObjectVelocity(objectHandle, lin.data(), ang.data()) == -1)
         throw api_error("simGetObjectVelocity");
     return std::make_pair(lin, ang);
 }
 
-simInt getObjects(simInt index, simInt objectType)
+int getObjects(int index, int objectType)
 {
-    simInt ret;
+    int ret;
     if((ret = simGetObjects(index, objectType)) == -1)
         throw api_error("simGetObjects");
     return ret;
 }
 
-std::vector<simInt> getObjectsInTree(simInt treeBaseHandle, simInt objectType, simInt options)
+std::vector<int> getObjectsInTree(int treeBaseHandle, int objectType, int options)
 {
-    simInt *ret;
-    simInt count;
+    int *ret;
+    int count;
     if((ret = simGetObjectsInTree(treeBaseHandle, objectType, options, &count)) == NULL)
         throw api_error("simGetObjectsInTree");
-    std::vector<simInt> v;
+    std::vector<int> v;
     for(size_t i = 0; i < count; i++) v.push_back(ret[i]);
     return v;
 }
 
-std::vector<simInt> getObjectSelection()
+std::vector<int> getObjectSelection()
 {
-    std::vector<simInt> handles;
+    std::vector<int> handles;
     handles.resize(getObjectSelectionSize());
-    simInt returnedSize;
+    int returnedSize;
     if((returnedSize = simGetObjectSelection(handles.data())) == -1)
         throw api_error("simGetObjectSelection");
     if(returnedSize != handles.size())
@@ -896,30 +896,30 @@ std::vector<simInt> getObjectSelection()
     return handles;
 }
 
-simInt getObjectSelectionSize()
+int getObjectSelectionSize()
 {
-    simInt ret;
+    int ret;
     if((ret = simGetObjectSelectionSize()) == -1)
         throw api_error("simGetObjectSelectionSize");
     return ret;
 }
 
-simVoid setModuleInfo(const std::string &moduleName, simInt infoType, const std::string &stringInfo)
+void setModuleInfo(const std::string &moduleName, int infoType, const std::string &stringInfo)
 {
     if(simSetModuleInfo(moduleName.c_str(), infoType, stringInfo.c_str(), 0) == -1)
         throw api_error("simSetModuleInfo");
 }
 
-simVoid setModuleInfo(const std::string &moduleName, simInt infoType, simInt intInfo)
+void setModuleInfo(const std::string &moduleName, int infoType, int intInfo)
 {
     if(simSetModuleInfo(moduleName.c_str(), infoType, nullptr, intInfo) == -1)
         throw api_error("simSetModuleInfo");
 }
 
-simVoid getModuleInfo(const std::string &moduleName, simInt infoType, std::string &stringInfo)
+void getModuleInfo(const std::string &moduleName, int infoType, std::string &stringInfo)
 {
-    simInt intInfo = 0;
-    simChar *s = nullptr;
+    int intInfo = 0;
+    char *s = nullptr;
     if(simGetModuleInfo(moduleName.c_str(), infoType, &s, &intInfo) == -1)
         throw api_error("simGetModuleInfo");
     if(s)
@@ -929,72 +929,72 @@ simVoid getModuleInfo(const std::string &moduleName, simInt infoType, std::strin
     }
 }
 
-simVoid getModuleInfo(const std::string &moduleName, simInt infoType, simInt &intInfo)
+void getModuleInfo(const std::string &moduleName, int infoType, int &intInfo)
 {
-    simChar *s = nullptr;
+    char *s = nullptr;
     if(simGetModuleInfo(moduleName.c_str(), infoType, &s, &intInfo) == -1)
         throw api_error("simGetModuleInfo");
     if(s)
         releaseBuffer(s);
 }
 
-std::string getModuleInfoStr(const std::string &moduleName, simInt infoType)
+std::string getModuleInfoStr(const std::string &moduleName, int infoType)
 {
     std::string s;
     getModuleInfo(moduleName, infoType, s);
     return s;
 }
 
-simInt getModuleInfoInt(const std::string &moduleName, simInt infoType)
+int getModuleInfoInt(const std::string &moduleName, int infoType)
 {
-    simInt i;
+    int i;
     getModuleInfo(moduleName, infoType, i);
     return i;
 }
 
-simVoid setModuleInfo(simInt infoType, const std::string &stringInfo)
+void setModuleInfo(int infoType, const std::string &stringInfo)
 {
     setModuleInfo(pluginName, infoType, stringInfo);
 }
 
-simVoid setModuleInfo(simInt infoType, simInt intInfo)
+void setModuleInfo(int infoType, int intInfo)
 {
     setModuleInfo(pluginName, infoType, intInfo);
 }
 
-simVoid getModuleInfo(simInt infoType, std::string &stringInfo)
+void getModuleInfo(int infoType, std::string &stringInfo)
 {
     getModuleInfo(pluginName, infoType, stringInfo);
 }
 
-simVoid getModuleInfo(simInt infoType, simInt &intInfo)
+void getModuleInfo(int infoType, int &intInfo)
 {
     getModuleInfo(pluginName, infoType, intInfo);
 }
 
-std::string getModuleInfoStr(simInt infoType)
+std::string getModuleInfoStr(int infoType)
 {
     std::string s;
     getModuleInfo(infoType, s);
     return s;
 }
 
-simInt getModuleInfoInt(simInt infoType)
+int getModuleInfoInt(int infoType)
 {
-    simInt i;
+    int i;
     getModuleInfo(infoType, i);
     return i;
 }
 
-simInt programVersion()
+int programVersion()
 {
-    simInt simVer = sim::getInt32Parameter(sim_intparam_program_version);
-    simInt simRev = sim::getInt32Parameter(sim_intparam_program_revision);
+    int simVer = sim::getInt32Parameter(sim_intparam_program_version);
+    int simRev = sim::getInt32Parameter(sim_intparam_program_revision);
     simVer = simVer * 100 + simRev;
     return simVer;
 }
 
-std::string versionString(simInt v)
+std::string versionString(int v)
 {
     int revision = v % 100;
     v /= 100;
