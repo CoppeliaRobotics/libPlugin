@@ -578,17 +578,17 @@ unsigned long long int getUInt64Parameter(int parameter)
     return ret;
 }
 
-float getFloatParameter(int parameter)
+double getFloatParameter(int parameter)
 {
-    float ret;
+    double ret;
     if(simGetFloatParameter(parameter, &ret) == -1)
         throw api_error("simGetFloatParameter");
     return ret;
 }
 
-std::array<float, 3> getArrayParameter(int parameter)
+std::array<double, 3> getArrayParameter(int parameter)
 {
-    std::array<float, 3> ret;
+    std::array<double, 3> ret;
     if(simGetArrayParameter(parameter, ret.data()) == -1)
         throw api_error("simGetArrayParameter");
     return ret;
@@ -616,13 +616,13 @@ void setInt32Parameter(int parameter, int value)
         throw api_error("simSetInt32Parameter");
 }
 
-void setFloatParameter(int parameter, float value)
+void setFloatParameter(int parameter, double value)
 {
     if(simSetFloatParameter(parameter, value) == -1)
         throw api_error("simSetFloatParameter");
 }
 
-void setArrayParameter(int parameter, std::array<float, 3> value)
+void setArrayParameter(int parameter, std::array<double, 3> value)
 {
     if(simSetArrayParameter(parameter, value.data()) == -1)
         throw api_error("simSetArrayParameter");
@@ -640,9 +640,9 @@ void setStringParameter(int parameter, const std::string &value)
         throw api_error("simSetStringParameter");
 }
 
-float getObjectFloatParameter(int objectHandle, int parameterID, float *parameter)
+double getObjectFloatParameter(int objectHandle, int parameterID, double *parameter)
 {
-    float ret;
+    double ret;
     if(simGetObjectFloatParameter(objectHandle, parameterID, &ret) == -1)
         throw api_error("simGetObjectFloatParameter");
     return ret;
@@ -667,7 +667,7 @@ std::string getObjectStringParameter(int objectHandle, int parameterID)
     return s;
 }
 
-void setObjectFloatParameter(int objectHandle, int parameterID, float parameter)
+void setObjectFloatParameter(int objectHandle, int parameterID, double parameter)
 {
     if(simSetObjectFloatParameter(objectHandle, parameterID, parameter) == -1)
         throw api_error("simSetObjectFloatParameter");
@@ -755,15 +755,15 @@ int getObjectHandle(const std::string &objectName)
     return ret;
 }
 
-std::array<float, 12> getObjectMatrix(int objectHandle, int relativeToObjectHandle)
+std::array<double, 12> getObjectMatrix(int objectHandle, int relativeToObjectHandle)
 {
-    std::array<float, 12> ret;
+    std::array<double, 12> ret;
     if(simGetObjectMatrix(objectHandle, relativeToObjectHandle, ret.data()) == -1)
         throw api_error("simGetObjectMatrix");
     return ret;
 }
 
-void setObjectMatrix(int objectHandle, int relativeToObjectHandle, const std::array<float, 12> &matrix)
+void setObjectMatrix(int objectHandle, int relativeToObjectHandle, const std::array<double, 12> &matrix)
 {
     if(simSetObjectMatrix(objectHandle, relativeToObjectHandle, matrix.data()) == -1)
         throw api_error("simSetObjectMatrix");
@@ -785,15 +785,15 @@ void setObjectName(int objectHandle, const std::string &objectName)
         throw api_error("simSetObjectName");
 }
 
-std::array<float, 3> getObjectOrientation(int objectHandle, int relativeToObjectHandle)
+std::array<double, 3> getObjectOrientation(int objectHandle, int relativeToObjectHandle)
 {
-    std::array<float, 3> ret;
+    std::array<double, 3> ret;
     if(simGetObjectOrientation(objectHandle, relativeToObjectHandle, ret.data()) == -1)
         throw api_error("simGetObjectOrientation");
     return ret;
 }
 
-void setObjectOrientation(int objectHandle, int relativeToObjectHandle, const std::array<float, 3> &eulerAngles)
+void setObjectOrientation(int objectHandle, int relativeToObjectHandle, const std::array<double, 3> &eulerAngles)
 {
     if(simSetObjectOrientation(objectHandle, relativeToObjectHandle, eulerAngles.data()) == -1)
         throw api_error("simSetObjectOrientation");
@@ -813,29 +813,29 @@ void setObjectParent(int objectHandle, int parentObjectHandle, bool keepInPlace)
         throw api_error("simSetObjectParent");
 }
 
-std::array<float, 3> getObjectPosition(int objectHandle, int relativeToObjectHandle)
+std::array<double, 3> getObjectPosition(int objectHandle, int relativeToObjectHandle)
 {
-    std::array<float, 3> ret;
+    std::array<double, 3> ret;
     if(simGetObjectPosition(objectHandle, relativeToObjectHandle, ret.data()) == -1)
         throw api_error("simGetObjectPosition");
     return ret;
 }
 
-void setObjectPosition(int objectHandle, int relativeToObjectHandle, const std::array<float, 3> &position)
+void setObjectPosition(int objectHandle, int relativeToObjectHandle, const std::array<double, 3> &position)
 {
     if(simSetObjectPosition(objectHandle, relativeToObjectHandle, position.data()) == -1)
         throw api_error("simSetObjectPosition");
 }
 
-std::array<float, 4> getObjectQuaternion(int objectHandle, int relativeToObjectHandle)
+std::array<double, 4> getObjectQuaternion(int objectHandle, int relativeToObjectHandle)
 {
-    std::array<float, 4> ret;
+    std::array<double, 4> ret;
     if(simGetObjectQuaternion(objectHandle, relativeToObjectHandle, ret.data()) == -1)
         throw api_error("simGetObjectQuaternion");
     return ret;
 }
 
-void setObjectQuaternion(int objectHandle, int relativeToObjectHandle, const std::array<float, 4> &quaternion)
+void setObjectQuaternion(int objectHandle, int relativeToObjectHandle, const std::array<double, 4> &quaternion)
 {
     if(simSetObjectQuaternion(objectHandle, relativeToObjectHandle, quaternion.data()) == -1)
         throw api_error("simSetObjectQuaternion");
@@ -857,9 +857,9 @@ int getObjectUniqueIdentifier(int objectHandle)
     return ret;
 }
 
-std::pair<std::array<float, 3>, std::array<float, 3>> getObjectVelocity(int objectHandle)
+std::pair<std::array<double, 3>, std::array<double, 3>> getObjectVelocity(int objectHandle)
 {
-    std::array<float, 3> lin, ang;
+    std::array<double, 3> lin, ang;
     if(simGetObjectVelocity(objectHandle, lin.data(), ang.data()) == -1)
         throw api_error("simGetObjectVelocity");
     return std::make_pair(lin, ang);

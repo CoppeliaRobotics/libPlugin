@@ -149,20 +149,20 @@ namespace sim
     int getBoolParameter(int parameter);
     int getInt32Parameter(int parameter);
     unsigned long long int getUInt64Parameter(int parameter);
-    float getFloatParameter(int parameter);
-    std::array<float, 3> getArrayParameter(int parameter);
+    double getFloatParameter(int parameter);
+    std::array<double, 3> getArrayParameter(int parameter);
     std::string getStringParameter(int parameter);
     void setBoolParameter(int parameter, bool value);
     void setInt32Parameter(int parameter, int value);
-    void setFloatParameter(int parameter, float value);
-    void setArrayParameter(int parameter, std::array<float, 3> value);
+    void setFloatParameter(int parameter, double value);
+    void setArrayParameter(int parameter, std::array<double, 3> value);
     void setStringParameter(int parameter, char *value);
     void setStringParameter(int parameter, const std::string &value);
 
-    float getObjectFloatParameter(int objectHandle, int parameterID, float *parameter);
+    double getObjectFloatParameter(int objectHandle, int parameterID, double *parameter);
     int getObjectInt32Parameter(int objectHandle, int parameterID, int *parameter);
     std::string getObjectStringParameter(int objectHandle, int parameterID);
-    void setObjectFloatParameter(int objectHandle, int parameterID, float parameter);
+    void setObjectFloatParameter(int objectHandle, int parameterID, double parameter);
     void setObjectInt32Parameter(int objectHandle, int parameterID, int parameter);
     void setObjectStringParameter(int objectHandle, int parameterID, const std::string &parameter);
 
@@ -179,21 +179,21 @@ namespace sim
 
     int getObjectChild(int objectHandle, int index);
     int getObjectHandle(const std::string &objectName);
-    std::array<float, 12> getObjectMatrix(int objectHandle, int relativeToObjectHandle);
-    void setObjectMatrix(int objectHandle, int relativeToObjectHandle, const std::array<float, 12> &matrix);
+    std::array<double, 12> getObjectMatrix(int objectHandle, int relativeToObjectHandle);
+    void setObjectMatrix(int objectHandle, int relativeToObjectHandle, const std::array<double, 12> &matrix);
     std::string getObjectName(int objectHandle);
     void setObjectName(int objectHandle, const std::string &objectName);
-    std::array<float, 3> getObjectOrientation(int objectHandle, int relativeToObjectHandle);
-    void setObjectOrientation(int objectHandle, int relativeToObjectHandle, const std::array<float, 3> &eulerAngles);
+    std::array<double, 3> getObjectOrientation(int objectHandle, int relativeToObjectHandle);
+    void setObjectOrientation(int objectHandle, int relativeToObjectHandle, const std::array<double, 3> &eulerAngles);
     int getObjectParent(int objectHandle);
     void setObjectParent(int objectHandle, int parentObjectHandle, bool keepInPlace);
-    std::array<float, 3> getObjectPosition(int objectHandle, int relativeToObjectHandle);
-    void setObjectPosition(int objectHandle, int relativeToObjectHandle, const std::array<float, 3> &position);
-    std::array<float, 4> getObjectQuaternion(int objectHandle, int relativeToObjectHandle);
-    void setObjectQuaternion(int objectHandle, int relativeToObjectHandle, const std::array<float, 4> &quaternion);
+    std::array<double, 3> getObjectPosition(int objectHandle, int relativeToObjectHandle);
+    void setObjectPosition(int objectHandle, int relativeToObjectHandle, const std::array<double, 3> &position);
+    std::array<double, 4> getObjectQuaternion(int objectHandle, int relativeToObjectHandle);
+    void setObjectQuaternion(int objectHandle, int relativeToObjectHandle, const std::array<double, 4> &quaternion);
     int getObjectType(int objectHandle);
     int getObjectUniqueIdentifier(int objectHandle);
-    std::pair<std::array<float, 3>, std::array<float, 3>> getObjectVelocity(int objectHandle);
+    std::pair<std::array<double, 3>, std::array<double, 3>> getObjectVelocity(int objectHandle);
     int getObjects(int index, int objectType);
     std::vector<int> getObjectsInTree(int treeBaseHandle, int objectType, int options);
     std::vector<int> getObjectSelection();
