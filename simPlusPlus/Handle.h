@@ -8,9 +8,13 @@
 
 #include <simPlusPlus/Lib.h>
 
+#warning "Handle.h is deprecated, use Handles.h instead."
+
 namespace sim
 {
-    /*! \brief A tool for converting pointers to strings and vice versa.
+    /*! \brief DEPRECATED: use Handles.h instead.
+     *
+     * A tool for converting pointers to strings and vice versa.
      *
      * Usage: specialize the Handle<T>::tag() method for your class, e.g.:
      *
@@ -170,120 +174,6 @@ namespace sim
 
         // object -> (sceneID -> scriptID)
         std::map<T*, std::map<int, int>> handlesr;
-    };
-
-    template<typename T>
-    struct HandlesX
-    {
-        std::string add(std::shared_ptr<T> t, int scriptID)
-        {
-            int sceneID = getSceneID(scriptID);
-            handlesf[sceneID][scriptID].insert(t);
-            handlesr[t][sceneID] = scriptID;
-            fromraw[t.get()] = t;
-            return Handle<T>::str(t.get());
-        }
-
-        void remove(std::shared_ptr<T> t)
-        {
-            auto it = handlesr.find(t);
-            if(it == handlesr.end()) return t;
-            for(const auto &m : it->second)
-            {
-                int sceneID = m.first;
-                int scriptID = m.second;
-                auto it1 = handlesf.find(sceneID);
-                if(it1 == handlesf.end()) continue;
-                auto it2 = it1->second.find(scriptID);
-                if(it2 == it1->second.end()) continue;
-                it2->second.erase(t);
-            }
-            handlesr.erase(it);
-            fromraw.erase(t.get());
-            return t;
-        }
-
-        std::shared_ptr<T> get(std::string h) const
-        {
-            T *rawptr = Handle<T>::obj(h);
-            if(!rawptr)
-                throw std::runtime_error("invalid object handle");
-            auto it = fromraw.find(rawptr);
-            if(it == fromraw.end())
-                throw std::runtime_error("invalid raw pointer");
-            std::shared_ptr<T> ret = it->second;
-            if(handlesr.find(ret) == handlesr.end())
-                throw std::runtime_error("non-existent object handle");
-            return ret;
-        }
-
-        std::set<std::shared_ptr<T>> find(int scriptID) const
-        {
-            int sceneID = getSceneID(scriptID);
-            auto it = handlesf.find(sceneID);
-            if(it == handlesf.end()) return {};
-            auto it2 = it->second.find(scriptID);
-            if(it2 == it->second.end()) return {};
-            return it2->second;
-        }
-
-        std::set<std::shared_ptr<T>> findBySceneOfScript(int scriptID) const
-        {
-            return findByScene(getSceneID(scriptID));
-        }
-
-        std::set<std::shared_ptr<T>> findByScene(int sceneID) const
-        {
-            auto it = handlesf.find(sceneID);
-            if(it == handlesf.end()) return {};
-            std::set<T*> r;
-            for(const auto &x : it->second)
-                for(auto t : x.second)
-                    r.insert(t);
-            return r;
-        }
-
-        std::set<std::shared_ptr<T>> all() const
-        {
-            std::set<T*> r;
-            for(const auto &x : handlesr)
-                r.insert(x.first);
-            return r;
-        }
-
-        std::set<std::string> handles() const
-        {
-            std::set<std::string> r;
-            for(const auto &x : handlesr)
-                r.insert(Handle<T>::str(x.first));
-            return r;
-        }
-
-    private:
-        static int getSceneID(int scriptID)
-        {
-            int scriptType, objectHandle;
-            sim::getScriptProperty(scriptID, &scriptType, &objectHandle);
-            if(0
-                    || scriptType == sim_scripttype_mainscript
-                    || scriptType == sim_scripttype_childscript
-                    || scriptType == sim_scripttype_customizationscript
-            )
-                return sim::getInt32Parameter(sim_intparam_scene_unique_id);
-            else
-                return -1;
-        }
-
-        // Tables of created objects (for methods: add, remove, find)
-
-        // sceneID -> (scriptID -> [objects])
-        std::map<int, std::map<int, std::set<std::shared_ptr<T>>>> handlesf;
-
-        // object -> (sceneID -> scriptID)
-        std::map<std::shared_ptr<T>, std::map<int, int>> handlesr;
-
-        // raw_ptr -> shared_ptr
-        std::map<T*, std::shared_ptr<T>> fromraw;
     };
 }
 
