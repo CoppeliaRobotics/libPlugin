@@ -38,11 +38,8 @@ namespace sim
             return ss.str();
         }
 
-        std::string add(T t, int scriptID)
+        std::string add(T t)
         {
-            int sceneID = getSceneID(scriptID);
-            handlesf[sceneID][scriptID].insert(t);
-            handlesr[t][sceneID] = scriptID;
             std::string h = toHandle(t);
             auto it = byhandle.find(h);
             if(it != byhandle.end())
@@ -55,6 +52,14 @@ namespace sim
                 byhandle[h] = t;
             }
             return h;
+        }
+
+        std::string add(T t, int scriptID)
+        {
+            int sceneID = getSceneID(scriptID);
+            handlesf[sceneID][scriptID].insert(t);
+            handlesr[t][sceneID] = scriptID;
+            return add(t);
         }
 
         T remove(T t)
