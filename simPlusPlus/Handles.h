@@ -12,7 +12,7 @@ namespace sim
 {
     /*! \brief A tool for converting pointers to strings and vice versa.
      */
-    template<typename T>
+    template<typename T, class TCompare = std::less<T>>
     struct Handles
     {
         Handles() : typeStr("ptr") {}
@@ -31,6 +31,21 @@ namespace sim
             return t.get();
         }
 
+        template<typename U>
+        void * toPtr(std::weak_ptr<U> t)
+        {
+            if(auto p = t.lock())
+                return p.get();
+            else
+                return nullptr;
+        }
+
+        static bool equals(const T &a, const T &b)
+        {
+            auto cmp = TCompare{};
+            return !cmp(a, b) && !cmp(b, a);
+        }
+
         std::string toHandle(T t)
         {
             std::stringstream ss;
@@ -44,7 +59,7 @@ namespace sim
             auto it = byhandle.find(h);
             if(it != byhandle.end())
             {
-                if(it->second != t)
+                if(!equals(it->second, t))
                     throw std::runtime_error("fatal error: handle already exists but points to different object");
             }
             else
@@ -154,13 +169,16 @@ namespace sim
         std::map<std::string, T> byhandle;
 
         // sceneID -> (scriptID -> [objects])
-        std::map<int, std::map<int, std::set<T>>> handlesf;
+        std::map<int, std::map<int, std::set<T, TCompare>>> handlesf;
 
         // object -> (sceneID -> scriptID)
-        std::map<T, std::map<int, int>> handlesr;
+        std::map<T, std::map<int, int>, TCompare> handlesr;
 
         std::string typeStr;
     };
+
+    template<typename T>
+    using WeakHandles = Handles<T, std::owner_less<T>>;
 }
 
 #endif // SIMPLUSPLUS_HANDLES_H_INCLUDED
