@@ -245,7 +245,7 @@ namespace sim
                 onImageFilterEnumerate(replyData[0], replyData[1], name);
                 if(name.length())
                 {
-                    char *ret = simCreateBuffer((int)name.length() + 1);
+                    char *ret = (char*)simCreateBuffer((int)name.length() + 1);
                     std::strncpy(ret, name.c_str(), name.length());
                     retVal = ret;
                 }

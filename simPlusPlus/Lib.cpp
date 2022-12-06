@@ -709,15 +709,15 @@ void setStringNamedParam(const std::string &parameter, const std::string &value)
         throw api_error("simSetStringNamedParam");
 }
 
-char* createBuffer(int size)
+void* createBuffer(int size)
 {
-    char *ret = simCreateBuffer(size);
+    void *ret = simCreateBuffer(size);
     if(ret == NULL)
         throw api_error("simCreateBuffer");
     return ret;
 }
 
-void releaseBuffer(char *buffer)
+void releaseBuffer(void *buffer)
 {
     if(simReleaseBuffer(buffer) == -1)
         throw api_error("simReleaseBuffer");

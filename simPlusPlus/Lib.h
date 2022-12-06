@@ -171,8 +171,8 @@ namespace sim
     boost::optional<std::string> getStringNamedParam(const std::string &parameter);
     void setStringNamedParam(const std::string &parameter, const std::string &value);
 
-    char* createBuffer(int size);
-    void releaseBuffer(char *buffer);
+    void* createBuffer(int size);
+    void releaseBuffer(void *buffer);
 
     std::string getLastError();
     void setLastError(const std::string &func, const std::string &msg);
