@@ -113,11 +113,15 @@
     <xsl:template name="renderLuaParamType">
         <xsl:choose>
             <xsl:when test="@type = 'table' and @item-type">
-                <xsl:value-of select="@item-type"/>
+                <xsl:choose>
+                    <xsl:when test="@item-type = 'double'">float</xsl:when>
+                    <xsl:otherwise><xsl:value-of select="@item-type"/></xsl:otherwise>
+                </xsl:choose>
                 <xsl:text>[</xsl:text>
                 <xsl:value-of select="@size"/>
                 <xsl:text>]</xsl:text>
             </xsl:when>
+            <xsl:when test="@type = 'double'">float</xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="@type"/>
             </xsl:otherwise>
@@ -165,7 +169,12 @@
     <xsl:template name="renderPythonParamType">
         <xsl:choose>
             <xsl:when test="@type = 'table'">list</xsl:when>
-            <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
+            <xsl:otherwise>
+                <xsl:choose>
+                    <xsl:when test="@type = 'double'">float</xsl:when>
+                    <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
+                </xsl:choose>
+            </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
 
@@ -246,11 +255,17 @@
                     <div>
                         <strong><xsl:value-of select="@name"/></strong>
                         <xsl:text> (</xsl:text>
-                        <xsl:value-of select="@type"/>
+                        <xsl:choose>
+                            <xsl:when test="@type = 'double'">float</xsl:when>
+                            <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
+                        </xsl:choose>
                         <xsl:if test="@type='table'">
                             <xsl:if test="@item-type">
                                 <xsl:text> of </xsl:text>
-                                <xsl:value-of select="@item-type"/>
+                                <xsl:choose>
+                                    <xsl:when test="@item-type = 'double'">float</xsl:when>
+                                    <xsl:otherwise><xsl:value-of select="@item-type"/></xsl:otherwise>
+                                </xsl:choose>
                             </xsl:if>
                             <xsl:if test="@size and not(@size = '') and not(@size = '*')">
                                 <xsl:text>, size </xsl:text>
