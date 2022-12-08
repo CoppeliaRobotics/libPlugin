@@ -15,26 +15,23 @@ namespace sim
     template<typename T, class TCompare = std::less<T>>
     struct Handles
     {
-        Handles() : typeStr("ptr") {}
-
-        Handles(const std::string &s) : typeStr(s) {}
-
+    private:
         template<typename U>
-        void * toPtr(U* t)
+        static void * toPtr(U* object)
         {
-            return t;
+            return object;
         }
 
         template<typename U>
-        void * toPtr(std::shared_ptr<U> t)
+        static void * toPtr(std::shared_ptr<U> object)
         {
-            return t.get();
+            return object.get();
         }
 
         template<typename U>
-        void * toPtr(std::weak_ptr<U> t)
+        static void * toPtr(std::weak_ptr<U> object)
         {
-            if(auto p = t.lock())
+            if(auto p = object.lock())
                 return p.get();
             else
                 return nullptr;
@@ -46,64 +43,69 @@ namespace sim
             return !cmp(a, b) && !cmp(b, a);
         }
 
-        std::string toHandle(T t)
+    public:
+        Handles() : typeString_("ptr") {}
+
+        Handles(const std::string &typeString) : typeString_(typeString) {}
+
+        std::string toHandle(T object)
         {
             std::stringstream ss;
-            ss << typeStr << ':' << toPtr(t);
+            ss << typeString_ << ':' << toPtr(object);
             return ss.str();
         }
 
-        std::string add(T t)
+        std::string add(T object)
         {
-            std::string h = toHandle(t);
-            auto it = byhandle.find(h);
-            if(it != byhandle.end())
+            std::string handle = toHandle(object);
+            auto it = handleToObject_.find(handle);
+            if(it != handleToObject_.end())
             {
-                if(!equals(it->second, t))
+                if(!equals(it->second, object))
                     throw std::runtime_error("fatal error: handle already exists but points to different object");
             }
             else
             {
-                byhandle[h] = t;
+                handleToObject_[handle] = object;
             }
-            return h;
+            return handle;
         }
 
-        std::string add(T t, int scriptID)
+        std::string add(T object, int scriptID)
         {
             int sceneID = getSceneID(scriptID);
-            handlesf[sceneID][scriptID].insert(t);
-            handlesr[t][sceneID] = scriptID;
-            return add(t);
+            sceneToScriptObjects_[sceneID][scriptID].insert(object);
+            objectToSceneScripts_[object][sceneID] = scriptID;
+            return add(object);
         }
 
-        T remove(T t)
+        T remove(T object)
         {
-            std::string h = toHandle(t);
-            auto it0 = byhandle.find(h);
-            if(it0 == byhandle.end())
+            std::string handle = toHandle(object);
+            auto it0 = handleToObject_.find(handle);
+            if(it0 == handleToObject_.end())
                 throw std::runtime_error("invalid object handle");
-            byhandle.erase(it0);
-            auto it = handlesr.find(t);
-            if(it == handlesr.end()) return t;
+            handleToObject_.erase(it0);
+            auto it = objectToSceneScripts_.find(object);
+            if(it == objectToSceneScripts_.end()) return object;
             for(const auto &m : it->second)
             {
                 int sceneID = m.first;
                 int scriptID = m.second;
-                auto it1 = handlesf.find(sceneID);
-                if(it1 == handlesf.end()) continue;
+                auto it1 = sceneToScriptObjects_.find(sceneID);
+                if(it1 == sceneToScriptObjects_.end()) continue;
                 auto it2 = it1->second.find(scriptID);
                 if(it2 == it1->second.end()) continue;
-                it2->second.erase(t);
+                it2->second.erase(object);
             }
-            handlesr.erase(it);
-            return t;
+            objectToSceneScripts_.erase(it);
+            return object;
         }
 
-        T get(std::string h) const
+        T get(const std::string &handle) const
         {
-            auto it = byhandle.find(h);
-            if(it == byhandle.end())
+            auto it = handleToObject_.find(handle);
+            if(it == handleToObject_.end())
                 throw std::runtime_error("invalid object handle");
             return it->second;
         }
@@ -111,8 +113,8 @@ namespace sim
         std::set<T> find(int scriptID) const
         {
             int sceneID = getSceneID(scriptID);
-            auto it = handlesf.find(sceneID);
-            if(it == handlesf.end()) return {};
+            auto it = sceneToScriptObjects_.find(sceneID);
+            if(it == sceneToScriptObjects_.end()) return {};
             auto it2 = it->second.find(scriptID);
             if(it2 == it->second.end()) return {};
             return it2->second;
@@ -125,29 +127,29 @@ namespace sim
 
         std::set<T> findByScene(int sceneID) const
         {
-            auto it = handlesf.find(sceneID);
-            if(it == handlesf.end()) return {};
-            std::set<T> r;
+            auto it = sceneToScriptObjects_.find(sceneID);
+            if(it == sceneToScriptObjects_.end()) return {};
+            std::set<T> ret;
             for(const auto &x : it->second)
-                for(auto t : x.second)
-                    r.insert(t);
-            return r;
+                for(auto object : x.second)
+                    ret.insert(object);
+            return ret;
         }
 
         std::set<T> all() const
         {
-            std::set<T> r;
-            for(const auto &x : handlesr)
-                r.insert(x.first);
-            return r;
+            std::set<T> ret;
+            for(const auto &x : objectToSceneScripts_)
+                ret.insert(x.first);
+            return ret;
         }
 
         std::set<std::string> handles() const
         {
-            std::set<std::string> r;
-            for(const auto &x : handlesr)
-                r.insert(toHandle(x.first));
-            return r;
+            std::set<std::string> ret;
+            for(const auto &x : objectToSceneScripts_)
+                ret.insert(toHandle(x.first));
+            return ret;
         }
 
     private:
@@ -166,15 +168,15 @@ namespace sim
         }
 
         // handle -> object
-        std::map<std::string, T> byhandle;
+        std::map<std::string, T> handleToObject_;
 
         // sceneID -> (scriptID -> [objects])
-        std::map<int, std::map<int, std::set<T, TCompare>>> handlesf;
+        std::map<int, std::map<int, std::set<T, TCompare>>> sceneToScriptObjects_;
 
         // object -> (sceneID -> scriptID)
-        std::map<T, std::map<int, int>, TCompare> handlesr;
+        std::map<T, std::map<int, int>, TCompare> objectToSceneScripts_;
 
-        std::string typeStr;
+        const std::string typeString_;
     };
 
     template<typename T>
