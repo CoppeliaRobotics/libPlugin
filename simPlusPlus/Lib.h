@@ -146,30 +146,30 @@ namespace sim
     int getStackFloatTable(int stackHandle, std::vector<float> *v);
     int getStackDoubleTable(int stackHandle, std::vector<double> *v);
 
-    int getBoolParameter(int parameter);
-    int getInt32Parameter(int parameter);
-    unsigned long long int getUInt64Parameter(int parameter);
-    double getFloatParameter(int parameter);
-    std::array<double, 3> getArrayParameter(int parameter);
-    std::string getStringParameter(int parameter);
-    void setBoolParameter(int parameter, bool value);
-    void setInt32Parameter(int parameter, int value);
-    void setFloatParameter(int parameter, double value);
-    void setArrayParameter(int parameter, std::array<double, 3> value);
-    void setStringParameter(int parameter, char *value);
-    void setStringParameter(int parameter, const std::string &value);
+    int getBoolParam(int parameter);
+    int getInt32Param(int parameter);
+    unsigned long long int getUInt64Param(int parameter);
+    double getFloatParam(int parameter);
+    std::array<double, 3> getArrayParam(int parameter);
+    std::string getStringParam(int parameter);
+    void setBoolParam(int parameter, bool value);
+    void setInt32Param(int parameter, int value);
+    void setFloatParam(int parameter, double value);
+    void setArrayParam(int parameter, std::array<double, 3> value);
+    void setStringParam(int parameter, char *value);
+    void setStringParam(int parameter, const std::string &value);
 
-    double getObjectFloatParameter(int objectHandle, int parameterID, double *parameter);
-    int getObjectInt32Parameter(int objectHandle, int parameterID, int *parameter);
-    std::string getObjectStringParameter(int objectHandle, int parameterID);
-    void setObjectFloatParameter(int objectHandle, int parameterID, double parameter);
-    void setObjectInt32Parameter(int objectHandle, int parameterID, int parameter);
-    void setObjectStringParameter(int objectHandle, int parameterID, const std::string &parameter);
+    double getObjectFloatParam(int objectHandle, int parameterID, double *parameter);
+    int getObjectInt32Param(int objectHandle, int parameterID, int *parameter);
+    std::string getObjectStringParam(int objectHandle, int parameterID);
+    void setObjectFloatParam(int objectHandle, int parameterID, double parameter);
+    void setObjectInt32Param(int objectHandle, int parameterID, int parameter);
+    void setObjectStringParam(int objectHandle, int parameterID, const std::string &parameter);
+    void getScriptInt32Param(int scriptHandle,int parameterID,int* parameter);
+//    void getScriptProperty(int scriptHandle, int *scriptProperty, int *associatedObjectHandle);
 
-    void getScriptProperty(int scriptHandle, int *scriptProperty, int *associatedObjectHandle);
-
-    boost::optional<std::string> getStringNamedParam(const std::string &parameter);
-    void setStringNamedParam(const std::string &parameter, const std::string &value);
+    boost::optional<std::string> getNamedStringParam(const std::string &parameter);
+    void setNamedStringParam(const std::string &parameter, const std::string &value);
 
     void* createBuffer(int size);
     void releaseBuffer(void *buffer);
@@ -178,11 +178,11 @@ namespace sim
     void setLastError(const std::string &func, const std::string &msg);
 
     int getObjectChild(int objectHandle, int index);
-    int getObjectHandle(const std::string &objectName);
+//    int getObjectHandle(const std::string &objectName);
     std::array<double, 12> getObjectMatrix(int objectHandle, int relativeToObjectHandle);
     void setObjectMatrix(int objectHandle, int relativeToObjectHandle, const std::array<double, 12> &matrix);
-    std::string getObjectName(int objectHandle);
-    void setObjectName(int objectHandle, const std::string &objectName);
+//    std::string getObjectName(int objectHandle);
+//    void setObjectName(int objectHandle, const std::string &objectName);
     std::array<double, 3> getObjectOrientation(int objectHandle, int relativeToObjectHandle);
     void setObjectOrientation(int objectHandle, int relativeToObjectHandle, const std::array<double, 3> &eulerAngles);
     int getObjectParent(int objectHandle);
@@ -196,8 +196,9 @@ namespace sim
     std::pair<std::array<double, 3>, std::array<double, 3>> getObjectVelocity(int objectHandle);
     int getObjects(int index, int objectType);
     std::vector<int> getObjectsInTree(int treeBaseHandle, int objectType, int options);
-    std::vector<int> getObjectSelection();
-    int getObjectSelectionSize();
+    std::vector<int> getObjectSel();
+    long long int getObjectUid(int objectHandle);
+//    int getObjectSelectionSize();
 
     void setModuleInfo(const std::string &moduleName, int infoType, const std::string &stringInfo);
     void setModuleInfo(const std::string &moduleName, int infoType, int intInfo);

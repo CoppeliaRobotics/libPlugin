@@ -559,7 +559,7 @@ bool registerScriptStuff()
     {
         checkRuntimeVersion();
 
-        auto dbg = sim::getStringNamedParam("simStubsGen.debug");
+        auto dbg = sim::getNamedStringParam("simStubsGen.debug");
         if(dbg && *dbg != "0")
             sim::enableStackDebug();
 
