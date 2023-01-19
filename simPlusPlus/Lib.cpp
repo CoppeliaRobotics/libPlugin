@@ -711,10 +711,53 @@ boost::optional<std::string> getNamedStringParam(const std::string &parameter)
     return s;
 }
 
+boost::optional<bool> getNamedBoolParam(const std::string &parameter)
+{
+    auto v = getNamedStringParam(parameter);
+    if(!v) return {};
+    auto s = *v;
+    if(s == "true") return true;
+    if(s == "false") return false;
+    if(s == "on") return true;
+    if(s == "off") return false;
+    if(s == "1") return true;
+    if(s == "0") return false;
+    throw api_error("simGetNamedBoolParam");
+}
+
+boost::optional<double> getNamedFloatParam(const std::string &parameter)
+{
+    auto v = getNamedStringParam(parameter);
+    if(!v) return {};
+    return std::stod(*v);
+}
+
+boost::optional<int> getNamedInt32Param(const std::string &parameter)
+{
+    auto v = getNamedStringParam(parameter);
+    if(!v) return {};
+    return std::stoi(*v);
+}
+
 void setNamedStringParam(const std::string &parameter, const std::string &value)
 {
     if(simSetNamedStringParam(parameter.c_str(), value.c_str(), value.size()) == -1)
         throw api_error("simSetNamedStringParam");
+}
+
+void setNamedBoolParam(const std::string &parameter, bool value)
+{
+    setNamedStringParam(parameter, value ? "true" : "false");
+}
+
+void setNamedFloatParam(const std::string &parameter, double value)
+{
+    setNamedStringParam(parameter, std::to_string(value));
+}
+
+void setNamedInt32Param(const std::string &parameter, int value)
+{
+    setNamedStringParam(parameter, std::to_string(value));
 }
 
 void* createBuffer(int size)

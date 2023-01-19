@@ -169,7 +169,13 @@ namespace sim
 //    void getScriptProperty(int scriptHandle, int *scriptProperty, int *associatedObjectHandle);
 
     boost::optional<std::string> getNamedStringParam(const std::string &parameter);
+    boost::optional<bool> getNamedBoolParam(const std::string &parameter);
+    boost::optional<double> getNamedFloatParam(const std::string &parameter);
+    boost::optional<int> getNamedInt32Param(const std::string &parameter);
     void setNamedStringParam(const std::string &parameter, const std::string &value);
+    void setNamedBoolParam(const std::string &parameter, bool value);
+    void setNamedFloatParam(const std::string &parameter, double value);
+    void setNamedInt32Param(const std::string &parameter, int value);
 
     void* createBuffer(int size);
     void releaseBuffer(void *buffer);
