@@ -531,7 +531,11 @@ void setObjectStringParam(int objectHandle, int parameterID, const std::string &
 
 // int simResetVisionSensor(int visionSensorHandle);
 
-// int simSetVisionSensorImg(int sensorHandle, const unsigned char *img, int options, const int *pos, const int *size);
+void setVisionSensorImg(int sensorHandle, const unsigned char *img, int options, std::array<int, 2> pos, std::array<int, 2> size)
+{
+    if(simSetVisionSensorImg(sensorHandle, img, options, pos.data(), size.data()) == -1)
+        throw api_error("simSetVisionSensorImg");
+}
 
 // int simRuckigRemove(int objHandle);
 
@@ -1690,9 +1694,21 @@ boost::optional<std::array<float, 3>> getShapeColor(int shapeHandle, int colorCo
 
 // int simCheckVisionSensor(int visionSensorHandle, int entityHandle, double **auxValues, int **auxValuesCount);
 
-// unsigned char *simGetVisionSensorImg(int sensorHandle, int options, double rgbaCutOff, const int *pos, const int *size, int *resolution);
+unsigned char * getVisionSensorImg(int sensorHandle, int options, double rgbaCutOff, std::array<int, 2> pos, std::array<int, 2> size, std::array<int, 2> *resolution)
+{
+    unsigned char *buf = simGetVisionSensorImg(sensorHandle, options, rgbaCutOff, pos.data(), size.data(), resolution ? resolution->data() : nullptr);
+    if(!buf)
+        throw api_error("simGetVisionSensorImg");
+    return buf;
+}
 
-// int simGetVisionSensorRes(int visionSensorHandle, int *resolution);
+std::array<int, 2> getVisionSensorRes(int visionSensorHandle)
+{
+    std::array<int, 2> ret;
+    if(simGetVisionSensorRes(visionSensorHandle, ret.data()) == -1)
+        throw api_error("simGetVisionSensorRes");
+    return ret;
+}
 
 std::array<double, 4> getObjectQuaternion(int objectHandle, int relativeToObjectHandle)
 {
@@ -1710,7 +1726,11 @@ void setObjectQuaternion(int objectHandle, int relativeToObjectHandle, const std
 
 // int simConvexDecompose(int shapeHandle, int options, const int *intParams, const double *floatParams);
 
-// int simWriteTexture(int textureId, int options, const char *data, int posX, int posY, int sizeX, int sizeY, double interpol);
+void writeTexture(int textureId, int options, const char *data, int posX, int posY, int sizeX, int sizeY, double interpol)
+{
+    if(simWriteTexture(textureId, options, data, posX, posY, sizeX, sizeY, interpol) == -1)
+        throw api_error("simWriteTexture");
+}
 
 // int simCreateTexture(const char *fileName, int options, const double *planeSizes, const double *scalingUV, const double *xy_g, int fixedResolution, int *textureId, int *resolution, const void *reserved);
 

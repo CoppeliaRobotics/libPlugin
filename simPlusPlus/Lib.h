@@ -333,7 +333,7 @@ namespace sim
 
     // resetVisionSensor
 
-    // setVisionSensorImg
+    void setVisionSensorImg(int sensorHandle, const unsigned char *img, int options = 0, std::array<int, 2> pos = {0, 0}, std::array<int, 2> size = {0, 0});
 
     // ruckigRemove
 
@@ -846,9 +846,9 @@ namespace sim
 
     // checkVisionSensor
 
-    // getVisionSensorImg
+    unsigned char * getVisionSensorImg(int sensorHandle, int options, double rgbaCutOff, std::array<int, 2> pos = {0, 0}, std::array<int, 2> size = {0, 0}, std::array<int, 2> *resolution = nullptr);
 
-    // getVisionSensorRes
+    std::array<int, 2> getVisionSensorRes(int visionSensorHandle);
 
     std::array<double, 4> getObjectQuaternion(int objectHandle, int relativeToObjectHandle);
 
@@ -856,7 +856,7 @@ namespace sim
 
     // convexDecompose
 
-    // writeTexture
+    void writeTexture(int textureId, int options, const char *data, int posX = 0, int posY = 0, int sizeX = 0, int sizeY = 0, double interpol = 0.0);
 
     // createTexture
 
