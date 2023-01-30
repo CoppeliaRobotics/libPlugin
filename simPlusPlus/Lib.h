@@ -255,7 +255,7 @@ namespace sim
 
     // removeDrawingObject
 
-    // announceSceneContentChange
+    int announceSceneContentChange();
 
     // setInt32Signal
 
@@ -325,9 +325,9 @@ namespace sim
 
     // setSimulationPassesPerRenderingPass
 
-    // persistentDataWrite
+    void persistentDataWrite(const std::string &dataName, const std::string &dataValue, int options = 0);
 
-    // persistentDataRead
+    std::string persistentDataRead(const std::string &dataName);
 
     // isHandle
 
@@ -356,6 +356,7 @@ namespace sim
     // readCustomDataBlockTags
 
     int getObjects(int index, int objectType);
+    std::vector<int> getObjects(int objectType);
 
     std::vector<int> getObjectsInTree(int treeBaseHandle, int objectType, int options = 0);
 
@@ -473,9 +474,9 @@ namespace sim
 
     void executeScriptString(int scriptHandleOrType, const std::string &stringAtScriptName, int stackID);
 
-    // getApiFunc
+    std::vector<std::string> getApiFunc(int scriptHandleOrType, const std::string &apiWord);
 
-    // getApiInfo
+    std::string getApiInfo(int scriptHandleOrType, const std::string &apiWord);
 
     void setModuleInfo(const std::string &moduleName, int infoType, const std::string &stringInfo);
     void setModuleInfo(const std::string &moduleName, int infoType, int intInfo);
@@ -491,9 +492,9 @@ namespace sim
     std::string getModuleInfoStr(int infoType);
     int getModuleInfoInt(int infoType);
 
-    // isDeprecated
+    bool isDeprecated(const std::string &funcOrConst);
 
-    // getPersistentDataTags
+    std::vector<std::string> getPersistentDataTags();
 
     int eventNotification(const std::string &event);
 

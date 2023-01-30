@@ -1,5 +1,7 @@
 #include <simPlusPlus/Lib.h>
 #include <simPlusPlus/Plugin.h>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 
 namespace sim
 {
@@ -429,7 +431,13 @@ std::vector<int> copyPasteObjects(const std::vector<int> &shapeHandles, int opti
 
 // int simRemoveDrawingObject(int objectHandle);
 
-// int simAnnounceSceneContentChange();
+int announceSceneContentChange()
+{
+    int ret = simAnnounceSceneContentChange();
+    if(ret == -1)
+        throw api_error("simAnnounceSceneContentChange");
+    return ret;
+}
 
 // int simSetInt32Signal(const char *signalName, int signalValue);
 
@@ -523,9 +531,22 @@ void setObjectStringParam(int objectHandle, int parameterID, const std::string &
 
 // int simSetSimulationPassesPerRenderingPass(int p);
 
-// int simPersistentDataWrite(const char *dataName, const char *dataValue, int dataLength, int options);
+void persistentDataWrite(const std::string &dataName, const std::string &dataValue, int options)
+{
+    if(simPersistentDataWrite(dataName.c_str(), dataValue.c_str(), dataValue.length(), options) == -1)
+        throw api_error("simPersistentDataWrite");
+}
 
-// char *simPersistentDataRead(const char *dataName, int *dataLength);
+std::string persistentDataRead(const std::string &dataName)
+{
+    int length = 0;
+    char *buf = simPersistentDataRead(dataName.c_str(), &length);
+    if(!buf)
+        throw api_error("simPersistentDataRead");
+    std::string ret(buf, length);
+    releaseBuffer(buf);
+    return ret;
+}
 
 // int simIsHandle(int generalObjectHandle, int generalObjectType);
 
@@ -579,6 +600,19 @@ int getObjects(int index, int objectType)
     int ret;
     if((ret = simGetObjects(index, objectType)) == -1)
         throw api_error("simGetObjects");
+    return ret;
+}
+
+std::vector<int> getObjects(int objectType)
+{
+    std::vector<int> ret;
+    int i = 0, handle = -1;
+    while(1)
+    {
+        handle = simGetObjects(i++, sim_handle_all);
+        if(handle == -1) break;
+        ret.push_back(handle);
+    }
     return ret;
 }
 
@@ -1021,9 +1055,29 @@ void executeScriptString(int scriptHandleOrType, const std::string &stringAtScri
         throw api_error("simExecuteScriptString");
 }
 
-// char *simGetApiFunc(int scriptHandleOrType, const char *apiWord);
+std::vector<std::string> getApiFunc(int scriptHandleOrType, const std::string &apiWord)
+{
+    std::vector<std::string> ret;
+    char *buf = simGetApiFunc(scriptHandleOrType, apiWord.c_str());
+    if(buf)
+    {
+        boost::split(ret, buf, boost::is_any_of(" "));
+        releaseBuffer(buf);
+    }
+    return ret;
+}
 
-// char *simGetApiInfo(int scriptHandleOrType, const char *apiWord);
+std::string getApiInfo(int scriptHandleOrType, const std::string &apiWord)
+{
+    char *buf = simGetApiInfo(scriptHandleOrType, apiWord.c_str());
+    if(buf)
+    {
+        std::string s(buf);
+        releaseBuffer(buf);
+        return s;
+    }
+    return "";
+}
 
 void setModuleInfo(const std::string &moduleName, int infoType, const std::string &stringInfo)
 {
@@ -1107,9 +1161,24 @@ int getModuleInfoInt(int infoType)
     return i;
 }
 
-// int simIsDeprecated(const char *funcOrConst);
+bool isDeprecated(const std::string &funcOrConst)
+{
+    int ret = simIsDeprecated(funcOrConst.c_str());
+    return ret > 0;
+}
 
-// char *simGetPersistentDataTags(int *tagCount);
+std::vector<std::string> getPersistentDataTags()
+{
+    std::vector<std::string> ret;
+    int count = 0;
+    char *buf = simGetPersistentDataTags(&count);
+    if(buf)
+    {
+        boost::split(ret, buf, boost::is_any_of("\0"));
+        releaseBuffer(buf);
+    }
+    return ret;
+}
 
 int eventNotification(const std::string &event)
 {
