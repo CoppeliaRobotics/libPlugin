@@ -242,6 +242,10 @@ namespace sim
     double getSimulationTime();
     double getSimulationTimeStep();
 
+    std::vector<double> getPointCloudPoints(int pointCloudHandle);
+    int createPointCloud(double maxVoxelSize, int maxPtCntPerVoxel, int options, double pointSize);
+    int insertObjectIntoPointCloud(int pointCloudHandle, int objectHandle, int options, double gridSize, boost::optional<std::array<unsigned char, 3>> color = {}, boost::optional<float> duplicateTolerance = {});
+
     int programVersion();
     std::string versionString(int v);
 

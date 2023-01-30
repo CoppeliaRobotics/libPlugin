@@ -1191,6 +1191,53 @@ double getSimulationTimeStep()
     return ret;
 }
 
+std::vector<double> getPointCloudPoints(int pointCloudHandle)
+{
+    int count = 0;
+    const double *buf = simGetPointCloudPoints(pointCloudHandle, &count, 0);
+    std::vector<double> ret;
+    if(buf)
+    {
+        ret.resize(count * 3);
+        for(size_t i = 0; i < count * 3; i++)
+            ret[i] = buf[i];
+    }
+    return ret;
+}
+
+int createPointCloud(double maxVoxelSize, int maxPtCntPerVoxel, int options, double pointSize)
+{
+    int ret = simCreatePointCloud(maxVoxelSize, maxPtCntPerVoxel, options, pointSize, nullptr);
+    if(ret == -1)
+        throw api_error("simCreatePointCloud");
+    return ret;
+}
+
+int insertObjectIntoPointCloud(int pointCloudHandle, int objectHandle, int options, double gridSize, boost::optional<std::array<unsigned char, 3>> color, boost::optional<float> duplicateTolerance)
+{
+    std::array<unsigned char, 3> color_;
+    unsigned char *colorPtr = nullptr;
+    if(color)
+    {
+        color_ = *color;
+        colorPtr = color_.data();
+    }
+
+    int optionalValues[2];
+    void *optionalValuesPtr = nullptr;
+    if(duplicateTolerance)
+    {
+        optionalValuesPtr = &optionalValues[0];
+        ((int *)optionalValuesPtr)[0] = 1;
+        ((float *)optionalValuesPtr)[1] = *duplicateTolerance;
+    }
+
+    int ret = simInsertObjectIntoPointCloud(pointCloudHandle, objectHandle, options, gridSize, colorPtr, optionalValuesPtr);
+    if(ret == -1)
+        throw api_error("simInsertObjectIntoPointCloud");
+    return ret;
+}
+
 int programVersion()
 {
     int simVer = sim::getInt32Param(sim_intparam_program_version);
