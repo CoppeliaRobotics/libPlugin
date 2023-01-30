@@ -155,8 +155,7 @@ namespace sim
     private:
         static int getSceneID(int scriptID)
         {
-            int scriptType;
-            sim::getScriptInt32Param(scriptID,sim_scriptintparam_type,&scriptType);
+            int scriptType = sim::getScriptInt32Param(scriptID, sim_scriptintparam_type);
             if(0
                     || scriptType == sim_scripttype_mainscript
                     || scriptType == sim_scripttype_childscript
