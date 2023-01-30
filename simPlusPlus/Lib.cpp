@@ -348,7 +348,13 @@ void releaseBuffer(const void *buffer)
         throw api_error("simReleaseBuffer");
 }
 
-// int simCheckCollision(int entity1Handle, int entity2Handle);
+bool checkCollision(int entity1Handle, int entity2Handle)
+{
+    int ret = simCheckCollision(entity1Handle, entity2Handle);
+    if(ret == -1)
+        throw api_error("simCheckCollision");
+    return ret > 0;
+}
 
 // int simGetRealTimeSimulation();
 
@@ -551,7 +557,13 @@ std::string persistentDataRead(const std::string &dataName)
     return ret;
 }
 
-// int simIsHandle(int generalObjectHandle, int generalObjectType);
+bool isHandle(int generalObjectHandle, int generalObjectType)
+{
+    int ret = simIsHandle(generalObjectHandle, generalObjectType);
+    if(ret == -1)
+        throw api_error("simIsHandle");
+    return ret > 0;
+}
 
 // int simResetVisionSensor(int visionSensorHandle);
 
@@ -1554,9 +1566,19 @@ void setObjectOrientation(int objectHandle, int relativeToObjectHandle, const st
         throw api_error("simSetObjectOrientation");
 }
 
-// int simGetJointPosition(int objectHandle, double *position);
+double getJointPosition(int objectHandle)
+{
+    double position;
+    if(simGetJointPosition(objectHandle, &position) == -1)
+        throw api_error("simGetJointPosition");
+    return position;
+}
 
-// int simSetJointPosition(int objectHandle, double position);
+void setJointPosition(int objectHandle, double position)
+{
+    if(simSetJointPosition(objectHandle, position) == -1)
+        throw api_error("simGetJointPosition");
+}
 
 // int simSetJointTargetPosition(int objectHandle, double targetPosition);
 
@@ -1756,7 +1778,23 @@ boost::optional<std::array<float, 3>> getShapeColor(int shapeHandle, int colorCo
 
 // int simCreateProximitySensor(int sensorType, int subType, int options, const int *intParams, const double *floatParams, const double *reserved);
 
-// int simGetRotationAxis(const double *matrixStart, const double *matrixGoal, double *axis, double *angle);
+std::pair<std::array<double, 3>, double> getRotationAxis(std::array<double, 12> matrixStart, std::array<double, 12> matrixGoal)
+{
+    std::array<double, 3> axis;
+    double angle;
+    if(simGetRotationAxis(matrixStart.data(), matrixGoal.data(), axis.data(), &angle) == -1)
+        throw api_error("simGetRotationAxis");
+    return std::make_pair(axis, angle);
+}
+
+std::pair<std::array<double, 3>, double> getRotationAxis(std::array<double, 7> matrixStart, std::array<double, 7> matrixGoal)
+{
+    std::array<double, 3> axis;
+    double angle;
+    if(simGetRotationAxis(matrixStart.data(), matrixGoal.data(), axis.data(), &angle) == -1)
+        throw api_error("simGetRotationAxis");
+    return std::make_pair(axis, angle);
+}
 
 // int simRotateAroundAxis(const double *matrixIn, const double *axis, const double *axisPos, double angle, double *matrixOut);
 

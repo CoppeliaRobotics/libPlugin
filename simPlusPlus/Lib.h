@@ -202,7 +202,7 @@ namespace sim
 
     void releaseBuffer(const void *buffer);
 
-    // checkCollision
+    bool checkCollision(int entity1Handle, int entity2Handle);
 
     // getRealTimeSimulation
 
@@ -329,7 +329,7 @@ namespace sim
 
     std::string persistentDataRead(const std::string &dataName);
 
-    // isHandle
+    bool isHandle(int generalObjectHandle, int generalObjectType);
 
     // resetVisionSensor
 
@@ -502,7 +502,7 @@ namespace sim
     template<typename... Arguments>
     void addLog(int verbosity, const std::string &fmt, Arguments&&... args)
     {
-        addLog(pluginNameAndVersion, verbosity, util::sprintf(fmt, std::forward<Arguments>(args)...).c_str());
+        addLog(pluginNameAndVersion, verbosity, util::sprintf(fmt, std::forward<Arguments>(args)...));
     }
 
     // isDynamicallyEnabled
@@ -683,9 +683,9 @@ namespace sim
 
     void setObjectOrientation(int objectHandle, int relativeToObjectHandle, const std::array<double, 3> &eulerAngles);
 
-    // getJointPosition
+    double getJointPosition(int objectHandle);
 
-    // setJointPosition
+    void setJointPosition(int objectHandle, double position);
 
     // setJointTargetPosition
 
@@ -834,7 +834,8 @@ namespace sim
 
     // createProximitySensor
 
-    // getRotationAxis
+    std::pair<std::array<double, 3>, double> getRotationAxis(std::array<double, 12> matrixStart, std::array<double, 12> matrixGoal);
+    std::pair<std::array<double, 3>, double> getRotationAxis(std::array<double, 7> matrixStart, std::array<double, 7> matrixGoal);
 
     // rotateAroundAxis
 
