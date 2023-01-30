@@ -221,7 +221,10 @@ long long int getObjectUid(int objectHandle)
 
 // int simGetObjectFromUid(long long int uid, int options);
 
-// int simGetScriptHandleEx(int scriptType, int objHandle, const char *scriptName);
+int getScriptHandleEx(int scriptType, int objHandle, boost::optional<std::string> scriptName)
+{
+    return simGetScriptHandleEx(scriptType, objHandle, scriptName ? scriptName->c_str() : nullptr);
+}
 
 void removeObjects(const std::vector<int> &objectHandles)
 {
@@ -1185,7 +1188,11 @@ int eventNotification(const std::string &event)
     return simEventNotification(event.c_str());
 }
 
-// int simAddLog(const char *pluginName, int verbosityLevel, const char *logMsg);
+void addLog(boost::optional<std::string> pluginName, int verbosityLevel, boost::optional<std::string> logMsg)
+{
+    if(simAddLog(pluginName ? pluginName->c_str() : nullptr, verbosityLevel, logMsg ? logMsg->c_str() : nullptr) == -1)
+        throw api_error("simAddLog");
+}
 
 // int simIsDynamicallyEnabled(int objectHandle);
 

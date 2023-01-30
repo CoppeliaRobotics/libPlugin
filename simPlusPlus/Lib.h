@@ -144,7 +144,7 @@ namespace sim
 
     // getObjectFromUid
 
-    // getScriptHandleEx
+    int getScriptHandleEx(int scriptType, int objHandle, boost::optional<std::string> scriptName = {});
 
     void removeObjects(const std::vector<int> &objectHandles);
 
@@ -498,10 +498,11 @@ namespace sim
 
     int eventNotification(const std::string &event);
 
+    void addLog(boost::optional<std::string> pluginName, int verbosityLevel, boost::optional<std::string> logMsg);
     template<typename... Arguments>
     void addLog(int verbosity, const std::string &fmt, Arguments&&... args)
     {
-        ::simAddLog(pluginNameAndVersion.c_str(), verbosity, util::sprintf(fmt, std::forward<Arguments>(args)...).c_str());
+        addLog(pluginNameAndVersion, verbosity, util::sprintf(fmt, std::forward<Arguments>(args)...).c_str());
     }
 
     // isDynamicallyEnabled
