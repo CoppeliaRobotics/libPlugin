@@ -646,7 +646,17 @@ void setStringParam(int parameter, const std::string &value)
         throw api_error("simSetStringParam");
 }
 
-double getObjectFloatParam(int objectHandle, int parameterID, double *parameter)
+std::string getObjectAlias(int objectHandle, int options)
+{
+    char *ret;
+    if((ret = simGetObjectAlias(objectHandle, options)) == NULL)
+        throw api_error("simGetObjectAlias");
+    std::string s(ret);
+    releaseBuffer(ret);
+    return s;
+}
+
+double getObjectFloatParam(int objectHandle, int parameterID)
 {
     double ret;
     if(simGetObjectFloatParam(objectHandle, parameterID, &ret) == -1)
@@ -654,7 +664,7 @@ double getObjectFloatParam(int objectHandle, int parameterID, double *parameter)
     return ret;
 }
 
-int getObjectInt32Param(int objectHandle, int parameterID, int *parameter)
+int getObjectInt32Param(int objectHandle, int parameterID)
 {
     int ret;
     if(simGetObjectInt32Param(objectHandle, parameterID, &ret) == -1)
@@ -671,6 +681,12 @@ std::string getObjectStringParam(int objectHandle, int parameterID)
     std::string s(ret, len);
     releaseBuffer(ret);
     return s;
+}
+
+void setObjectAlias(int objectHandle, const std::string &alias, int options)
+{
+    if(simSetObjectAlias(objectHandle, alias.c_str(), options) == -1)
+        throw api_error("simSetObjectAlias");
 }
 
 void setObjectFloatParam(int objectHandle, int parameterID, double parameter)
@@ -692,10 +708,12 @@ void setObjectStringParam(int objectHandle, int parameterID, const std::string &
         throw api_error("simSetObjectStringParam");
 }
 
-void getScriptInt32Param(int scriptHandle, int parameterID, int* parameter)
+int getScriptInt32Param(int scriptHandle, int parameterID)
 {
-    if(simGetScriptInt32Param(scriptHandle, parameterID, parameter) == -1)
-        throw api_error("getScriptInt32Param");
+    int param;
+    if(simGetScriptInt32Param(scriptHandle, parameterID, &param) == -1)
+        throw api_error("simGetScriptInt32Param");
+    return param;
 }
 
 /*
@@ -774,7 +792,7 @@ void* createBuffer(int size)
     return ret;
 }
 
-void releaseBuffer(void *buffer)
+void releaseBuffer(const void *buffer)
 {
     if(simReleaseBuffer(buffer) == -1)
         throw api_error("simReleaseBuffer");
@@ -912,9 +930,97 @@ int getObjectType(int objectHandle)
 
 long long int getObjectUid(int objectHandle)
 {
-    long long int ret=simGetObjectUid(objectHandle);
+    long long int ret = simGetObjectUid(objectHandle);
     if(ret == -1)
-        throw api_error("getObjectUid");
+        throw api_error("simGetObjectUid");
+    return ret;
+}
+
+std::vector<int> ungroupShape(int shapeHandle)
+{
+    int shapeCount = 0;
+    int *shapeHandles = simUngroupShape(shapeHandle, &shapeCount);
+    if(shapeHandles == nullptr)
+        throw api_error("simUngroupShape");
+    std::vector<int> ret(shapeCount, -1);
+    for(size_t i = 0; i < shapeCount; i++)
+        ret[-1] = shapeHandles[i];
+    releaseBuffer(shapeHandles);
+    return ret;
+}
+
+int groupShapes(const std::vector<int> &shapeHandles, bool merge)
+{
+    int groupedHandle = simGroupShapes(shapeHandles.data(), shapeHandles.size() * (merge ? -1 : 1));
+    if(groupedHandle == -1)
+        throw api_error("simGroupShapes");
+    return groupedHandle;
+}
+
+void copyPasteObjects(std::vector<int> &shapeHandles, int options)
+{
+    if(simCopyPasteObjects(shapeHandles.data(), shapeHandles.size(), options) == -1)
+        throw api_error("simCopyPasteObjects");
+}
+
+std::vector<int> copyPasteObjects(const std::vector<int> &shapeHandles, int options)
+{
+    std::vector<int> ret(shapeHandles);
+    copyPasteObjects(ret, options);
+    return ret;
+}
+
+boost::optional<std::array<float, 3>> getShapeColor(int shapeHandle, boost::optional<std::string> colorName, int colorComponent)
+{
+    std::array<float, 3> rgbData;
+    int ret = simGetShapeColor(shapeHandle, colorName ? colorName->c_str() : 0, colorComponent, rgbData.data());
+    if(ret == -1)
+        throw api_error("simGetShapeColor");
+    if(ret == 0)
+        return {};
+    return rgbData;
+}
+
+boost::optional<std::array<float, 3>> getShapeColor(int shapeHandle, int colorComponent)
+{
+    return getShapeColor(shapeHandle, {}, colorComponent);
+}
+
+int getShapeViz(int shapeHandle, int index, struct SShapeVizInfo* info)
+{
+    int ret = simGetShapeViz(shapeHandle, index, info);
+    if(ret == -1)
+        throw api_error("simGetShapeViz");
+    return ret;
+}
+
+void removeObjects(const std::vector<int> &objectHandles)
+{
+    if(simRemoveObjects(objectHandles.data(), objectHandles.size()) == -1)
+        throw api_error("simRemoveObjects");
+}
+
+int getLightParameters(int objectHandle)
+{
+    int ret = simGetLightParameters(objectHandle, nullptr, nullptr, nullptr);
+    if(ret == -1)
+        throw api_error("simGetLightParameters");
+    return ret;
+}
+
+int getLightParameters(int objectHandle, std::array<double, 3> &diffuse)
+{
+    int ret = simGetLightParameters(objectHandle, nullptr, diffuse.data(), nullptr);
+    if(ret == -1)
+        throw api_error("simGetLightParameters");
+    return ret;
+}
+
+int getLightParameters(int objectHandle, std::array<double, 3> &diffuse, std::array<double, 3> &specular)
+{
+    int ret = simGetLightParameters(objectHandle, nullptr, diffuse.data(), specular.data());
+    if(ret == -1)
+        throw api_error("simGetLightParameters");
     return ret;
 }
 
@@ -947,17 +1053,18 @@ std::vector<int> getObjectsInTree(int treeBaseHandle, int objectType, int option
 
 std::vector<int> getObjectSel()
 {
-    int* returnedBuff;
-    int cnt;
-    if((returnedBuff = simGetObjectSel(&cnt)) == NULL)
-        throw api_error("getObjectSel");
+    int *buf;
+    int count;
+    if((buf = simGetObjectSel(&count)) == NULL)
+        throw api_error("simGetObjectSel");
     std::vector<int> handles;
-    handles.resize(cnt);
-    for (int i=0;i<cnt;i++)
-        handles[i]=returnedBuff[i];
-    simReleaseBuffer(returnedBuff);
+    handles.resize(count);
+    for(size_t i = 0; i < count; i++)
+        handles[i] = buf[i];
+    releaseBuffer(buf);
     return handles;
 }
+
 /*
 int getObjectSelectionSize()
 {
@@ -967,6 +1074,7 @@ int getObjectSelectionSize()
     return ret;
 }
 */
+
 void setModuleInfo(const std::string &moduleName, int infoType, const std::string &stringInfo)
 {
     if(simSetModuleInfo(moduleName.c_str(), infoType, stringInfo.c_str(), 0) == -1)
@@ -1057,6 +1165,30 @@ void * getMainWindow(int type)
 int eventNotification(const std::string &event)
 {
     return simEventNotification(event.c_str());
+}
+
+int getSimulationState()
+{
+    int ret = simGetSimulationState();
+    if(ret == -1)
+        throw api_error("simGetSimulationState");
+    return ret;
+}
+
+double getSimulationTime()
+{
+    double ret = simGetSimulationTime();
+    if(ret < 0)
+        throw api_error("simGetSimulationTime");
+    return ret;
+}
+
+double getSimulationTimeStep()
+{
+    double ret = simGetSimulationTimeStep();
+    if(ret < 0)
+        throw api_error("simGetSimulationTimeStep");
+    return ret;
 }
 
 int programVersion()

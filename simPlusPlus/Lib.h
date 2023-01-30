@@ -160,13 +160,15 @@ namespace sim
     void setStringParam(int parameter, char *value);
     void setStringParam(int parameter, const std::string &value);
 
-    double getObjectFloatParam(int objectHandle, int parameterID, double *parameter);
-    int getObjectInt32Param(int objectHandle, int parameterID, int *parameter);
+    std::string getObjectAlias(int objectHandle, int options);
+    double getObjectFloatParam(int objectHandle, int parameterID);
+    int getObjectInt32Param(int objectHandle, int parameterID);
     std::string getObjectStringParam(int objectHandle, int parameterID);
+    void setObjectAlias(int objectHandle, const std::string &alias, int options = 0);
     void setObjectFloatParam(int objectHandle, int parameterID, double parameter);
     void setObjectInt32Param(int objectHandle, int parameterID, int parameter);
     void setObjectStringParam(int objectHandle, int parameterID, const std::string &parameter);
-    void getScriptInt32Param(int scriptHandle,int parameterID,int* parameter);
+    int getScriptInt32Param(int scriptHandle, int parameterID);
 //    void getScriptProperty(int scriptHandle, int *scriptProperty, int *associatedObjectHandle);
 
     boost::optional<std::string> getNamedStringParam(const std::string &parameter);
@@ -179,7 +181,7 @@ namespace sim
     void setNamedInt32Param(const std::string &parameter, int value);
 
     void* createBuffer(int size);
-    void releaseBuffer(void *buffer);
+    void releaseBuffer(const void *buffer);
 
     std::string getLastError();
     void setLastError(const std::string &func, const std::string &msg);
@@ -202,10 +204,21 @@ namespace sim
     int getObjectUniqueIdentifier(int objectHandle);
     std::pair<std::array<double, 3>, std::array<double, 3>> getObjectVelocity(int objectHandle);
     int getObjects(int index, int objectType);
-    std::vector<int> getObjectsInTree(int treeBaseHandle, int objectType, int options);
+    std::vector<int> getObjectsInTree(int treeBaseHandle, int objectType, int options = 0);
     std::vector<int> getObjectSel();
     long long int getObjectUid(int objectHandle);
 //    int getObjectSelectionSize();
+    std::vector<int> ungroupShape(int shapeHandle);
+    int groupShapes(const std::vector<int> &shapeHandles, bool merge = false);
+    void copyPasteObjects(std::vector<int> &shapeHandles, int options);
+    std::vector<int> copyPasteObjects(const std::vector<int> &shapeHandles, int options);
+    boost::optional<std::array<float, 3>> getShapeColor(int shapeHandle, boost::optional<std::string> colorName, int colorComponent);
+    boost::optional<std::array<float, 3>> getShapeColor(int shapeHandle, int colorComponent);
+    int getShapeViz(int shapeHandle, int index, struct SShapeVizInfo* info);
+    void removeObjects(const std::vector<int> &objectHandles);
+    int getLightParameters(int objectHandle);
+    int getLightParameters(int objectHandle, std::array<double, 3> &diffuse);
+    int getLightParameters(int objectHandle, std::array<double, 3> &diffuse, std::array<double, 3> &specular);
 
     void setModuleInfo(const std::string &moduleName, int infoType, const std::string &stringInfo);
     void setModuleInfo(const std::string &moduleName, int infoType, int intInfo);
@@ -224,6 +237,10 @@ namespace sim
     void * getMainWindow(int type);
 
     int eventNotification(const std::string &event);
+
+    int getSimulationState();
+    double getSimulationTime();
+    double getSimulationTimeStep();
 
     int programVersion();
     std::string versionString(int v);
