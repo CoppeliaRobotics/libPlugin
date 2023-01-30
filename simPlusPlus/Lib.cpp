@@ -79,6 +79,12 @@ void callScriptFunctionEx(int scriptHandleOrType, const std::string &functionNam
         throw api_error("simCallScriptFunctionEx");
 }
 
+void executeScriptString(int scriptHandleOrType, const std::string &stringAtScriptName, int stackID)
+{
+    if(simExecuteScriptString(scriptHandleOrType, stringAtScriptName.c_str(), stackID) == -1)
+        throw api_error("simExecuteScriptString");
+}
+
 int createStack()
 {
     addStackDebugLog("simCreateStack");
@@ -1041,6 +1047,16 @@ int getModuleInfoInt(int infoType)
     int i;
     getModuleInfo(infoType, i);
     return i;
+}
+
+void * getMainWindow(int type)
+{
+    return simGetMainWindow(type);
+}
+
+int eventNotification(const std::string &event)
+{
+    return simEventNotification(event.c_str());
 }
 
 int programVersion()

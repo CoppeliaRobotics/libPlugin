@@ -100,7 +100,8 @@ namespace sim
         return registerScriptVariable(varName, std::to_string(varValue), stackID);
     }
 
-    void callScriptFunctionEx(int scriptHandleOrType, const std::string &functionNameAtScriptName, int stackId);
+    void callScriptFunctionEx(int scriptHandleOrType, const std::string &functionNameAtScriptName, int stackID);
+    void executeScriptString(int scriptHandleOrType, const std::string &stringAtScriptName, int stackID);
 
     int createStack();
     void releaseStack(int stackHandle);
@@ -219,6 +220,10 @@ namespace sim
     void getModuleInfo(int infoType, int &intInfo);
     std::string getModuleInfoStr(int infoType);
     int getModuleInfoInt(int infoType);
+
+    void * getMainWindow(int type);
+
+    int eventNotification(const std::string &event);
 
     int programVersion();
     std::string versionString(int v);
