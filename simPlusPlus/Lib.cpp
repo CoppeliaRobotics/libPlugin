@@ -97,12 +97,12 @@ void setBoolParam(int parameter, bool value)
         throw api_error("simSetBoolParameter");
 }
 
-int getBoolParam(int parameter)
+bool getBoolParam(int parameter)
 {
     int ret;
     if((ret = simGetBoolParam(parameter)) == -1)
         throw api_error("simGetBoolParam");
-    return ret;
+    return ret > 0;
 }
 
 void setInt32Param(int parameter, int value)
@@ -1766,7 +1766,28 @@ boost::optional<std::array<float, 3>> getShapeColor(int shapeHandle, int colorCo
 
 // int simCreateHeightfieldShape(int options, double shadingAngle, int xPointCount, int yPointCount, double xSize, const double *heights);
 
-// int simGetShapeMesh(int shapeHandle, double **vertices, int *verticesSize, int **indices, int *indicesSize, double **normals);
+void getShapeMesh(int shapeHandle, double **vertices, int *verticesSize, int **indices, int *indicesSize, double **normals)
+{
+    if(simGetShapeMesh(shapeHandle, vertices, verticesSize, indices, indicesSize, normals) == -1)
+        throw api_error("simGetShapeMesh");
+}
+
+void getShapeMesh(int shapeHandle, std::vector<double> vertices, std::vector<int> indices, boost::optional<std::vector<double>> normals)
+{
+    double *verticesBuf;
+    int verticesSize = 0;
+    int *indicesBuf;
+    int indicesSize = 0;
+    double *normalsBuf;
+    getShapeMesh(shapeHandle, &verticesBuf, &verticesSize, &indicesBuf, &indicesSize, normals ? &normalsBuf : nullptr);
+    vertices.assign(verticesBuf, verticesBuf + verticesSize);
+    indices.assign(indicesBuf, indicesBuf + indicesSize);
+    if(normals)
+        normals->assign(normalsBuf, normalsBuf + indicesSize * 3);
+    releaseBuffer(verticesBuf);
+    releaseBuffer(indicesBuf);
+    releaseBuffer(normalsBuf);
+}
 
 // int simCreateJoint(int jointType, int jointMode, int options, const double *sizes, const double *reservedA, const double *reservedB);
 

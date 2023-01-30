@@ -115,7 +115,7 @@ namespace sim
 
     void setBoolParam(int parameter, bool value);
 
-    int getBoolParam(int parameter);
+    bool getBoolParam(int parameter);
 
     void setInt32Param(int parameter, int value);
 
@@ -822,7 +822,8 @@ namespace sim
 
     // createHeightfieldShape
 
-    // getShapeMesh
+    void getShapeMesh(int shapeHandle, double **vertices, int *verticesSize, int **indices, int *indicesSize, double **normals);
+    void getShapeMesh(int shapeHandle, std::vector<double> vertices, std::vector<int> indices, boost::optional<std::vector<double>> normals = {});
 
     // createJoint
 
