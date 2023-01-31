@@ -523,6 +523,8 @@ namespace sim
 
     int moduleEntry(int handle, const char *label, int state);
     int moduleEntry(int handle, const std::string &label, int state);
+    int moduleEntry(const std::string &label, int state);
+    int moduleEntry(int handle, int state);
 
     bool checkExecAuthorization(const char *what, const char *args);
     bool checkExecAuthorization(const std::string &what, const std::string &args);

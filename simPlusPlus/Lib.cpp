@@ -1477,6 +1477,19 @@ int moduleEntry(int handle, const std::string &label, int state)
     return moduleEntry(handle, label.c_str(), state);
 }
 
+int moduleEntry(const std::string &label, int state)
+{
+    return moduleEntry(-1, label, state);
+}
+
+int moduleEntry(int handle, int state)
+{
+    int retHandle = simModuleEntry(handle, nullptr, state);
+    if(retHandle == -1)
+        throw api_error("simModuleEntry");
+    return retHandle;
+}
+
 bool checkExecAuthorization(const char *what, const char *args)
 {
     int ret = simCheckExecAuthorization(what, args);
