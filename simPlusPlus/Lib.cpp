@@ -868,9 +868,31 @@ int setScriptStringParam(int scriptHandle, int parameterID, const std::string &p
 
 // int simSaveImage(const unsigned char *image, const int *resolution, int options, const char *filename, int quality, void *reserved);
 
-// unsigned char *simLoadImage(int *resolution, int options, const char *filename, void *reserved);
+unsigned char * loadImage(int *resolution, int options, const char *filename, void *reserved)
+{
+    unsigned char *buf = simLoadImage(resolution, options, filename, reserved);
+    if(!buf)
+        throw api_error("simLoadImage");
+    return buf;
+}
 
-// unsigned char *simGetScaledImage(const unsigned char *imageIn, const int *resolutionIn, int *resolutionOut, int options, void *reserved);
+unsigned char * loadImage(int *resolution, int options, const std::string &filename, void *reserved)
+{
+    return loadImage(resolution, options, filename.c_str(), reserved);
+}
+
+unsigned char * getScaledImage(const unsigned char *imageIn, const int *resolutionIn, int *resolutionOut, int options)
+{
+    unsigned char *buf = simGetScaledImage(imageIn, resolutionIn, resolutionOut, options, nullptr);
+    if(!buf)
+        throw api_error("simGetScaledImage");
+    return buf;
+}
+
+unsigned char * getScaledImage(const unsigned char *imageIn, std::array<int, 2> resolutionIn, int *resolutionOut, int options)
+{
+    return getScaledImage(imageIn, resolutionIn.data(), resolutionOut, options);
+}
 
 void callScriptFunctionEx(int scriptHandleOrType, const std::string &functionNameAtScriptName, int stackId)
 {
@@ -1767,7 +1789,16 @@ void setEngineFloatParam(int paramId, int objectHandle, const void *object, doub
         throw api_error("simSetEngineFloatParam");
 }
 
-// int simTransformImage(unsigned char *image, const int *resolution, int options, const double *floatParams, const int *intParams, void *reserved);
+void transformImage(unsigned char *image, const int *resolution, int options)
+{
+    if(simTransformImage(image, resolution, options, nullptr, nullptr, nullptr) == -1)
+        throw api_error("simTransformImage");
+}
+
+void transformImage(unsigned char *image, std::array<int, 2> resolution, int options)
+{
+    transformImage(image, resolution.data(), options);
+}
 
 // const double *simGetOctreeVoxels(int octreeHandle, int *ptCnt, void *reserved);
 

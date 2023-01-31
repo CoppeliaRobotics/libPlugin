@@ -392,9 +392,11 @@ namespace sim
 
     // saveImage
 
-    // loadImage
+    unsigned char * loadImage(int *resolution, int options, const char *filename, void *reserved);
+    unsigned char * loadImage(int *resolution, int options, const std::string &filename, void *reserved);
 
-    // getScaledImage
+    unsigned char * getScaledImage(const unsigned char *imageIn, const int *resolutionIn, int *resolutionOut, int options);
+    unsigned char * getScaledImage(const unsigned char *imageIn, std::array<int, 2> resolutionIn, int *resolutionOut, int options);
 
     void callScriptFunctionEx(int scriptHandleOrType, const std::string &functionNameAtScriptName, int stackID);
 
@@ -673,7 +675,8 @@ namespace sim
 
     void setEngineFloatParam(int paramId, int objectHandle, const void *object, double val);
 
-    // transformImage
+    void transformImage(unsigned char *image, const int *resolution, int options);
+    void transformImage(unsigned char *image, std::array<int, 2> resolution, int options);
 
     // getOctreeVoxels
 
