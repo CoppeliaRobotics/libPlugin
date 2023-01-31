@@ -381,11 +381,12 @@ namespace sim
 
     int getScriptInt32Param(int scriptHandle, int parameterID);
 
-    // setScriptInt32Param
+    int setScriptInt32Param(int scriptHandle, int parameterID, int parameter);
 
-    // getScriptStringParam
+    std::string getScriptStringParam(int scriptHandle, int parameterID);
+    boost::optional<std::string> getScriptStringParamOpt(int scriptHandle, int parameterID);
 
-    // setScriptStringParam
+    int setScriptStringParam(int scriptHandle, int parameterID, const std::string &parameter);
 
     // reorientShapeBoundingBox
 
@@ -514,13 +515,15 @@ namespace sim
         addLog(pluginNameAndVersion, verbosity, util::sprintf(fmt, std::forward<Arguments>(args)...));
     }
 
-    // isDynamicallyEnabled
+    bool isDynamicallyEnabled(int objectHandle);
 
-    // initScript
+    bool initScript(int scriptHandle);
 
-    // moduleEntry
+    int moduleEntry(int handle, const char *label, int state);
+    int moduleEntry(int handle, const std::string &label, int state);
 
-    // checkExecAuthorization
+    bool checkExecAuthorization(const char *what, const char *args);
+    bool checkExecAuthorization(const std::string &what, const std::string &args);
 
     void pushFloatOntoStack(int stackHandle, float value);
 

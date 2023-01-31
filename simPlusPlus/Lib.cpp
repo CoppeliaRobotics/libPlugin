@@ -827,11 +827,42 @@ int getScriptInt32Param(int scriptHandle, int parameterID)
     return param;
 }
 
-// int simSetScriptInt32Param(int scriptHandle, int parameterID, int parameter);
+int setScriptInt32Param(int scriptHandle, int parameterID, int parameter)
+{
+    int ret = simSetScriptInt32Param(scriptHandle, parameterID, parameter);
+    if(ret == -1)
+        throw api_error("simSetScriptInt32Param");
+    return ret;
+}
 
-// char *simGetScriptStringParam(int scriptHandle, int parameterID, int *parameterLength);
+std::string getScriptStringParam(int scriptHandle, int parameterID)
+{
+    int parameterLength = 0;
+    char *buf = simGetScriptStringParam(scriptHandle, parameterID, &parameterLength);
+    if(!buf)
+        throw api_error("simGetScriptStringParam");
+    std::string s(buf, parameterLength);
+    releaseBuffer(buf);
+    return s;
+}
 
-// int simSetScriptStringParam(int scriptHandle, int parameterID, const char *parameter, int parameterLength);
+boost::optional<std::string> getScriptStringParamOpt(int scriptHandle, int parameterID)
+{
+    int parameterLength = 0;
+    char *buf = simGetScriptStringParam(scriptHandle, parameterID, &parameterLength);
+    if(!buf) return {};
+    std::string s(buf, parameterLength);
+    releaseBuffer(buf);
+    return s;
+}
+
+int setScriptStringParam(int scriptHandle, int parameterID, const std::string &parameter)
+{
+    int ret = simSetScriptStringParam(scriptHandle, parameterID, parameter.c_str(), parameter.length());
+    if(ret == -1)
+        throw api_error("simSetScriptStringParam");
+    return ret;
+}
 
 // int simReorientShapeBoundingBox(int shapeHandle, int relativeToHandle, int reservedSetToZero);
 
@@ -1395,13 +1426,47 @@ void addLog(boost::optional<std::string> pluginName, int verbosityLevel, boost::
         throw api_error("simAddLog");
 }
 
-// int simIsDynamicallyEnabled(int objectHandle);
+bool isDynamicallyEnabled(int objectHandle)
+{
+    int ret = simIsDynamicallyEnabled(objectHandle);
+    if(ret == -1)
+        throw api_error("simIsDynamicallyEnabled");
+    return ret > 0;
+}
 
-// int simInitScript(int scriptHandle);
+bool initScript(int scriptHandle)
+{
+    int ret = simInitScript(scriptHandle);
+    if(ret == -1)
+        throw api_error("simInitScript");
+    return ret > 0;
+}
 
-// int simModuleEntry(int handle, const char *label, int state);
+int moduleEntry(int handle, const char *label, int state)
+{
+    int retHandle = simModuleEntry(handle, label, state);
+    if(retHandle == -1)
+        throw api_error("simModuleEntry");
+    return retHandle;
+}
 
-// int simCheckExecAuthorization(const char *what, const char *args);
+int moduleEntry(int handle, const std::string &label, int state)
+{
+    return moduleEntry(handle, label.c_str(), state);
+}
+
+bool checkExecAuthorization(const char *what, const char *args)
+{
+    int ret = simCheckExecAuthorization(what, args);
+    if(ret == -1)
+        throw api_error("simCheckExecAuthorization");
+    return ret > 0;
+}
+
+bool checkExecAuthorization(const std::string &what, const std::string &args)
+{
+    return checkExecAuthorization(what.c_str(), args.c_str());
+}
 
 void pushFloatOntoStack(int stackHandle, float value)
 {
