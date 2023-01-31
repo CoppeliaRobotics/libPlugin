@@ -87,9 +87,29 @@ std::string getLastError()
     return s;
 }
 
-// int simLoadModule(const char *filenameAndPath, const char *pluginName);
+int loadModule(const char *filenameAndPath, const char *pluginName)
+{
+    int handle = simLoadModule(filenameAndPath, pluginName);
+    if(handle >= 0)
+        return handle;
+    if(handle == -1)
+        throw api_error("simLoadModule", "plugin could not initialize");
+    if(handle == -2)
+        throw api_error("simLoadModule", "plugin is missing entry points");
+    if(handle == -3)
+        throw api_error("simLoadModule", "plugin could not be loaded");
+    throw api_error("simLoadModule", "unknown error");
+}
 
-// int simUnloadModule(int pluginhandle);
+int loadModule(const std::string &filenameAndPath, const std::string &pluginName)
+{
+    return loadModule(filenameAndPath.c_str(), pluginName.c_str());
+}
+
+int unloadModule(int pluginhandle)
+{
+    return simUnloadModule(pluginhandle);
+}
 
 void setBoolParam(int parameter, bool value)
 {
@@ -209,7 +229,30 @@ boost::optional<int> getNamedInt32Param(const std::string &parameter)
     return std::stoi(*v);
 }
 
-// int simGetObject(const char *objectPath, int index, int proxy, int options);
+int getObject(const char *objectPath, int index, int proxy, int options)
+{
+    int handle = simGetObject(const char *objectPath, int index, int proxy, int options);
+    if(handle == -1)
+        throw api_error("simGetObject");
+    return handle;
+}
+
+int getObject(const std::string &objectPath, int index, int proxy, int options)
+{
+    return getObject(objectPath.c_str(), index, proxy, options);
+}
+
+int getObject(const std::string &objectPath, int index, int proxy, bool noError)
+{
+    int options = 0;
+    if(noError) options |= 1;
+    return getObject(objectPath, index, proxy, options);
+}
+
+int getObject(const std::string &objectPath, int index, int proxy)
+{
+    return getObject(objectPath, index, proxy, 0);
+}
 
 long long int getObjectUid(int objectHandle)
 {
@@ -219,7 +262,20 @@ long long int getObjectUid(int objectHandle)
     return ret;
 }
 
-// int simGetObjectFromUid(long long int uid, int options);
+int getObjectFromUid(long long int uid, int options)
+{
+    int handle = simGetObjectFromUid(uid, options);
+    if(handle == -1)
+        throw api_error("simGetObjectFromUid");
+    return handle;
+}
+
+int getObjectFromUid(long long int uid, bool noError)
+{
+    int options = 0;
+    if(noError) options |= 1;
+    return getObjectFromUid(uid, options);
+}
 
 int getScriptHandleEx(int scriptType, int objHandle, boost::optional<std::string> scriptName)
 {
@@ -392,7 +448,16 @@ std::vector<int> getObjectSel()
     return handles;
 }
 
-// int simSetObjectSel(const int *handles, int cnt);
+void setObjectSel(const int *handles, int cnt)
+{
+    if(simSetObjectSel(handles, cnt) == -1)
+        throw api_error("simSetObjectSel");
+}
+
+void setObjectSel(const std::vector<int> &handles)
+{
+    setObjectSel(handles.data(), handles.size());
+}
 
 // int simAssociateScriptWithObject(int scriptHandle, int associatedObjectHandle);
 

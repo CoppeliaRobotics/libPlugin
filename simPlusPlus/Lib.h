@@ -109,9 +109,10 @@ namespace sim
 
     std::string getLastError();
 
-    // loadModule
+    int loadModule(const char *filenameAndPath, const char *pluginName);
+    int loadModule(const std::string &filenameAndPath, const std::string &pluginName);
 
-    // unloadModule
+    int unloadModule(int pluginhandle);
 
     void setBoolParam(int parameter, bool value);
 
@@ -138,11 +139,15 @@ namespace sim
     boost::optional<double> getNamedFloatParam(const std::string &parameter);
     boost::optional<int> getNamedInt32Param(const std::string &parameter);
 
-    // getObject
+    int getObject(const char *objectPath, int index, int proxy, int options);
+    int getObject(const std::string &objectPath, int index, int proxy, int options);
+    int getObject(const std::string &objectPath, int index, int proxy, bool noError);
+    int getObject(const std::string &objectPath, int index = -1, int proxy = -1);
 
     long long int getObjectUid(int objectHandle);
 
-    // getObjectFromUid
+    int getObjectFromUid(long long int uid, int options);
+    int getObjectFromUid(long long int uid, bool noError);
 
     int getScriptHandleEx(int scriptType, int objHandle, boost::optional<std::string> scriptName = {});
 
