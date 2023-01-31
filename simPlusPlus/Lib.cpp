@@ -232,7 +232,13 @@ void removeObjects(const std::vector<int> &objectHandles)
         throw api_error("simRemoveObjects");
 }
 
-// int simRemoveModel(int objectHandle);
+int removeModel(int objectHandle)
+{
+    int n = simRemoveModel(objectHandle);
+    if(n == -1)
+        throw api_error("simRemoveModel");
+    return n;
+}
 
 std::string getObjectAlias(int objectHandle, int options)
 {
@@ -266,6 +272,17 @@ int getObjectChild(int objectHandle, int index)
     return ret;
 }
 
+std::vector<int> getObjectChildren(int objectHandle)
+{
+    std::vector<int> ret;
+    for(int index = 0, childHandle; ; index++)
+    {
+        if((childHandle = simGetObjectChild(objectHandle, index)) == -1) break;
+        ret.push_back(childHandle);
+    }
+    return ret;
+}
+
 void setObjectParent(int objectHandle, int parentObjectHandle, bool keepInPlace)
 {
     if(simSetObjectParent(objectHandle, parentObjectHandle, keepInPlace) == -1)
@@ -280,7 +297,13 @@ int getObjectType(int objectHandle)
     return ret;
 }
 
-// int simGetJointType(int objectHandle);
+int getJointType(int objectHandle)
+{
+    int type = simGetJointType(objectHandle);
+    if(type == -1)
+        throw api_error("simGetJointType");
+    return type;
+}
 
 // int simReservedCommand(int v, int w);
 
@@ -292,17 +315,68 @@ int getSimulationState()
     return ret;
 }
 
-// int simLoadScene(const char *filename);
+void loadScene(const char *filename)
+{
+    if(simLoadScene(filename) == -1)
+        throw api_error("simLoadScene");
+}
 
-// int simCloseScene();
+void loadScene(const std::string &filename)
+{
+    return loadScene(filename.c_str());
+}
 
-// int simSaveScene(const char *filename);
+void closeScene()
+{
+    if(simCloseScene() == -1)
+        throw api_error("simCloseScene");
+}
 
-// int simLoadModel(const char *filename);
+void saveScene(const char *filename)
+{
+    if(simSaveScene(filename) == -1)
+        throw api_error("simSaveScene");
+}
 
-// int simSaveModel(int baseOfModelHandle, const char *filename);
+void saveScene(const std::string &filename)
+{
+    return saveScene(filename.c_str());
+}
 
-// int simDoesFileExist(const char *filename);
+void loadModel(const char *filename)
+{
+    if(simLoadModel(filename) == -1)
+        throw api_error("simLoadModel");
+}
+
+void loadModel(const std::string &filename)
+{
+    return loadModel(filename.c_str());
+}
+
+void saveModel(int baseOfModelHandle, const char *filename)
+{
+    if(simSaveModel(baseOfModelHandle, filename) == -1)
+        throw api_error("simSaveModel");
+}
+
+void saveModel(int baseOfModelHandle, const std::string &filename)
+{
+    return saveModel(baseOfModelHandle, filename.c_str());
+}
+
+bool doesFileExist(const char *filename)
+{
+    int ret = simDoesFileExist(filename);
+    if(ret == -1)
+        throw api_error("simDoesFileExist");
+    return ret > 0;
+}
+
+bool doesFileExist(const std::string &filename)
+{
+    return doesFileExist(filename.c_str());
+}
 
 std::vector<int> getObjectSel()
 {
@@ -464,9 +538,19 @@ int announceSceneContentChange()
 
 // char *simGetSignalName(int signalIndex, int signalType);
 
-// int simSetObjectProperty(int objectHandle, int prop);
+void setObjectProperty(int objectHandle, int prop)
+{
+    if(simSetObjectProperty(objectHandle, prop) == -1)
+        throw api_error("simSetObjectProperty");
+}
 
-// int simGetObjectProperty(int objectHandle);
+int getObjectProperty(int objectHandle)
+{
+    int ret = simGetObjectProperty(objectHandle);
+    if(ret == -1)
+        throw api_error("simGetObjectProperty");
+    return ret;
+}
 
 // int simSetObjectSpecialProperty(int objectHandle, int prop);
 
@@ -476,19 +560,50 @@ int announceSceneContentChange()
 
 // int simGetExplicitHandling(int objectHandle);
 
-// int simGetLinkDummy(int dummyHandle);
+int getLinkDummy(int dummyHandle)
+{
+    return simGetLinkDummy(dummyHandle);
+}
 
-// int simSetLinkDummy(int dummyHandle, int linkedDummyHandle);
+void setLinkDummy(int dummyHandle, int linkedDummyHandle)
+{
+    if(simSetLinkDummy(dummyHandle, linkedDummyHandle) == -1)
+        throw api_error("simSetLinkDummy");
+}
 
-// int simSetModelProperty(int objectHandle, int modelProperty);
+void setModelProperty(int objectHandle, int modelProperty)
+{
+    if(simSetModelProperty(objectHandle, modelProperty) == -1)
+        throw api_error("simSetModelProperty");
+}
 
-// int simGetModelProperty(int objectHandle);
+int getModelProperty(int objectHandle)
+{
+    int ret = simGetModelProperty(objectHandle);
+    if(ret == -1)
+        throw api_error("simGetModelProperty");
+    return ret;
+}
 
-// int simResetDynamicObject(int objectHandle);
+void resetDynamicObject(int objectHandle)
+{
+    if(simResetDynamicObject(objectHandle) == -1)
+        throw api_error("simResetDynamicObject");
+}
 
-// int simSetJointMode(int jointHandle, int jointMode, int options);
+void setJointMode(int jointHandle, int jointMode)
+{
+    if(simSetJointMode(jointHandle, jointMode, 0) == -1)
+        throw api_error("simSetJointMode");
+}
 
-// int simGetJointMode(int jointHandle, int *options);
+int getJointMode(int jointHandle)
+{
+    int ret = simGetJointMode(jointHandle, nullptr);
+    if(ret == -1)
+        throw api_error("simGetJointMode");
+    return ret;
+}
 
 // int simSerialOpen(const char *portString, int baudRate, void *reserved1, void *reserved2);
 
@@ -596,19 +711,71 @@ std::vector<int> ungroupShape(int shapeHandle)
     return ret;
 }
 
-// void simQuitSimulator(bool ignoredArgument);
+void quitSimulator()
+{
+    simQuitSimulator(true);
+}
 
-// int simSetShapeMaterial(int shapeHandle, int materialIdOrShapeHandle);
+void setShapeMaterial(int shapeHandle, int materialIdOrShapeHandle)
+{
+    if(simSetShapeMaterial(shapeHandle, materialIdOrShapeHandle) == -1)
+        throw api_error("simSetShapeMaterial");
+}
 
 // int simGetTextureId(const char *textureName, int *resolution);
 
 // unsigned char *simReadTexture(int textureId, int options, int posX, int posY, int sizeX, int sizeY);
 
-// int simWriteCustomDataBlock(int objectHandle, const char *tagName, const char *data, int dataSize);
+void writeCustomDataBlock(int objectHandle, const char *tagName, const char *data, int dataSize)
+{
+    if(simWriteCustomDataBlock(objectHandle, tagName, data, dataSize) == -1)
+        throw api_error("simWriteCustomDataBlock");
+}
 
-// char *simReadCustomDataBlock(int objectHandle, const char *tagName, int *dataSize);
+void writeCustomDataBlock(int objectHandle, const std::string &tagName, const std::string &data)
+{
+    return writeCustomDataBlock(objectHandle, tagName.c_str(), data.c_str(), data.length());
+}
 
-// char *simReadCustomDataBlockTags(int objectHandle, int *tagCount);
+char * readCustomDataBlock(int objectHandle, const char *tagName, int *dataSize)
+{
+    return simReadCustomDataBlock(objectHandle, tagName, dataSize);
+}
+
+boost::optional<std::string> readCustomDataBlock(int objectHandle, const std::string &tagName)
+{
+    int size = 0;
+    char *buf = readCustomDataBlock(objectHandle, tagName.c_str(), &size);
+    if(!buf) return {};
+    std::string s(buf, size);
+    releaseBuffer(buf);
+    return s;
+}
+
+char * readCustomDataBlockTags(int objectHandle, int *tagCount)
+{
+    return simReadCustomDataBlockTags(objectHandle, tagCount);
+}
+
+std::vector<std::string> readCustomDataBlockTags(int objectHandle)
+{
+    std::vector<std::string> ret;
+    int count = 0;
+    char *buf = readCustomDataBlockTags(objectHandle, &count);
+    if(buf)
+    {
+        int len = 0;
+        char *tmp = buf;
+        for(int i = 0; i < count; i++)
+        {
+            while(*tmp) {tmp++; len++;}
+        }
+        std::string s(buf, len);
+        boost::split(ret, s, boost::is_any_of("\0"));
+        releaseBuffer(buf);
+    }
+    return ret;
+}
 
 int getObjects(int index, int objectType)
 {
@@ -1042,13 +1209,35 @@ void debugStack(int stackHandle, int index)
         throw api_error("simDebugStack");
 }
 
-// int simGetEngineInt32Param(int paramId, int objectHandle, const void *object, bool *ok);
+int getEngineInt32Param(int paramId, int objectHandle, const void *object)
+{
+    bool ok = false;
+    int ret = simGetEngineInt32Param(paramId, objectHandle, object, &ok);
+    if(!ok)
+        throw api_error("simGetEngineInt32Param");
+    return ret;
+}
 
-// bool simGetEngineBoolParam(int paramId, int objectHandle, const void *object, bool *ok);
+bool getEngineBoolParam(int paramId, int objectHandle, const void *object)
+{
+    bool ok = false;
+    bool ret = simGetEngineBoolParam(paramId, objectHandle, object, &ok);
+    if(!ok)
+        throw api_error("simGetEngineBoolParam");
+    return ret;
+}
 
-// int simSetEngineInt32Param(int paramId, int objectHandle, const void *object, int val);
+void setEngineInt32Param(int paramId, int objectHandle, const void *object, int val)
+{
+    if(simSetEngineInt32Param(paramId, objectHandle, object, val) != 1)
+        throw api_error("simSetEngineInt32Param");
+}
 
-// int simSetEngineBoolParam(int paramId, int objectHandle, const void *object, bool val);
+void setEngineBoolParam(int paramId, int objectHandle, const void *object, bool val)
+{
+    if(simSetEngineBoolParam(paramId, objectHandle, object, val) != 1)
+        throw api_error("simSetEngineBoolParam");
+}
 
 // int simInsertObjectIntoOctree(int octreeHandle, int objectHandle, int options, const unsigned char *color, unsigned int tag, void *reserved);
 
@@ -1498,9 +1687,20 @@ void setObjectFloatParam(int objectHandle, int parameterID, double parameter)
 
 // int simSetObjectFloatArrayParam(int objectHandle, int parameterID, const double *params, int size);
 
-// double simGetEngineFloatParam(int paramId, int objectHandle, const void *object, bool *ok);
+double getEngineFloatParam(int paramId, int objectHandle, const void *object)
+{
+    bool ok = false;
+    double ret = simGetEngineFloatParam(paramId, objectHandle, object, &ok);
+    if(!ok)
+        throw api_error("simGetEngineFloatParam");
+    return ret;
+}
 
-// int simSetEngineFloatParam(int paramId, int objectHandle, const void *object, double val);
+void setEngineFloatParam(int paramId, int objectHandle, const void *object, double val)
+{
+    if(simSetEngineFloatParam(paramId, objectHandle, object, val) != 1)
+        throw api_error("simSetEngineFloatParam");
+}
 
 // int simTransformImage(unsigned char *image, const int *resolution, int options, const double *floatParams, const int *intParams, void *reserved);
 
@@ -1520,50 +1720,100 @@ std::vector<double> getPointCloudPoints(int pointCloudHandle)
     return ret;
 }
 
+void getObjectMatrix(int objectHandle, int relativeToObjectHandle, double *matrix)
+{
+    if(simGetObjectMatrix(objectHandle, relativeToObjectHandle, matrix) == -1)
+        throw api_error("simGetObjectMatrix");
+}
+
 std::array<double, 12> getObjectMatrix(int objectHandle, int relativeToObjectHandle)
 {
     std::array<double, 12> ret;
-    if(simGetObjectMatrix(objectHandle, relativeToObjectHandle, ret.data()) == -1)
-        throw api_error("simGetObjectMatrix");
+    getObjectMatrix(objectHandle, relativeToObjectHandle, ret.data());
     return ret;
+}
+
+void setObjectMatrix(int objectHandle, int relativeToObjectHandle, const double *matrix)
+{
+    if(simSetObjectMatrix(objectHandle, relativeToObjectHandle, matrix) == -1)
+        throw api_error("simSetObjectMatrix");
 }
 
 void setObjectMatrix(int objectHandle, int relativeToObjectHandle, const std::array<double, 12> &matrix)
 {
-    if(simSetObjectMatrix(objectHandle, relativeToObjectHandle, matrix.data()) == -1)
-        throw api_error("simSetObjectMatrix");
+    setObjectMatrix(objectHandle, relativeToObjectHandle, matrix.data());
 }
 
-// int simGetObjectPose(int objectHandle, int relativeToObjectHandle, double *pose);
+void getObjectPose(int objectHandle, int relativeToObjectHandle, double *pose)
+{
+    if(simGetObjectPose(objectHandle, relativeToObjectHandle, pose) == -1)
+        throw api_error("simGetObjectPose");
+}
 
-// int simSetObjectPose(int objectHandle, int relativeToObjectHandle, const double *pose);
+std::array<double, 7> getObjectPose(int objectHandle, int relativeToObjectHandle)
+{
+    std::array<double, 7> ret;
+    getObjectPose(objectHandle, relativeToObjectHandle, ret.data());
+    return ret;
+}
+
+void setObjectPose(int objectHandle, int relativeToObjectHandle, const double *pose)
+{
+    if(simSetObjectPose(objectHandle, relativeToObjectHandle, pose) == -1)
+        throw api_error("simSetObjectPose");
+}
+
+void setObjectPose(int objectHandle, int relativeToObjectHandle, std::array<double, 7> pose)
+{
+    setObjectPose(objectHandle, relativeToObjectHandle, pose.data());
+}
+
+void getObjectPosition(int objectHandle, int relativeToObjectHandle, double *position)
+{
+    if(simGetObjectPosition(objectHandle, relativeToObjectHandle, position) == -1)
+        throw api_error("simGetObjectPosition");
+}
 
 std::array<double, 3> getObjectPosition(int objectHandle, int relativeToObjectHandle)
 {
     std::array<double, 3> ret;
-    if(simGetObjectPosition(objectHandle, relativeToObjectHandle, ret.data()) == -1)
-        throw api_error("simGetObjectPosition");
+    getObjectPosition(objectHandle, relativeToObjectHandle, ret.data());
     return ret;
+}
+
+void setObjectPosition(int objectHandle, int relativeToObjectHandle, const double *position)
+{
+    if(simSetObjectPosition(objectHandle, relativeToObjectHandle, position) == -1)
+        throw api_error("simSetObjectPosition");
 }
 
 void setObjectPosition(int objectHandle, int relativeToObjectHandle, const std::array<double, 3> &position)
 {
-    if(simSetObjectPosition(objectHandle, relativeToObjectHandle, position.data()) == -1)
-        throw api_error("simSetObjectPosition");
+    setObjectPosition(objectHandle, relativeToObjectHandle, position.data());
+}
+
+void getObjectOrientation(int objectHandle, int relativeToObjectHandle, double *eulerAngles)
+{
+    if(simGetObjectOrientation(objectHandle, relativeToObjectHandle, eulerAngles) == -1)
+        throw api_error("simGetObjectOrientation");
 }
 
 std::array<double, 3> getObjectOrientation(int objectHandle, int relativeToObjectHandle)
 {
     std::array<double, 3> ret;
-    if(simGetObjectOrientation(objectHandle, relativeToObjectHandle, ret.data()) == -1)
-        throw api_error("simGetObjectOrientation");
+    getObjectOrientation(objectHandle, relativeToObjectHandle, ret.data());
     return ret;
+}
+
+void setObjectOrientation(int objectHandle, int relativeToObjectHandle, const double *eulerAngles)
+{
+    if(simSetObjectOrientation(objectHandle, relativeToObjectHandle, eulerAngles) == -1)
+        throw api_error("simSetObjectOrientation");
 }
 
 void setObjectOrientation(int objectHandle, int relativeToObjectHandle, const std::array<double, 3> &eulerAngles)
 {
-    if(simSetObjectOrientation(objectHandle, relativeToObjectHandle, eulerAngles.data()) == -1)
-        throw api_error("simSetObjectOrientation");
+    setObjectOrientation(objectHandle, relativeToObjectHandle, eulerAngles.data());
 }
 
 double getJointPosition(int objectHandle)
@@ -1580,21 +1830,81 @@ void setJointPosition(int objectHandle, double position)
         throw api_error("simGetJointPosition");
 }
 
-// int simSetJointTargetPosition(int objectHandle, double targetPosition);
+void setJointTargetPosition(int objectHandle, double targetPosition)
+{
+    if(simSetJointTargetPosition(objectHandle, targetPosition) == -1)
+        throw api_error("simSetJointTargetPosition");
+}
 
-// int simGetJointTargetPosition(int objectHandle, double *targetPosition);
+double getJointTargetPosition(int objectHandle)
+{
+    double targetPosition;
+    if(simGetJointTargetPosition(objectHandle, &targetPosition) == -1)
+        throw api_error("simGetJointTargetPosition");
+    return targetPosition;
+}
 
-// int simGetJointTargetForce(int jointHandle, double *forceOrTorque);
+double getJointTargetForce(int jointHandle)
+{
+    double forceOrTorque;
+    if(simGetJointTargetForce(jointHandle, &forceOrTorque) == -1)
+        throw api_error("simGetJointTargetForce");
+    return forceOrTorque;
+}
 
-// int simSetJointTargetForce(int objectHandle, double forceOrTorque, bool signedValue);
+void setJointTargetForce(int objectHandle, double forceOrTorque, bool signedValue)
+{
+    if(simSetJointTargetForce(objectHandle, forceOrTorque, signedValue) == -1)
+        throw api_error("simSetJointTargetForce");
+}
 
-// int simGetObjectChildPose(int objectHandle, double *pose);
+void getObjectChildPose(int objectHandle, double *pose)
+{
+    if(simGetObjectChildPose(objectHandle, pose) == -1)
+        throw api_error("simGetObjectChildPose");
+}
 
-// int simSetObjectChildPose(int objectHandle, const double *pose);
+std::array<double, 7> getObjectChildPose(int objectHandle)
+{
+    std::array<double, 7> pose;
+    getObjectChildPose(objectHandle, pose.data());
+    return pose;
+}
 
-// int simGetJointInterval(int objectHandle, bool *cyclic, double *interval);
+void setObjectChildPose(int objectHandle, const double *pose)
+{
+    if(simSetObjectChildPose(objectHandle, pose) == -1)
+        throw api_error("simSetObjectChildPose");
+}
 
-// int simSetJointInterval(int objectHandle, bool cyclic, const double *interval);
+void setObjectChildPose(int objectHandle, std::array<double, 7> pose)
+{
+    setObjectChildPose(objectHandle, pose.data());
+}
+
+void getJointInterval(int objectHandle, bool *cyclic, double *interval)
+{
+    if(simGetJointInterval(objectHandle, cyclic, interval) == -1)
+        throw api_error("simGetJointInterval");
+}
+
+std::array<double, 2> getJointInterval(int objectHandle, bool *cyclic)
+{
+    std::array<double, 2> interval;
+    getJointInterval(objectHandle, cyclic, interval.data());
+    return interval;
+}
+
+void setJointInterval(int objectHandle, bool cyclic, const double *interval)
+{
+    if(simSetJointInterval(objectHandle, cyclic, interval) == -1)
+        throw api_error("simSetJointInterval");
+}
+
+void setJointInterval(int objectHandle, bool cyclic, std::array<double, 2> interval)
+{
+    setJointInterval(objectHandle, cyclic, interval.data());
+}
 
 // int simBuildIdentityMatrix(double *matrix);
 
@@ -1606,21 +1916,69 @@ void setJointPosition(int objectHandle, double position)
 
 // int simInvertMatrix(double *matrix);
 
-// int simMultiplyMatrices(const double *matrixIn1, const double *matrixIn2, double *matrixOut);
+std::array<double, 12> multiplyMatrices(std::array<double, 12> matrixIn1, std::array<double, 12> matrixIn2)
+{
+    std::array<double, 12> ret;
+    if(simMultiplyMatrices(matrixIn1.data(), matrixIn2.data(), ret.data()) == -1)
+        throw api_error("simMultiplyMatrices");
+    return ret;
+}
 
-// int simMultiplyPoses(const double *poseIn1, const double *poseIn2, double *poseOut);
+std::array<double, 7> multiplyPoses(std::array<double, 7> poseIn1, std::array<double, 7> poseIn2)
+{
+    std::array<double, 7> ret;
+    if(simMultiplyPoses(poseIn1.data(), poseIn2.data(), ret.data()) == -1)
+        throw api_error("simMultiplyPoses");
+    return ret;
+}
 
-// int simInvertPose(double *pose);
+std::array<double, 7> invertPose(std::array<double, 7> pose)
+{
+    std::array<double, 7> ret(pose);
+    if(simInvertPose(ret.data()) == -1)
+        throw api_error("simInvertPose");
+    return ret;
+}
 
-// int simInterpolatePoses(const double *poseIn1, const double *poseIn2, double interpolFactor, double *poseOut);
+std::array<double, 7> interpolatePoses(std::array<double, 7> poseIn1, std::array<double, 7> poseIn2, double interpolFactor)
+{
+    std::array<double, 7> ret;
+    if(simInterpolatePoses(poseIn1.data(), poseIn2.data(), interpolFactor, ret.data()) == -1)
+        throw api_error("simInterpolatePoses");
+    return ret;
+}
 
-// int simPoseToMatrix(const double *poseIn, double *matrixOut);
+std::array<double, 12> poseToMatrix(std::array<double, 7> poseIn)
+{
+    std::array<double, 12> ret;
+    if(simPoseToMatrix(poseIn.data(), ret.data()) == -1)
+        throw api_error("simPoseToMatrix");
+    return ret;
+}
 
-// int simMatrixToPose(const double *matrixIn, double *poseOut);
+std::array<double, 7> matrixToPose(std::array<double, 12> matrixIn)
+{
+    std::array<double, 7> ret;
+    if(simMatrixToPose(matrixIn.data(), ret.data()) == -1)
+        throw api_error("simMatrixToPose");
+    return ret;
+}
 
-// int simInterpolateMatrices(const double *matrixIn1, const double *matrixIn2, double interpolFactor, double *matrixOut);
+std::array<double, 12> interpolateMatrices(std::array<double, 12> matrixIn1, std::array<double, 12> matrixIn2, double interpolFactor)
+{
+    std::array<double, 12> ret;
+    if(simInterpolateMatrices(matrixIn1.data(), matrixIn2.data(), interpolFactor, ret.data()) == -1)
+        throw api_error("simInterpolateMatrices");
+    return ret;
+}
 
-// int simTransformVector(const double *matrix, double *vect);
+std::array<double, 3> transformVector(std::array<double, 12> matrix, std::array<double, 3> vect)
+{
+    std::array<double, 3> ret(vect);
+    if(simTransformVector(matrix.data(), ret.data()) == -1)
+        throw api_error("simTransformVector");
+    return ret;
+}
 
 double getSimulationTime()
 {
@@ -1630,7 +1988,10 @@ double getSimulationTime()
     return ret;
 }
 
-// double simGetSystemTime();
+double getSystemTime()
+{
+    return simGetSystemTime();
+}
 
 // int simHandleProximitySensor(int sensorHandle, double *detectedPoint, int *detectedObjectHandle, double *normalVector);
 
@@ -1754,17 +2115,61 @@ boost::optional<std::array<float, 3>> getShapeColor(int shapeHandle, int colorCo
 
 // int simAuxiliaryConsoleOpen(const char *title, int maxLines, int mode, const int *position, const int *size, const float *textColor, const float *backgroundColor);
 
-// int simImportShape(int fileformat, const char *pathAndFilename, int options, double identicalVerticeTolerance, double scalingFactor);
+int importShape(const char *pathAndFilename, int options, double scalingFactor)
+{
+    int handle = simImportShape(0, pathAndFilename, options, 0, scalingFactor);
+    if(handle == -1)
+        throw api_error("simImportShape");
+    return handle;
+}
+
+int importShape(const std::string &pathAndFilename, int options, double scalingFactor)
+{
+    return importShape(pathAndFilename.c_str(), options, scalingFactor);
+}
 
 // int simImportMesh(int fileformat, const char *pathAndFilename, int options, double identicalVerticeTolerance, double scalingFactor, double ***vertices, int **verticesSizes, int ***indices, int **indicesSizes, double ***reserved, char ***names);
 
 // int simExportMesh(int fileformat, const char *pathAndFilename, int options, double scalingFactor, int elementCount, const double **vertices, const int *verticesSizes, const int **indices, const int *indicesSizes, double **reserved, const char **names);
 
-// int simCreateMeshShape(int options, double shadingAngle, const double *vertices, int verticesSize, const int *indices, int indicesSize, double *reserved);
+int createMeshShape(int options, double shadingAngle, const double *vertices, int verticesSize, const int *indices, int indicesSize)
+{
+    int handle = simCreateMeshShape(options, shadingAngle, vertices, verticesSize, indices, indicesSize, nullptr);
+    if(handle == -1)
+        throw api_error("simCreateMeshShape");
+    return handle;
+}
 
-// int simCreatePrimitiveShape(int primitiveType, const double *sizes, int options);
+int createMeshShape(int options, double shadingAngle, const std::vector<double> &vertices, const std::vector<int> &indices)
+{
+    return createMeshShape(options, shadingAngle, vertices.data(), vertices.size(), indices.data(), indices.size());
+}
 
-// int simCreateHeightfieldShape(int options, double shadingAngle, int xPointCount, int yPointCount, double xSize, const double *heights);
+int createPrimitiveShape(int primitiveType, const double *sizes, int options)
+{
+    int handle = simCreatePrimitiveShape(primitiveType, sizes, options);
+    if(handle == -1)
+        throw api_error("simCreatePrimitiveShape");
+    return handle;
+}
+
+int createPrimitiveShape(int primitiveType, std::array<double, 3> sizes, int options)
+{
+    return createPrimitiveShape(primitiveType, sizes.data(), options);
+}
+
+int createHeightfieldShape(int options, double shadingAngle, int xPointCount, int yPointCount, double xSize, const double *heights)
+{
+    int handle = simCreateHeightfieldShape(options, shadingAngle, xPointCount, yPointCount, xSize, heights);
+    if(handle == -1)
+        throw api_error("simCreateHeightfieldShape");
+    return handle;
+}
+
+int createHeightfieldShape(int options, double shadingAngle, int xPointCount, int yPointCount, double xSize, const std::vector<double> &heights)
+{
+    return createHeightfieldShape(options, shadingAngle, xPointCount, yPointCount, xSize, heights.data());
+}
 
 void getShapeMesh(int shapeHandle, double **vertices, int *verticesSize, int **indices, int *indicesSize, double **normals)
 {
@@ -1789,15 +2194,125 @@ void getShapeMesh(int shapeHandle, std::vector<double> vertices, std::vector<int
     releaseBuffer(normalsBuf);
 }
 
-// int simCreateJoint(int jointType, int jointMode, int options, const double *sizes, const double *reservedA, const double *reservedB);
+int createJoint(int jointType, int jointMode, int options, const double *sizes)
+{
+    int handle = simCreateJoint(jointType, jointMode, options, sizes, nullptr, nullptr);
+    if(handle == -1)
+        throw api_error("simCreateJoint");
+    return handle;
+}
 
-// int simCreateDummy(double size, const float *reserved);
+int createJoint(int jointType, int jointMode, int options, boost::optional<std::array<double, 2>> sizes)
+{
+    return createJoint(jointType, jointMode, options, sizes ? sizes->data() : nullptr);
+}
 
-// int simCreateForceSensor(int options, const int *intParams, const double *floatParams, const double *reserved);
+int createDummy(double size)
+{
+    int handle = simCreateDummy(size, nullptr);
+    if(handle == -1)
+        throw api_error("simCreateDummy");
+    return handle;
+}
 
-// int simCreateVisionSensor(int options, const int *intParams, const double *floatParams, const double *reserved);
+int createForceSensor(int options, const int *intParams, const double *floatParams)
+{
+    int handle = simCreateForceSensor(options, intParams, floatParams, nullptr);
+    if(handle == -1)
+        throw api_error("simCreateForceSensor");
+    return handle;
+}
 
-// int simCreateProximitySensor(int sensorType, int subType, int options, const int *intParams, const double *floatParams, const double *reserved);
+int createForceSensor(int options, int type, int valueCount, int thresholdCount, double size, double forceThreshold, double torqueThreshold)
+{
+    int intParams[] = {
+        type,
+        valueCount,
+        thresholdCount,
+        0,
+        0
+    };
+    double floatParams[] = {
+        size,
+        forceThreshold,
+        torqueThreshold,
+        0.0,
+        0.0
+    };
+    return createForceSensor(options, &intParams[0], &floatParams[0]);
+}
+
+int createVisionSensor(int options, const int *intParams, const double *floatParams)
+{
+    int handle = simCreateVisionSensor(options, intParams, floatParams, nullptr);
+    if(handle == -1)
+        throw api_error("simCreateVisionSensor");
+    return handle;
+}
+
+int createVisionSensor(int options, std::array<int, 2> resolution, double clipNear, double clipFar, double viewAngleOrOrthoSize, double xSize, std::array<float, 3> nullPixelColor)
+{
+    int intParams[] = {
+        resolution[0],
+        resolution[1],
+        0,
+        0
+    };
+    double floatParams[] = {
+        clipNear,
+        clipFar,
+        viewAngleOrOrthoSize,
+        xSize,
+        0.0,
+        0.0,
+        nullPixelColor[0],
+        nullPixelColor[1],
+        nullPixelColor[2],
+        0.0,
+        0.0
+    };
+    return createVisionSensor(options, &intParams[0], &floatParams[0]);
+}
+
+int createProximitySensor(int sensorType, int options, const int *intParams, const double *floatParams)
+{
+    int handle = simCreateProximitySensor(sensorType, 16, options, intParams, floatParams, nullptr);
+    if(handle == -1)
+        throw api_error("simCreateProximitySensor");
+    return handle;
+}
+
+int createProximitySensor(int sensorType, int options, int faceCount, int faceCountFar, int subdivisions, int subdivisionsFar, int randDetSampleCountPerReading, int randDetIndividualRayDetCntForTrig, double offset, double range, std::array<double, 2> size, std::array<double, 2> sizeFar, double insideGap, double radius, double radiusFar, double angle, double thresholdAngle, double smallestDetDist, double sensPointSize)
+{
+    int intParams[] = {
+        faceCount,
+        faceCountFar,
+        subdivisions,
+        subdivisionsFar,
+        randDetSampleCountPerReading,
+        randDetIndividualRayDetCntForTrig,
+        0,
+        0
+    };
+    double floatParams[] = {
+        offset,
+        range,
+        size[0],
+        size[1],
+        sizeFar[0],
+        sizeFar[1],
+        insideGap,
+        radius,
+        radiusFar,
+        angle,
+        thresholdAngle,
+        smallestDetDist,
+        sensPointSize,
+        0.0,
+        0.0
+    };
+    return createProximitySensor(sensorType, options, &intParams[0], &floatParams[0]);
+}
 
 std::pair<std::array<double, 3>, double> getRotationAxis(std::array<double, 12> matrixStart, std::array<double, 12> matrixGoal)
 {
@@ -1940,13 +2455,44 @@ int insertObjectIntoPointCloud(int pointCloudHandle, int objectHandle, int optio
 
 // int simGetJointDependency(int jointHandle, int *masterJointHandle, double *offset, double *multCoeff);
 
-// int simGetShapeMass(int shapeHandle, double *mass);
+double getShapeMass(int shapeHandle)
+{
+    double mass = 0.0;
+    if(simGetShapeMass(shapeHandle, &mass) == -1)
+        throw api_error("simGetShapeMass");
+    return mass;
+}
 
-// int simSetShapeMass(int shapeHandle, double mass);
+void setShapeMass(int shapeHandle, double mass)
+{
+    if(simSetShapeMass(shapeHandle, mass) == -1)
+        throw api_error("simSetShapeMass");
+}
 
-// int simGetShapeInertia(int shapeHandle, double *inertiaMatrix, double *transformationMatrix);
+void getShapeInertia(int shapeHandle, double *inertiaMatrix, double *transformationMatrix)
+{
+    if(simGetShapeInertia(shapeHandle, inertiaMatrix, transformationMatrix) == -1)
+        throw api_error("simGetShapeInertia");
+}
 
-// int simSetShapeInertia(int shapeHandle, const double *inertiaMatrix, const double *transformationMatrix);
+std::pair<std::array<double, 9>, std::array<double, 12>> getShapeInertia(int shapeHandle)
+{
+    std::array<double, 9> inertiaMatrix;
+    std::array<double, 12> transformationMatrix;
+    getShapeInertia(shapeHandle, inertiaMatrix.data(), transformationMatrix.data());
+    return std::make_pair(inertiaMatrix, transformationMatrix);
+}
+
+void setShapeInertia(int shapeHandle, const double *inertiaMatrix, const double *transformationMatrix)
+{
+    if(simSetShapeInertia(shapeHandle, inertiaMatrix, transformationMatrix) == -1)
+        throw api_error("simSetShapeInertia");
+}
+
+void setShapeInertia(int shapeHandle, std::array<double, 9> inertiaMatrix, std::array<double, 12> transformationMatrix)
+{
+    return setShapeInertia(shapeHandle, inertiaMatrix.data(), transformationMatrix.data());
+}
 
 // int simGenerateShapeFromPath(const double *path, int pathSize, const double *section, int sectionSize, int options, const double *upVector, double reserved);
 

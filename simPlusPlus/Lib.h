@@ -148,7 +148,7 @@ namespace sim
 
     void removeObjects(const std::vector<int> &objectHandles);
 
-    // removeModel
+    int removeModel(int objectHandle);
 
     std::string getObjectAlias(int objectHandle, int options);
 
@@ -157,28 +157,34 @@ namespace sim
     int getObjectParent(int objectHandle);
 
     int getObjectChild(int objectHandle, int index);
+    std::vector<int> getObjectChildren(int objectHandle);
 
     void setObjectParent(int objectHandle, int parentObjectHandle, bool keepInPlace);
 
     int getObjectType(int objectHandle);
 
-    // getJointType
+    int getJointType(int objectHandle);
 
     // reservedCommand
 
     int getSimulationState();
 
-    // loadScene
+    void loadScene(const char *filename);
+    void loadScene(const std::string &filename);
 
-    // closeScene
+    void closeScene();
 
-    // saveScene
+    void saveScene(const char *filename);
+    void saveScene(const std::string &filename);
 
-    // loadModel
+    void loadModel(const char *filename);
+    void loadModel(const std::string &filename);
 
-    // saveModel
+    void saveModel(int baseOfModelHandle, const char *filename);
+    void saveModel(int baseOfModelHandle, const std::string &filename);
 
-    // doesFileExist
+    bool doesFileExist(const char *filename);
+    bool doesFileExist(const std::string &filename);
 
     std::vector<int> getObjectSel();
 
@@ -273,9 +279,9 @@ namespace sim
 
     // getSignalName
 
-    // setObjectProperty
+    void setObjectProperty(int objectHandle, int prop);
 
-    // getObjectProperty
+    int getObjectProperty(int objectHandle);
 
     // setObjectSpecialProperty
 
@@ -285,19 +291,19 @@ namespace sim
 
     // getExplicitHandling
 
-    // getLinkDummy
+    int getLinkDummy(int dummyHandle);
 
-    // setLinkDummy
+    void setLinkDummy(int dummyHandle, int linkedDummyHandle);
 
-    // setModelProperty
+    void setModelProperty(int objectHandle, int modelProperty);
 
-    // getModelProperty
+    int getModelProperty(int objectHandle);
 
-    // resetDynamicObject
+    void resetDynamicObject(int objectHandle);
 
-    // setJointMode
+    void setJointMode(int jointHandle, int jointMode);
 
-    // getJointMode
+    int getJointMode(int jointHandle);
 
     // serialOpen
 
@@ -341,19 +347,22 @@ namespace sim
 
     std::vector<int> ungroupShape(int shapeHandle);
 
-    // quitSimulator
+    void quitSimulator();
 
-    // setShapeMaterial
+    void setShapeMaterial(int shapeHandle, int materialIdOrShapeHandle);
 
     // getTextureId
 
     // readTexture
 
-    // writeCustomDataBlock
+    void writeCustomDataBlock(int objectHandle, const char *tagName, const char *data, int dataSize);
+    void writeCustomDataBlock(int objectHandle, const std::string &tagName, const std::string &data);
 
-    // readCustomDataBlock
+    char * readCustomDataBlock(int objectHandle, const char *tagName, int *dataSize);
+    boost::optional<std::string> readCustomDataBlock(int objectHandle, const std::string &tagName);
 
-    // readCustomDataBlockTags
+    char * readCustomDataBlockTags(int objectHandle, int *tagCount);
+    std::vector<std::string> readCustomDataBlockTags(int objectHandle);
 
     int getObjects(int index, int objectType);
     std::vector<int> getObjects(int objectType);
@@ -450,13 +459,13 @@ namespace sim
 
     void debugStack(int stackHandle, int index = -1);
 
-    // getEngineInt32Param
+    int getEngineInt32Param(int paramId, int objectHandle, const void *object);
 
-    // getEngineBoolParam
+    bool getEngineBoolParam(int paramId, int objectHandle, const void *object);
 
-    // setEngineInt32Param
+    void setEngineInt32Param(int paramId, int objectHandle, const void *object, int val);
 
-    // setEngineBoolParam
+    void setEngineBoolParam(int paramId, int objectHandle, const void *object, bool val);
 
     // insertObjectIntoOctree
 
@@ -657,9 +666,9 @@ namespace sim
 
     // setObjectFloatArrayParam
 
-    // getEngineFloatParam
+    double getEngineFloatParam(int paramId, int objectHandle, const void *object);
 
-    // setEngineFloatParam
+    void setEngineFloatParam(int paramId, int objectHandle, const void *object, double val);
 
     // transformImage
 
@@ -667,41 +676,53 @@ namespace sim
 
     std::vector<double> getPointCloudPoints(int pointCloudHandle);
 
+    void getObjectMatrix(int objectHandle, int relativeToObjectHandle, double *matrix);
     std::array<double, 12> getObjectMatrix(int objectHandle, int relativeToObjectHandle);
 
+    void setObjectMatrix(int objectHandle, int relativeToObjectHandle, const double *matrix);
     void setObjectMatrix(int objectHandle, int relativeToObjectHandle, const std::array<double, 12> &matrix);
 
-    // getObjectPose
+    void getObjectPose(int objectHandle, int relativeToObjectHandle, double *pose);
+    std::array<double, 7> getObjectPose(int objectHandle, int relativeToObjectHandle);
 
-    // setObjectPose
+    void setObjectPose(int objectHandle, int relativeToObjectHandle, const double *pose);
+    void setObjectPose(int objectHandle, int relativeToObjectHandle, std::array<double, 7> pose);
 
+    void getObjectPosition(int objectHandle, int relativeToObjectHandle, double *position);
     std::array<double, 3> getObjectPosition(int objectHandle, int relativeToObjectHandle);
 
+    void setObjectPosition(int objectHandle, int relativeToObjectHandle, const double *position);
     void setObjectPosition(int objectHandle, int relativeToObjectHandle, const std::array<double, 3> &position);
 
+    void getObjectOrientation(int objectHandle, int relativeToObjectHandle, double *eulerAngles);
     std::array<double, 3> getObjectOrientation(int objectHandle, int relativeToObjectHandle);
 
+    void setObjectOrientation(int objectHandle, int relativeToObjectHandle, const double *eulerAngles);
     void setObjectOrientation(int objectHandle, int relativeToObjectHandle, const std::array<double, 3> &eulerAngles);
 
     double getJointPosition(int objectHandle);
 
     void setJointPosition(int objectHandle, double position);
 
-    // setJointTargetPosition
+    void setJointTargetPosition(int objectHandle, double targetPosition);
 
-    // getJointTargetPosition
+    double getJointTargetPosition(int objectHandle);
 
-    // getJointTargetForce
+    double getJointTargetForce(int jointHandle);
 
-    // setJointTargetForce
+    void setJointTargetForce(int objectHandle, double forceOrTorque, bool signedValue);
 
-    // getObjectChildPose
+    void getObjectChildPose(int objectHandle, double *pose);
+    std::array<double, 7> getObjectChildPose(int objectHandle);
 
-    // setObjectChildPose
+    void setObjectChildPose(int objectHandle, const double *pose);
+    void setObjectChildPose(int objectHandle, std::array<double, 7> pose);
 
-    // getJointInterval
+    void getJointInterval(int objectHandle, bool *cyclic, double *interval);
+    std::array<double, 2> getJointInterval(int objectHandle, bool *cyclic);
 
-    // setJointInterval
+    void setJointInterval(int objectHandle, bool cyclic, const double *interval);
+    void setJointInterval(int objectHandle, bool cyclic, std::array<double, 2> interval);
 
     // buildIdentityMatrix
 
@@ -713,25 +734,25 @@ namespace sim
 
     // invertMatrix
 
-    // multiplyMatrices
+    std::array<double, 12> multiplyMatrices(std::array<double, 12> matrixIn1, std::array<double, 12> matrixIn2);
 
-    // multiplyPoses
+    std::array<double, 7> multiplyPoses(std::array<double, 7> poseIn1, std::array<double, 7> poseIn2);
 
-    // invertPose
+    std::array<double, 7> invertPose(std::array<double, 7> pose);
 
-    // interpolatePoses
+    std::array<double, 7> interpolatePoses(std::array<double, 7> poseIn1, std::array<double, 7> poseIn2, double interpolFactor);
 
-    // poseToMatrix
+    std::array<double, 12> poseToMatrix(std::array<double, 7> poseIn);
 
-    // matrixToPose
+    std::array<double, 7> matrixToPose(std::array<double, 12> matrixIn);
 
-    // interpolateMatrices
+    std::array<double, 12> interpolateMatrices(std::array<double, 12> matrixIn1, std::array<double, 12> matrixIn2, double interpolFactor);
 
-    // transformVector
+    std::array<double, 3> transformVector(std::array<double, 12> matrix, std::array<double, 3> vect);
 
     double getSimulationTime();
 
-    // getSystemTime
+    double getSystemTime();
 
     // handleProximitySensor
 
@@ -810,30 +831,38 @@ namespace sim
 
     // auxiliaryConsoleOpen
 
-    // importShape
+    int importShape(const char *pathAndFilename, int options, double scalingFactor);
+    int importShape(const std::string &pathAndFilename, int options, double scalingFactor);
 
     // importMesh
 
     // exportMesh
 
-    // createMeshShape
+    int createMeshShape(int options, double shadingAngle, const double *vertices, int verticesSize, const int *indices, int indicesSize);
+    int createMeshShape(int options, double shadingAngle, const std::vector<double> &vertices, const std::vector<int> &indices);
 
-    // createPrimitiveShape
+    int createPrimitiveShape(int primitiveType, const double *sizes, int options);
+    int createPrimitiveShape(int primitiveType, std::array<double, 3> sizes, int options);
 
-    // createHeightfieldShape
+    int createHeightfieldShape(int options, double shadingAngle, int xPointCount, int yPointCount, double xSize, const double *heights);
+    int createHeightfieldShape(int options, double shadingAngle, int xPointCount, int yPointCount, double xSize, const std::vector<double> &heights);
 
-    void getShapeMesh(int shapeHandle, double **vertices, int *verticesSize, int **indices, int *indicesSize, double **normals);
+    void getShapeMesh(int shapeHandle, double **vertices, int *verticesSize, int **indices, int *indicesSize, double **normals = nullptr);
     void getShapeMesh(int shapeHandle, std::vector<double> vertices, std::vector<int> indices, boost::optional<std::vector<double>> normals = {});
 
-    // createJoint
+    int createJoint(int jointType, int jointMode, int options, const double *sizes);
+    int createJoint(int jointType, int jointMode, int options = 0, boost::optional<std::array<double, 2>> sizes = {});
 
-    // createDummy
+    int createDummy(double size = 0.01);
 
-    // createForceSensor
+    int createForceSensor(int options, const int *intParams, const double *floatParams);
+    int createForceSensor(int options, int type, int valueCount, int thresholdCount, double size, double forceThreshold, double torqueThreshold);
 
-    // createVisionSensor
+    int createVisionSensor(int options, const int *intParams, const double *floatParams);
+    int createVisionSensor(int options, std::array<int, 2> resolution, double clipNear, double clipFar, double viewAngleOrOrthoSize, double xSize, std::array<float, 3> nullPixelColor);
 
-    // createProximitySensor
+    int createProximitySensor(int sensorType, int options, const int *intParams, const double *floatParams);
+    int createProximitySensor(int sensorType, int options, int faceCount, int faceCountFar, int subdivisions, int subdivisionsFar, int randDetSampleCountPerReading, int randDetIndividualRayDetCntForTrig, double offset, double range, std::array<double, 2> size, std::array<double, 2> sizeFar, double insideGap, double radius, double radiusFar, double angle, double thresholdAngle, double smallestDetDist, double sensPointSize);
 
     std::pair<std::array<double, 3>, double> getRotationAxis(std::array<double, 12> matrixStart, std::array<double, 12> matrixGoal);
     std::pair<std::array<double, 3>, double> getRotationAxis(std::array<double, 7> matrixStart, std::array<double, 7> matrixGoal);
@@ -906,13 +935,15 @@ namespace sim
 
     // getJointDependency
 
-    // getShapeMass
+    double getShapeMass(int shapeHandle);
 
-    // setShapeMass
+    void setShapeMass(int shapeHandle, double mass);
 
-    // getShapeInertia
+    void getShapeInertia(int shapeHandle, double *inertiaMatrix, double *transformationMatrix);
+    std::pair<std::array<double, 9>, std::array<double, 12>> getShapeInertia(int shapeHandle);
 
-    // setShapeInertia
+    void setShapeInertia(int shapeHandle, const double *inertiaMatrix, const double *transformationMatrix);
+    void setShapeInertia(int shapeHandle, std::array<double, 9> inertiaMatrix, std::array<double, 12> transformationMatrix);
 
     // generateShapeFromPath
 
