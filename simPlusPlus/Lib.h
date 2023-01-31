@@ -751,6 +751,7 @@ namespace sim
 
     std::array<double, 12> interpolateMatrices(std::array<double, 12> matrixIn1, std::array<double, 12> matrixIn2, double interpolFactor);
 
+    void transformVector(const double *matrix, double *vect);
     std::array<double, 3> transformVector(std::array<double, 12> matrix, std::array<double, 3> vect);
 
     double getSimulationTime();

@@ -2037,11 +2037,16 @@ std::array<double, 12> interpolateMatrices(std::array<double, 12> matrixIn1, std
     return ret;
 }
 
+void transformVector(const double *matrix, double *vect)
+{
+    if(simTransformVector(matrix, vect) == -1)
+        throw api_error("simTransformVector");
+}
+
 std::array<double, 3> transformVector(std::array<double, 12> matrix, std::array<double, 3> vect)
 {
     std::array<double, 3> ret(vect);
-    if(simTransformVector(matrix.data(), ret.data()) == -1)
-        throw api_error("simTransformVector");
+    transformVector(matrix.data(), ret.data());
     return ret;
 }
 
