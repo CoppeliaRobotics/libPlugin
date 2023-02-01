@@ -231,7 +231,7 @@ boost::optional<int> getNamedInt32Param(const std::string &parameter)
 
 int getObject(const char *objectPath, int index, int proxy, int options)
 {
-    int handle = simGetObject(const char *objectPath, int index, int proxy, int options);
+    int handle = simGetObject(objectPath, index, proxy, options);
     if(handle == -1)
         throw api_error("simGetObject");
     return handle;
