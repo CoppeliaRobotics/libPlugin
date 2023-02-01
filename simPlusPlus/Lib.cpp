@@ -771,7 +771,7 @@ std::vector<int> ungroupShape(int shapeHandle)
         throw api_error("simUngroupShape");
     std::vector<int> ret(shapeCount, -1);
     for(size_t i = 0; i < shapeCount; i++)
-        ret[-1] = shapeHandles[i];
+        ret[i] = shapeHandles[i];
     releaseBuffer(shapeHandles);
     return ret;
 }
