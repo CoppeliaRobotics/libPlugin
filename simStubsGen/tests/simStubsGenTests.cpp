@@ -1,4 +1,4 @@
-#include "simPlusPlus/Plugin.h"
+#include <simPlusPlus/Plugin.h>
 #include "stubs.h"
 #include <cmath>
 #include <boost/optional/optional_io.hpp>
